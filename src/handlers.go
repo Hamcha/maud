@@ -18,11 +18,15 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 
 }
 
-func httpNew(rw http.ResponseWriter, req *http.Request) {
+func httpNewThread(rw http.ResponseWriter, req *http.Request) {
+	send(rw, "newthread", nil)
+}
+
+func apiNewThread(rw http.ResponseWriter, req *http.Request) {
 
 }
 
-func httpReply(rw http.ResponseWriter, req *http.Request) {
+func apiReply(rw http.ResponseWriter, req *http.Request) {
 
 }
 

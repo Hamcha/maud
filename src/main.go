@@ -38,9 +38,10 @@ func main() {
 	GET.HandleFunc("/t{thread}", httpThread)
 	GET.HandleFunc("/t{thread}/{page}", httpThread)
 	GET.HandleFunc("/tag/{tag}", httpTagSearch)
+	GET.HandleFunc("/new", httpNewThread)
 
-	POST.HandleFunc("/new", httpNew)
-	POST.HandleFunc("/t{thread}/reply", httpReply)
+	POST.HandleFunc("/new", apiNewThread)
+	POST.HandleFunc("/t{thread}/reply", apiReply)
 
 	http.Handle("/", router)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))

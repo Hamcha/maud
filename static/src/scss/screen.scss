@@ -1,5 +1,6 @@
 @import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,300italic,400italic);
-@import url(http://fonts.googleapis.com/css?family=Raleway:200,400);
+@import url(http://fonts.googleapis.com/css?family=Raleway:200,400,600);
+@import "compass/css3";
 
 body {
     background: url(../images/stardust.png) #333;
@@ -7,27 +8,125 @@ body {
     color: #fff; margin: 0; padding: 0;
 }
 
+header, footer, h1, h2, h3, h4 { font-family: "Raleway", sans-serif; }
+
 #container {
     text-align: left;
-    max-width: 600px;
+    max-width: 650px;
     margin: 0 auto;
-    padding: 10px;
-    background: rgba(0,0,0,.5);
+}
+
+nav, section, article {
+    background: rgba(0,0,0,0.5);
+    padding: 5px; margin: 2px 0;
+}
+
+a, a:visited {
+    color: #fff; text-decoration: none; border-bottom: 1px dotted #ccc;
+}
+
+a.button, a.button:visited {
+    text-decoration: none;
+    border: 1px solid #ccc; color: #fff;
+    padding: 3px 5px; margin: 0; margin-right: 2px;
+    display: inline-block;
+    font-size: 1.2em;
+    @include transition-property(all);
+    @include transition-duration(0.2s);
+    &:hover {
+        background-color: #fff;
+        color: #000;
+    }
+}
+
+#tagsearch {
+    font-size: 1.2em;
+    background: transparent;
+    border: 1px solid #aaa;
+    font-weight: 300;
+    padding: 3px 5px;
+    margin: 0;
+    font-family: "Source Sans Pro", sans-serif;
+    color: #fff;
+    &:focus {
+        border-color: #fff;
+        background-color: rgba(255,255,255,0.3);
+        outline: none;
+    }
 }
 
 header {
-    font-family: "Raleway", sans-serif;
+    background: rgba(0,0,0,0.5);
     font-size: 2em;
+    padding: 10px;
 }
 
 header a, header a:visited {
-    color: #fff; text-decoration: none;
+    color: #fff; border: 0;
     font-weight: 200;
 }
 
 footer {
     margin: 10px;
-    font-family: "Raleway", sans-serif;
     text-align: center;
     font-size: 0.85rem;
+}
+
+.home-thread {
+    padding: 5px 10px;
+}
+
+.thread-title {
+    margin: 5px 0; padding: 0;
+    font-weight: 400;
+}
+.thread-author, .post-author {
+    margin: 0; padding: 0;
+    font-weight: 400;
+    font-size: 0.9rem;
+}
+
+.post-author {
+    padding: 0 5px;
+}
+
+.nickname { font-weight: 600; }
+.tripcode { color: #777; }
+.date     { font-size: 0.9em; color: #ccc; }
+
+.hidden {
+    padding: 3px 5px;
+    opacity: 0.8;
+    cursor: pointer;
+    font-size: 0.9em;
+    &:hover { opacity: 1; }
+}
+
+.last-update {
+    font-family: "Raleway", sans-serif;
+    font-size: 0.9em;
+    font-weight: 200;
+}
+
+.tags { font-size: 0.9em; opacity: 0.8; padding: 3px 5px 5px 5px; }
+.tag, .tag:visited { color: #ccc; border: 0; &:hover { color: #fff; } }
+
+h2 { font-size: 1.3em; margin: 0; padding: 0; }
+p { margin: 0; padding: 5px 0; }
+.thread-content, .post-content { margin: 5px; color: #eee; }
+
+.full {
+    display: block; width: 98%; margin: 5px auto;
+    font-family: "Source Sans Pro", sans-serif;
+    font-size: 1.3rem; font-weight: 300;
+    border: 1px solid #666; background-color: transparent;
+}
+
+textarea.full {
+    margin: 6px auto;
+}
+
+hr {
+    background: transparent;
+    padding: 3px; margin: 2px 0; border: 0;
 }
