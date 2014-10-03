@@ -1,10 +1,10 @@
 <section><h2>Creating a new thread</h2></section>
 <section class="form">
 <form method="POST" action="/new" onsubmit="return validate()">
-<input class="full" type="text" name="nickname" placeholder="Nickname#Tripcode" required />
+<input class="full small" type="text" name="nickname" placeholder="Nickname#Tripcode" required autofocus />
 <input class="full" type="text" name="title" placeholder="Thread title" required />
-<textarea class="full" required placeholder="Thread text"></textarea>
-<input class="full" type="text" name="tags" placeholder="Tags (separated by comma)" />
-<input type="submit" value="Create thread" />
+<textarea class="full small" required placeholder="Thread text (Markdown is supported)"></textarea>
+<input class="full small" type="text" name="tags" placeholder="Tags (separated by comma)" /><hr />
+<center><input type="submit" value="Create thread" /></center>
 </form>
 </section>

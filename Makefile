@@ -13,4 +13,4 @@ dep:
 	touch dep
 
 clean:
-	rm -f maud
+	rm -f maud dep
