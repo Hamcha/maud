@@ -98,9 +98,11 @@ footer {
 
 .hidden {
     padding: 3px 5px;
+    font-size: 0.9em;
+}
+.hidden-link {
     opacity: 0.8;
     cursor: pointer;
-    font-size: 0.9em;
     &:hover { opacity: 1; }
 }
 
@@ -138,3 +140,9 @@ hr {
     background: transparent;
     padding: 3px; margin: 2px 0; border: 0;
 }
+
+.tag-item {
+    padding: 10px;
+}
+
+.tag-name { text-transform: capitalize; padding: 0; margin: 0; }
