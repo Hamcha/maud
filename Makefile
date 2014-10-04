@@ -1,7 +1,10 @@
 all: maud
 
-maud: dep
+maud: grunt dep
 	go build -o maud ./src
+
+grunt:
+	grunt build
 
 run: all
 	./maud
