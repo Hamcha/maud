@@ -6,6 +6,7 @@ import (
 
 type SiteInfo struct {
 	Title  string
+	Secret string
 	Footer string
 }
 

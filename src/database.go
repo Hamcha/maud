@@ -58,12 +58,18 @@ func DBNewThread(user User, title, content string, tags []string) (string, error
 
 func DBGetThread(surl string) (Thread, error) {
 	var thread Thread
-	err := database.C("threads").Find(bson.M{"ShortUrl": surl}).One(&thread)
+	err := database.C("threads").Find(bson.M{"shorturl": surl}).One(&thread)
 	return thread, err
 }
 
+func DBGetPost(id bson.ObjectId) (Post, error) {
+	var post Post
+	err := database.C("posts").FindId(id).One(&post)
+	return post, err
+}
+
 func DBGetPosts(thread *Thread, limit int, offset int) ([]Post, error) {
-	query := database.C("posts").Find(bson.M{"ThreadId": thread.Id})
+	query := database.C("posts").Find(bson.M{"threadid": thread.Id})
 	if offset > 0 {
 		query = query.Skip(offset)
 	}
@@ -72,17 +78,18 @@ func DBGetPosts(thread *Thread, limit int, offset int) ([]Post, error) {
 	}
 
 	var posts []Post
-	err := query.All(&posts)
+	err := query.Sort("Date").All(&posts)
+
 	return posts, err
 }
 
 func DBNextId(name string) (int64, error) {
 	inc := mgo.Change{
-		Update:    bson.M{"$inc": bson.M{"Seq": 1}},
+		Update:    bson.M{"$inc": bson.M{"seq": 1}},
 		Upsert:    true,
 		ReturnNew: true,
 	}
 	var doc Counter
-	_, err := database.C("counters").Find(bson.M{"Name": name}).Apply(inc, &doc)
+	_, err := database.C("counters").Find(bson.M{"name": name}).Apply(inc, &doc)
 	return doc.Seq, err
 }

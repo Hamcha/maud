@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"crypto/sha256"
 	"encoding/base64"
 	"encoding/binary"
 	"github.com/microcosm-cc/bluemonday"
@@ -17,9 +18,15 @@ func parseNickname(nickname string) (string, string) {
 	}
 	nicks := strings.SplitN(nickname, "#", 2)
 	if len(nicks) > 1 {
-		return nicks[0], nicks[1]
+		return nicks[0], tripcode(nicks[1])
 	}
 	return nickname, ""
+}
+
+func tripcode(str string) string {
+	sum := sha256.Sum256([]byte(str + siteInfo.Secret))
+	b64 := base64.URLEncoding.EncodeToString(sum[:])
+	return b64[0:6]
 }
 
 func parseContent(content string) string {
@@ -51,7 +58,7 @@ func seedRand() {
 func generateURL(name string) string {
 	buf := make([]byte, 8)
 	num, _ := DBNextId(name)
-	binary.PutVarint(buf, num)
+	binary.PutVarint(buf, num+1)
 	btr := bytes.TrimRight(buf, "\000")
 	str := base64.URLEncoding.EncodeToString(btr)
 	return strings.TrimRight(str, "=")

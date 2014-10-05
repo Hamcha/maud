@@ -23,7 +23,7 @@ func apiNewThread(rw http.ResponseWriter, req *http.Request) {
 	threadId, err := DBNewThread(user, postTitle, content, tags)
 	if err != nil {
 		fmt.Println(err.Error())
-		http.Error(rw, "Something went wrong...", 500)
+		sendError(rw, 500, err.Error())
 		return
 	}
 

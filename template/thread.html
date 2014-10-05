@@ -2,32 +2,37 @@
     <a href="#reply" class="button">Reply</a>
 </nav>
 <hr />
-
+{{#Data}}
 <section class="tags">
-    <a href="/tag/pupu" class="tag">#pupu</a>
-    <a href="/tag/sunset shimmer" class="tag">#sunset shimmer</a>
+    {{#Thread}}
+        {{#Tags}}<a href="/tag/{{.}}" class="tag">#{{.}}</a> {{/Tags}}
+    {{/Thread}}
 </section>
 <article class="thread">
+    {{#ThreadPost}}
     <h2 class="thread-title">La pupu puzza?</h2>
     <h3 class="thread-author">
-        <span class="nickname">Hamcha</span>
-        <span class="tripcode">crazyJoe</span>
-        <span class="date">(03/10/14 00:23)</span>
+        {{#Author}}
+        <span class="nickname">{{Nickname}}</span>
+        <span class="tripcode">{{Tripcode}}</span>
+        {{/Author}}
+        <span class="date">{{Date}}</span>
     </h3>
-    <p class="thread-content">
-        Me lo chiedevo perché boh
-    </p>
-    </article>
+    <div class="thread-content">{{{Content}}}</div>
+    {{/ThreadPost}}
+</article>
+{{#Posts}}
 <article class="post">
     <h3 class="post-author">
-        <span class="nickname">clockino</span>
-        <span class="tripcode">rAr1tYb3st</span>
-        <span class="date">(2 minutes ago)</span>
+        {{#Author}}
+        <span class="nickname">{{Nickname}}</span>
+        <span class="tripcode">{{Tripcode}}</span>
+        {{/Author}}
+        <span class="date">{{Date}}</span>
     </h3>
-    <p class="post-content">
-        OP is faggot
-    </p>
+    <div class="post-content">{{{Content}}}</div>
 </article>
+{{/Posts}}
 <hr />
 <section class="form"><a name="reply" class="noborder"></a>
 <form method="POST" action="/new">
@@ -36,3 +41,4 @@
 <center><input type="submit" value="Reply" /></center>
 </form>
 </section>
+{{/Data}}

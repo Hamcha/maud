@@ -126,8 +126,8 @@ a, a:visited {
 .tag, .tag:visited { color: #ccc; border: 0; &:hover { color: #fff; } }
 
 h2 { font-size: 1.3em; margin: 0; padding: 0; }
-p { margin: 0; padding: 5px 0; }
-.thread-content, .post-content { margin: 5px; color: #eee; }
+.thread-content p, .post-content p { margin: 0; padding: 0 0 5px 0; }
+.thread-content, .post-content { margin: 5px; padding: 0; color: #eee; }
 
 /* Homepage */
 
@@ -153,3 +153,6 @@ textarea.full { margin: 6px auto; min-height: 200px; }
 .small { font-size: 1rem; }
 .verysmall { font-size: 1rem; }
 textarea.verysmall { min-height: 100px; }
+
+/* Errors */
+.fullimage { width: 100%; max-width: 650px; }
