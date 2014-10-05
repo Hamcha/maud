@@ -11,23 +11,15 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 }
 
 func httpThread(rw http.ResponseWriter, req *http.Request) {
-
+	send(rw, "thread", nil)
 }
 
 func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
-
+	send(rw, "tagsearch", nil)
 }
 
 func httpNewThread(rw http.ResponseWriter, req *http.Request) {
 	send(rw, "newthread", nil)
-}
-
-func apiNewThread(rw http.ResponseWriter, req *http.Request) {
-
-}
-
-func apiReply(rw http.ResponseWriter, req *http.Request) {
-
 }
 
 func send(rw http.ResponseWriter, name string, context interface{}) {

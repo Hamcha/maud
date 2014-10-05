@@ -74,9 +74,7 @@ footer {
     font-size: 0.85rem;
 }
 
-.home-thread {
-    padding: 5px 10px;
-}
+.home-thread { padding: 5px 10px; }
 
 .thread-title {
     margin: 5px 0; padding: 0;
@@ -88,9 +86,7 @@ footer {
     font-size: 0.9rem;
 }
 
-.post-author {
-    padding: 0 5px;
-}
+.post-author { padding: 0 5px; }
 
 .nickname { font-weight: 600; }
 .tripcode { color: #777; }
@@ -133,7 +129,6 @@ p { margin: 0; padding: 5px 0; }
 }
 
 textarea.full { margin: 6px auto; min-height: 200px; }
-
 .small { font-size: 1rem; }
 
 hr {
@@ -141,8 +136,5 @@ hr {
     padding: 3px; margin: 2px 0; border: 0;
 }
 
-.tag-item {
-    padding: 10px;
-}
-
+.tag-item { padding: 10px; }
 .tag-name { text-transform: capitalize; padding: 0; margin: 0; }

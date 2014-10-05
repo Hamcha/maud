@@ -35,9 +35,9 @@ func main() {
 	POST := router.Methods("POST").Subrouter()
 
 	GET.HandleFunc("/", httpHome)
-	GET.HandleFunc("/t{thread}", httpThread)
-	GET.HandleFunc("/t{thread}/{page}", httpThread)
 	GET.HandleFunc("/tag/{tag}", httpTagSearch)
+	GET.HandleFunc("/thread/{thread}", httpThread)
+	GET.HandleFunc("/thread/{thread}/{page}", httpThread)
 	GET.HandleFunc("/new", httpNewThread)
 
 	POST.HandleFunc("/new", apiNewThread)
