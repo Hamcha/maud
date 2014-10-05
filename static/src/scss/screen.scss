@@ -2,6 +2,7 @@
 @import url(http://fonts.googleapis.com/css?family=Raleway:200,400,600);
 @import "compass/css3";
 
+/* General Template */
 body {
     background: url(../images/stardust.png) #333;
     font-family: "Source Sans Pro", sans-serif; font-weight: 300;
@@ -22,41 +23,6 @@ nav, section, article {
     padding: 5px; margin: 2px 0;
 }
 
-a, a:visited {
-    color: #fff; text-decoration: none; border-bottom: 1px dotted #ccc;
-}
-
-input[type="submit"], a.button, a.button:visited {
-    font-family: "Source Sans Pro", sans-serif;
-    text-decoration: none; background-color: transparent;
-    border: 1px solid #ccc; color: #fff;
-    padding: 3px 5px; margin: 0; margin-right: 2px;
-    display: inline-block; cursor: pointer;
-    font-size: 1.2em; font-weight: 300;
-    @include transition-property(all);
-    @include transition-duration(0.2s);
-    &:hover {
-        background-color: #fff;
-        color: #000;
-    }
-}
-
-#tagsearch {
-    font-size: 1.2em;
-    background: transparent;
-    border: 1px solid #aaa;
-    font-weight: 300;
-    padding: 3px 5px;
-    margin: 0;
-    font-family: "Source Sans Pro", sans-serif;
-    color: #fff;
-    &:focus {
-        border-color: #fff;
-        background-color: rgba(255,255,255,0.3);
-        outline: none;
-    }
-}
-
 header {
     background: rgba(0,0,0,0.5);
     font-size: 2em;
@@ -74,23 +40,53 @@ footer {
     font-size: 0.85rem;
 }
 
-.home-thread { padding: 5px 10px; }
-
-.thread-title {
-    margin: 5px 0; padding: 0;
-    font-weight: 400;
-}
-.thread-author, .post-author {
-    margin: 0; padding: 0;
-    font-weight: 400;
-    font-size: 0.9rem;
+hr {
+    background: transparent;
+    padding: 3px; margin: 2px 0; border: 0;
 }
 
-.post-author { padding: 0 5px; }
+/* Buttons and links */
 
-.nickname { font-weight: 600; }
-.tripcode { color: #777; }
-.date     { font-size: 0.9em; color: #ccc; }
+input[type="submit"], a.button, a.button:visited {
+    font-family: "Source Sans Pro", sans-serif;
+    text-decoration: none; background-color: transparent;
+    border: 1px solid #ccc; color: #fff;
+    padding: 3px 5px; margin: 0; margin-right: 2px;
+    display: inline-block; cursor: pointer;
+    font-size: 1.2em; font-weight: 300;
+    @include transition-property(all);
+    @include transition-duration(0.2s);
+    &:hover {
+        background-color: #fff;
+        color: #000;
+    }
+}
+
+a, a:visited {
+    color: #fff; text-decoration: none; border-bottom: 1px dotted #ccc;
+}
+
+.noborder { border: 0; }
+
+/* Tag search */
+
+#tagsearch {
+    font-size: 1.2em;
+    background: transparent;
+    border: 1px solid #aaa;
+    font-weight: 300;
+    padding: 3px 5px;
+    margin: 0;
+    font-family: "Source Sans Pro", sans-serif;
+    color: #fff;
+    &:focus {
+        border-color: #fff;
+        background-color: rgba(255,255,255,0.3);
+        outline: none;
+    }
+}
+
+.home-thread, .thread { padding: 5px 5px; }
 
 .hidden {
     padding: 3px 5px;
@@ -108,12 +104,37 @@ footer {
     font-weight: 200;
 }
 
+/* Thread view */
+
+.thread-title {
+    margin: 5px; padding: 0;
+    font-weight: 400;
+}
+.thread-author, .post-author {
+    margin: 0; padding: 5px; padding-top: 0;
+    font-weight: 400;
+    font-size: 0.9rem;
+}
+
+.post-author { padding: 0 5px; padding-top: 5px; }
+
+.nickname { font-weight: 600; }
+.tripcode { color: #777; }
+.date     { font-size: 0.9em; color: #ccc; }
+
 .tags { font-size: 0.9em; opacity: 0.8; padding: 3px 5px 5px 5px; }
 .tag, .tag:visited { color: #ccc; border: 0; &:hover { color: #fff; } }
 
 h2 { font-size: 1.3em; margin: 0; padding: 0; }
 p { margin: 0; padding: 5px 0; }
 .thread-content, .post-content { margin: 5px; color: #eee; }
+
+/* Homepage */
+
+.tag-item { padding: 10px; }
+.tag-name { text-transform: capitalize; padding: 0; margin: 0; }
+
+/* Forms */
 
 .full {
     display: block; width: 96%; margin: 5px auto;
@@ -130,11 +151,5 @@ p { margin: 0; padding: 5px 0; }
 
 textarea.full { margin: 6px auto; min-height: 200px; }
 .small { font-size: 1rem; }
-
-hr {
-    background: transparent;
-    padding: 3px; margin: 2px 0; border: 0;
-}
-
-.tag-item { padding: 10px; }
-.tag-name { text-transform: capitalize; padding: 0; margin: 0; }
+.verysmall { font-size: 1rem; }
+textarea.verysmall { min-height: 100px; }
