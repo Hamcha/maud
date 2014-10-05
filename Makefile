@@ -5,6 +5,7 @@ maud: grunt dep
 
 grunt:
 	grunt build
+	touch grunt
 
 run: all
 	./maud
@@ -18,4 +19,4 @@ dep:
 	touch dep
 
 clean:
-	rm -f maud dep
+	rm -f maud dep grunt
