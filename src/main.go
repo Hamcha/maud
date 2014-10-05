@@ -18,6 +18,9 @@ func main() {
 	dbname := flag.String("dbname", "maud", "MongoDB database to use")
 	flag.Parse()
 
+	// Seed RNG
+	seedRand()
+
 	// Load Site info file
 	rawconf, _ := ioutil.ReadFile("info.json")
 	err := json.Unmarshal(rawconf, &siteInfo)

@@ -15,16 +15,16 @@ type User struct {
 }
 
 type Thread struct {
-	Id        bson.ObjectId "_id"
-	ShortUrl  string
-	Title     string
-	Author    User
-	Content   string
-	Tags      []string
-	Date      int64
-	Messages  int32
-	LastReply bson.ObjectId
-	LRDate    int64
+	Id         bson.ObjectId "_id"
+	ShortUrl   string
+	Title      string
+	Author     User
+	Tags       []string
+	Date       int64
+	Messages   int32
+	ThreadPost bson.ObjectId
+	LastReply  bson.ObjectId
+	LRDate     int64
 }
 
 type Post struct {
@@ -33,4 +33,9 @@ type Post struct {
 	Author   User
 	Content  string
 	Date     int64
+}
+
+type Counter struct {
+	Name string
+	Seq  int64
 }
