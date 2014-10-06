@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"github.com/gorilla/mux"
 	"net/http"
+	"strconv"
 )
 
 func apiNewThread(rw http.ResponseWriter, req *http.Request) {
@@ -31,5 +33,27 @@ func apiNewThread(rw http.ResponseWriter, req *http.Request) {
 }
 
 func apiReply(rw http.ResponseWriter, req *http.Request) {
-	http.Error(rw, "MY HAMON IS NOT STRONG ENOUGH YET", 501)
+	vars := mux.Vars(req)
+	threadUrl := vars["thread"]
+	thread, err := DBGetThread(threadUrl)
+
+	postNickname := req.PostFormValue("nickname")
+	postContent := req.PostFormValue("text")
+	if len(postContent) < 1 {
+		http.Error(rw, "Required fields are missing", 400)
+		return
+	}
+
+	nickname, tripcode := parseNickname(postNickname)
+	user := User{nickname, tripcode}
+	content := parseContent(postContent)
+
+	msgId, err := DBReplyThread(&thread, user, content)
+	if err != nil {
+		fmt.Println(err.Error())
+		sendError(rw, 500, err.Error())
+		return
+	}
+
+	http.Redirect(rw, req, "/thread/"+thread.ShortUrl+"#p"+strconv.Itoa(msgId-1), http.StatusMovedPermanently)
 }

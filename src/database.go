@@ -63,6 +63,38 @@ func DBNewThread(user User, title, content string, tags []string) (string, error
 	return thread.ShortUrl, err
 }
 
+func DBReplyThread(thread *Thread, user User, content string) (int, error) {
+	post := Post{
+		Id:       bson.NewObjectId(),
+		ThreadId: thread.Id,
+		Author:   user,
+		Content:  content,
+		Date:     time.Now().UTC().Unix(),
+	}
+
+	err := database.C("posts").Insert(post)
+	if err != nil {
+		return 0, err
+	}
+
+	err = database.C("threads").UpdateId(thread.Id, bson.M{
+		"$set": bson.M{
+			"lastreply": post.Id,
+			"lrdate":    post.Date,
+		},
+		"$inc": bson.M{
+			"messages": 1,
+		},
+	})
+
+	// Increase tag popularity
+	for i := range thread.Tags {
+		DBIncTag(thread.Tags[i], thread.Id)
+	}
+
+	return int(thread.Messages), err
+}
+
 func DBGetThreadList(tag string, limit, offset int) ([]Thread, error) {
 	var filterByTag bson.M
 	if tag != "" {

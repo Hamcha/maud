@@ -126,7 +126,7 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 			Tags:         v.Tags,
 			Date:         v.Date,
 			LRDate:       v.LRDate,
-			Messages:     v.Messages,
+			Messages:     v.Messages - 1,
 			ShortContent: short,
 			HasBroken:    isbroken,
 			HasLR:        v.ThreadPost != v.LastReply,
