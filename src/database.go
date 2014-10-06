@@ -3,6 +3,7 @@ package main
 import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"sort"
 	"time"
 )
 
@@ -53,12 +54,44 @@ func DBNewThread(user User, title, content string, tags []string) (string, error
 		return "", err
 	}
 	err = database.C("posts").Insert(post)
+
+	// Increase tag popularity
+	for i := range tags {
+		DBIncTag(tags[i], tid)
+	}
+
 	return thread.ShortUrl, err
+}
+
+func DBGetThreadList(tag string, limit, offset int) ([]Thread, error) {
+	var filterByTag bson.M
+	if tag != "" {
+		filterByTag = bson.M{"tags": tag}
+	} else {
+		filterByTag = nil
+	}
+	query := database.C("threads").Find(filterByTag).Sort("-LRDate")
+	if offset > 0 {
+		query = query.Skip(offset)
+	}
+	if limit > 0 {
+		query = query.Limit(limit)
+	}
+
+	var threads []Thread
+	err := query.All(&threads)
+	return threads, err
 }
 
 func DBGetThread(surl string) (Thread, error) {
 	var thread Thread
 	err := database.C("threads").Find(bson.M{"shorturl": surl}).One(&thread)
+	return thread, err
+}
+
+func DBGetThreadById(id bson.ObjectId) (Thread, error) {
+	var thread Thread
+	err := database.C("threads").FindId(id).One(&thread)
 	return thread, err
 }
 
@@ -68,8 +101,8 @@ func DBGetPost(id bson.ObjectId) (Post, error) {
 	return post, err
 }
 
-func DBGetPosts(thread *Thread, limit int, offset int) ([]Post, error) {
-	query := database.C("posts").Find(bson.M{"threadid": thread.Id})
+func DBGetPosts(thread *Thread, limit, offset int) ([]Post, error) {
+	query := database.C("posts").Find(bson.M{"threadid": thread.Id}).Sort("date")
 	if offset > 0 {
 		query = query.Skip(offset)
 	}
@@ -78,9 +111,22 @@ func DBGetPosts(thread *Thread, limit int, offset int) ([]Post, error) {
 	}
 
 	var posts []Post
-	err := query.Sort("Date").All(&posts)
+	err := query.All(&posts)
 
 	return posts, err
+}
+
+type ByThreads []Tag
+
+func (b ByThreads) Len() int           { return len(b) }
+func (b ByThreads) Swap(i, j int)      { b[i], b[j] = b[j], b[i] }
+func (b ByThreads) Less(i, j int) bool { return b[i].Posts < b[i].Posts }
+
+func DBGetPopularTags() ([]Tag, error) {
+	var result []Tag
+	err := database.C("tags").Find(nil).Sort("-lastupdate").Limit(10).All(&result)
+	sort.Sort(ByThreads(result))
+	return result, err
 }
 
 func DBNextId(name string) (int64, error) {
@@ -92,4 +138,21 @@ func DBNextId(name string) (int64, error) {
 	var doc Counter
 	_, err := database.C("counters").Find(bson.M{"name": name}).Apply(inc, &doc)
 	return doc.Seq, err
+}
+
+func DBIncTag(name string, lastThread bson.ObjectId) error {
+	inc := mgo.Change{
+		Update: bson.M{
+			"$inc": bson.M{"posts": 1},
+			"$set": bson.M{
+				"lastupdate": time.Now().UTC().Unix(),
+				"lastthread": lastThread,
+			},
+		},
+		Upsert:    true,
+		ReturnNew: true,
+	}
+	var doc Tag
+	_, err := database.C("tags").Find(bson.M{"name": name}).Apply(inc, &doc)
+	return err
 }

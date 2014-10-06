@@ -6,7 +6,9 @@
 <article class="hidden2">
     Most popular tags, ordered by popularity
 </article>
+{{#Data}}
 <article class="tag-item">
-        <h3 class="tag-name"><a href="/tag/some" class="noborder">maud pie rocks</a></h3>
-        <div>Last updated thread: <a href="/thread/pupu" class="thread-title">Test thread here</a> (2 minutes ago)</div>
+        <h3 class="tag-name"><a href="/tag/{{Name}}" class="noborder">{{Name}}</a></h3>
+        <div>Last updated thread: {{#LastThread}}<a href="/thread/{{ShortUrl}}" class="thread-title">{{Title}}</a>{{/LastThread}} (<span class="date">{{LastUpdate}}</span>)</div>
 </article>
+{{/Data}}

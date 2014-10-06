@@ -48,7 +48,27 @@ func parseTags(tags string) []string {
 			list[i] = list[i][1:]
 		}
 	}
+	list = removeDuplicates(list)
 	return list
+}
+
+func removeDuplicates(in []string) []string {
+	out := make([]string, 0)
+	for _, i := range in {
+		found := false
+		for _, j := range out {
+			if i == j {
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			out = append(out, i)
+		}
+	}
+
+	return out
 }
 
 func seedRand() {

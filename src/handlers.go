@@ -9,7 +9,35 @@ import (
 )
 
 func httpHome(rw http.ResponseWriter, req *http.Request) {
-	send(rw, "home", nil)
+	tags, err := DBGetPopularTags()
+	if err != nil {
+		sendError(rw, 500, err.Error())
+		return
+	}
+
+	type TagData struct {
+		Name       string
+		LastUpdate int64
+		LastThread Thread
+	}
+
+	tagdata := make([]TagData, len(tags))
+
+	for i := range tags {
+		thread, err := DBGetThreadById(tags[i].LastThread)
+		if err != nil {
+			sendError(rw, 500, err.Error())
+			return
+		}
+
+		tagdata[i] = TagData{
+			Name:       tags[i].Name,
+			LastUpdate: tags[i].LastUpdate,
+			LastThread: thread,
+		}
+	}
+
+	send(rw, "home", tagdata)
 }
 
 func httpThread(rw http.ResponseWriter, req *http.Request) {

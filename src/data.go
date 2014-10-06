@@ -40,3 +40,10 @@ type Counter struct {
 	Name string
 	Seq  int64
 }
+
+type Tag struct {
+	Name       string
+	Posts      int64
+	LastUpdate int64
+	LastThread bson.ObjectId
+}
