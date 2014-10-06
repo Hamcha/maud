@@ -40,11 +40,11 @@ func main() {
 	GET.HandleFunc("/", httpHome)
 	GET.HandleFunc("/tag/{tag}", httpTagSearch)
 	GET.HandleFunc("/thread/{thread}", httpThread)
-	GET.HandleFunc("/thread/{thread}/{page}", httpThread)
+	GET.HandleFunc("/thread/{thread}/page/{page}", httpThread)
 	GET.HandleFunc("/new", httpNewThread)
 
 	POST.HandleFunc("/new", apiNewThread)
-	POST.HandleFunc("/t{thread}/reply", apiReply)
+	POST.HandleFunc("/thread/{thread}/reply", apiReply)
 
 	http.Handle("/", router)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))

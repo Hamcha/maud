@@ -35,7 +35,7 @@
 {{/Posts}}
 <hr />
 <section class="form"><a name="reply" class="noborder"></a>
-<form method="POST" action="/new">
+<form method="POST" action="/thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/reply">
 <input class="full verysmall" type="text" name="nickname" placeholder="Nickname#Tripcode (optional)" />
 <textarea class="full verysmall" name="text" required placeholder="Thread text (Markdown is supported)"></textarea>
 <center><input type="submit" value="Reply" /></center>

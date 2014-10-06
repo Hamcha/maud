@@ -83,3 +83,11 @@ func generateURL(name string) string {
 	str := base64.URLEncoding.EncodeToString(btr)
 	return strings.TrimRight(str, "=")
 }
+
+func shortify(content string) (string, bool) {
+	if len(content) < 300 {
+		return content, false
+	}
+
+	return bluemonday.UGCPolicy().Sanitize(content[:300]), true
+}

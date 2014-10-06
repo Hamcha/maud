@@ -2,33 +2,44 @@
     <a href="/new" class="button">New thread</a>
     <input type="text" id="tagsearch" placeholder="Filter by tag" />
 </nav>
+{{#Data}}
 <hr />
 <article class="home-thread">
-    <div class="last-update">Last activity: 2 minutes ago</div>
-    <h2 class="thread-title"><a href="/" class="noborder">La pupu puzza?</a></h2>
+    <div class="last-update">Last activity: <span class="date">{{LRDate}}</span></div>
+    <h2 class="thread-title"><a href="/thread/{{ShortUrl}}" class="noborder">{{Title}}</a></h2>
     <h3 class="thread-author">
-        <span class="nickname">Hamcha</span>
-        <span class="tripcode">crazyJoe</span>
-        <span class="date">(03/10/14 00:23)</span>
+        {{#Author}}
+        <span class="nickname">{{Nickname}}</span>
+        <span class="tripcode">{{Tripcode}}</span>
+        {{/Author}}
+        <span class="date">{{Date}}</span>
     </h3>
-    <p class="thread-content">
-        Me lo chiedevo perché boh
-    </p>
-    </article>
-    <article class="hidden hidden-link">
-    <a href="/" class="noborder">Showing last reply (of 24), click to view full thread</a>
-    </article>
+    <div class="thread-content">
+        {{{ShortContent}}}{{#HasBroken}}...<br /><br /><a href="/thread/{{ShortUrl}}">Post truncated, click here to view the full text.</a>{{/HasBroken}}
+    </div>
+</article>
+{{#HasLR}}
+<article class="hidden hidden-link">
+    <a href="/thread/{{ShortUrl}}" class="noborder">Showing last reply (of {{Messages}}), click to view full thread</a>
+</article>
+{{#LastPost}}
 <article class="home-post">
     <h3 class="post-author">
-        <span class="nickname">clockino</span>
-        <span class="tripcode">rAr1tYb3st</span>
-        <span class="date">(2 minutes ago)</span>
+        {{#Author}}
+        <span class="nickname">{{Nickname}}</span>
+        <span class="tripcode">{{Tripcode}}</span>
+        {{/Author}}
+        <span class="date">{{Date}}</span>
     </h3>
-    <p class="post-content">
-        OP is faggot
-    </p>
+    <div class="post-content">
+        {{{ShortContent}}}{{#HasBroken}}...<br /><br /><a href="/thread/{{ShortUrl}}">Post truncated, click here to view the full text.</a>{{/HasBroken}}
+    </div>
 </article>
+{{/LastPost}}
+{{/HasLR}}
 <section class="tags">
-    <a href="/tag/pupu" class="tag">#pupu</a>
-    <a href="/tag/sunset shimmer" class="tag">#sunset shimmer</a>
+{{#Tags}}
+    <a href="/tag/{{.}}" class="tag">#{{.}}</a>
+{{/Tags}}
 </section>
+{{/Data}}
