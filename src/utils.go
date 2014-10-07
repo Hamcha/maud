@@ -42,7 +42,7 @@ func parseTags(tags string) []string {
 	list := strings.Split(tags, ",")
 	for i := range list {
 		// Spaces begone
-		list[i] = strings.TrimSpace(list[i])
+		list[i] = strings.ToLower(strings.TrimSpace(list[i]))
 		// Strip initial # if any
 		if list[i][0] == '#' {
 			list[i] = list[i][1:]
