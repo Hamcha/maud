@@ -102,7 +102,7 @@ func DBGetThreadList(tag string, limit, offset int) ([]Thread, error) {
 	} else {
 		filterByTag = nil
 	}
-	query := database.C("threads").Find(filterByTag).Sort("-LRDate")
+	query := database.C("threads").Find(filterByTag).Sort("LRDate")
 	if offset > 0 {
 		query = query.Skip(offset)
 	}
