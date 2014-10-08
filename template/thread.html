@@ -3,14 +3,14 @@
 </nav>
 <hr />
 {{#Data}}
+{{#Thread}}
 <section class="tags">
-    {{#Thread}}
-        {{#Tags}}<a href="/tag/{{.}}" class="tag">#{{.}}</a> {{/Tags}}
-    {{/Thread}}
+{{#Tags}}<a href="/tag/{{.}}" class="tag">#{{.}}</a> {{/Tags}}
 </section>
 <article class="thread">
-    {{#ThreadPost}}
+    {{/Thread}}
     <h2 class="thread-title">{{Title}}</h2>
+    {{#ThreadPost}}
     <h3 class="thread-author">
         {{#Author}}
         <span class="nickname">{{Nickname}}</span>
