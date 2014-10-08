@@ -4,3 +4,5 @@ static/js
 .sass-cache
 node_modules
 info.json
+dep
+grunt
