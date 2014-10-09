@@ -9,6 +9,7 @@ import (
 	"os"
 	"path"
 	"reflect"
+	"strconv"
 	"strings"
 )
 
@@ -24,6 +25,7 @@ type varElement struct {
 type sectionElement struct {
 	name      string
 	inverted  bool
+	varname   string
 	startline int
 	elems     []interface{}
 }
@@ -135,6 +137,11 @@ func (tmpl *Template) parseSection(section *sectionElement) error {
 			break
 		case '#', '^':
 			name := strings.TrimSpace(tag[1:])
+			varname := ""
+			if sep := strings.Index(name, ":"); sep >= 0 {
+				varname = name[sep+1:]
+				name = name[0:sep]
+			}
 
 			//ignore the newline when a section starts
 			if len(tmpl.data) > tmpl.p && tmpl.data[tmpl.p] == '\n' {
@@ -143,7 +150,7 @@ func (tmpl *Template) parseSection(section *sectionElement) error {
 				tmpl.p += 2
 			}
 
-			se := sectionElement{name, tag[0] == '^', tmpl.curline, []interface{}{}}
+			se := sectionElement{name, tag[0] == '^', varname, tmpl.curline, []interface{}{}}
 			err := tmpl.parseSection(&se)
 			if err != nil {
 				return err
@@ -173,6 +180,7 @@ func (tmpl *Template) parse() error {
 	se := sectionElement{
 		name:      "",
 		inverted:  false,
+		varname:   "",
 		startline: tmpl.curline,
 		elems:     []interface{}{},
 	}
@@ -231,6 +239,7 @@ Outer:
 			}
 		}
 	}
+
 	return reflect.Value{}
 }
 
@@ -298,11 +307,12 @@ func renderSection(section *sectionElement, contextChain []interface{}, buf io.W
 		contexts = append(contexts, context)
 	}
 
-	chain2 := make([]interface{}, len(contextChain)+1)
-	copy(chain2[1:], contextChain)
+	chain2 := make([]interface{}, len(contextChain)+2)
+	copy(chain2[2:], contextChain)
 	//by default we execute the section
-	for _, ctx := range contexts {
+	for i, ctx := range contexts {
 		chain2[0] = ctx
+		chain2[1] = reflect.ValueOf(map[string]string{section.varname: strconv.Itoa(i)})
 		for _, elem := range section.elems {
 			renderElement(elem, chain2, buf)
 		}

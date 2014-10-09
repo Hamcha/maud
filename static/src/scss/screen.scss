@@ -116,11 +116,14 @@ a, a:visited {
     font-size: 0.9rem;
 }
 
+article.post-selected { background-color: rgba(0,0,0,.7); }
+
 .post-author { padding: 0 5px; padding-top: 5px; }
 
 .nickname { font-weight: 600; }
 .tripcode { color: #777; }
 .date     { font-size: 0.9em; color: #ccc; }
+a.date    { border: 0; color: #ccc; &:hover { color: #eee; }}
 
 .tags { font-size: 0.9em; opacity: 0.8; padding: 3px 5px 5px 5px; }
 .tag, .tag:visited { color: #ccc; border: 0; &:hover { color: #fff; } }
