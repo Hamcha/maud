@@ -6,3 +6,4 @@ node_modules
 info.json
 dep
 grunt
+mustache/.git

@@ -12,7 +12,6 @@ run: all
 
 dep:
 	go get github.com/gorilla/mux
-	go get github.com/hoisie/mustache
 	go get github.com/microcosm-cc/bluemonday
 	go get github.com/russross/blackfriday
 	go get gopkg.in/mgo.v2

@@ -1,9 +1,9 @@
 package main
 
 import (
+	"../mustache"
 	"fmt"
 	"github.com/gorilla/mux"
-	"github.com/hoisie/mustache"
 	"net/http"
 	"strconv"
 )
@@ -37,7 +37,7 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	send(rw, "home", tagdata)
+	send(rw, "home", "", tagdata)
 }
 
 func httpThread(rw http.ResponseWriter, req *http.Request) {
@@ -69,7 +69,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		posts = posts[1:]
 	}
 
-	send(rw, "thread", struct {
+	send(rw, "thread", thread.Title, struct {
 		Thread     Thread
 		ThreadPost Post
 		Posts      []Post
@@ -146,23 +146,28 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	send(rw, "tagsearch", threadlist)
+	send(rw, "tagsearch", "Threads under \""+tagName+"\"", threadlist)
 }
 
 func httpNewThread(rw http.ResponseWriter, req *http.Request) {
-	send(rw, "newthread", nil)
+	send(rw, "newthread", "New thread", nil)
 }
 
-func send(rw http.ResponseWriter, name string, context interface{}) {
+func send(rw http.ResponseWriter, name string, title string, context interface{}) {
+	if len(title) > 0 {
+		title = " ~ " + title
+	}
 	fmt.Fprintf(rw,
 		mustache.RenderFileInLayout(
 			"template/"+name+".html",
 			"template/layout.html",
 			struct {
-				Info SiteInfo
-				Data interface{}
+				Info  SiteInfo
+				Title string
+				Data  interface{}
 			}{
 				siteInfo,
+				siteInfo.Title + title,
 				context,
 			}))
 }
