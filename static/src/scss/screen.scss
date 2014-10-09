@@ -24,10 +24,16 @@ nav, section, article {
 }
 
 header {
-    background: rgba(0,0,0,0.5);
+    background: #000;
     font-size: 2em;
-    padding: 10px;
+    height: 150px;
+    background-color: #000, #000;
+    background-image: url(/static/images/headerbg.png), url(/static/images/maud.gif);
+    background-repeat: no-repeat;
+    background-position: left, right;
 }
+
+img.head { width: 100%; max-width: 410px; margin-top: 10px; }
 
 header a, header a:visited {
     color: #fff; border: 0;
