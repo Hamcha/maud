@@ -6,3 +6,4 @@ TODO:
 
 - Remove unneeded stuff (ie. partials)
 - Add loop indexes
+- (Optional) Dot notation support, one that works with structs
