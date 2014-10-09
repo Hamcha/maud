@@ -152,7 +152,7 @@ type ByThreads []Tag
 
 func (b ByThreads) Len() int           { return len(b) }
 func (b ByThreads) Swap(i, j int)      { b[i], b[j] = b[j], b[i] }
-func (b ByThreads) Less(i, j int) bool { return b[i].Posts < b[i].Posts }
+func (b ByThreads) Less(i, j int) bool { return a[i].Posts < b[i].Posts }
 
 func DBGetPopularTags() ([]Tag, error) {
 	var result []Tag
