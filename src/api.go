@@ -55,5 +55,5 @@ func apiReply(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	http.Redirect(rw, req, "/thread/"+thread.ShortUrl+"#p"+strconv.Itoa(msgId-1), http.StatusMovedPermanently)
+	http.Redirect(rw, req, "/thread/"+thread.ShortUrl+"#p"+strconv.Itoa(msgId-2), http.StatusMovedPermanently)
 }
