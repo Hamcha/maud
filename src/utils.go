@@ -5,7 +5,6 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/binary"
-	"github.com/microcosm-cc/bluemonday"
 	"github.com/russross/blackfriday"
 	"math/rand"
 	"strings"
@@ -31,7 +30,7 @@ func tripcode(str string) string {
 
 func parseContent(content string) string {
 	html := blackfriday.MarkdownCommon([]byte(content))
-	safe := bluemonday.UGCPolicy().SanitizeBytes(html)
+	safe := PostPolicy().SanitizeBytes(html)
 	return string(safe)
 }
 
@@ -89,5 +88,5 @@ func shortify(content string) (string, bool) {
 		return content, false
 	}
 
-	return bluemonday.UGCPolicy().Sanitize(content[:300]), true
+	return PostPolicy().Sanitize(content[:300]), true
 }
