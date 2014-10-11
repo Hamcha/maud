@@ -156,7 +156,7 @@ func (b ByThreads) Less(i, j int) bool { return b[i].Posts < b[j].Posts }
 
 func DBGetPopularTags() ([]Tag, error) {
 	var result []Tag
-	err := database.C("tags").Find(nil).Sort("-lastupdate").Limit(10).All(&result)
+	err := database.C("tags").Find(nil).Sort("-lastupdate").All(&result)
 	sort.Sort(sort.Reverse(ByThreads(result)))
 	return result, err
 }
