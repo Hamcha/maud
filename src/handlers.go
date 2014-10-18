@@ -25,6 +25,7 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 
 	for i := range tags {
 		thread, err := DBGetThreadById(tags[i].LastThread)
+		thread.Messages -= 2 // Last Post id fix
 		if err != nil {
 			sendError(rw, 500, err.Error())
 			return
@@ -37,7 +38,19 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	send(rw, "home", "", tagdata)
+	threads, err := DBGetThreadList("", 5, 0)
+	if err != nil {
+		sendError(rw, 500, err.Error())
+		return
+	}
+
+	send(rw, "home", "", struct {
+		Last []Thread
+		Tags []TagData
+	}{
+		threads,
+		tagdata,
+	})
 }
 
 func httpThread(rw http.ResponseWriter, req *http.Request) {
