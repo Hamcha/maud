@@ -170,7 +170,7 @@ func send(rw http.ResponseWriter, name string, title string, context interface{}
 	if len(title) > 0 {
 		title = " ~ " + title
 	}
-	fmt.Fprintf(rw,
+	fmt.Fprintln(rw,
 		mustache.RenderFileInLayout(
 			"template/"+name+".html",
 			"template/layout.html",
@@ -187,7 +187,7 @@ func send(rw http.ResponseWriter, name string, title string, context interface{}
 
 func sendError(rw http.ResponseWriter, code int, context interface{}) {
 	rw.WriteHeader(code)
-	fmt.Fprintf(rw,
+	fmt.Fprintln(rw,
 		mustache.RenderFileInLayout(
 			"errors/"+strconv.Itoa(code)+".html",
 			"errors/layout.html",
