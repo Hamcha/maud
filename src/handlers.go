@@ -172,8 +172,8 @@ func send(rw http.ResponseWriter, name string, title string, context interface{}
 	}
 	fmt.Fprintln(rw,
 		mustache.RenderFileInLayout(
-			"template/"+name+".html",
-			"template/layout.html",
+			maudRoot+"/template/"+name+".html",
+			maudRoot+"/template/layout.html",
 			struct {
 				Info  SiteInfo
 				Title string
@@ -189,8 +189,8 @@ func sendError(rw http.ResponseWriter, code int, context interface{}) {
 	rw.WriteHeader(code)
 	fmt.Fprintln(rw,
 		mustache.RenderFileInLayout(
-			"errors/"+strconv.Itoa(code)+".html",
-			"errors/layout.html",
+			maudRoot+"/errors/"+strconv.Itoa(code)+".html",
+			maudRoot+"/errors/layout.html",
 			struct {
 				Info SiteInfo
 				Data interface{}
