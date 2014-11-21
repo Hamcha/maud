@@ -7,6 +7,7 @@ format = (date) ->
     return fulldate + " " + fullhour
 
 sincetime = (diff) ->
+    return "just now" if diff < 1
     int = Math.floor(diff/86400)
     return int + " "+plur("day",int)+" ago" if int > 0
     int = Math.floor(diff/3600)
