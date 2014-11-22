@@ -5,7 +5,6 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/binary"
-	"github.com/russross/blackfriday"
 	"math/rand"
 	"strings"
 	"time"
@@ -29,9 +28,9 @@ func tripcode(str string) string {
 }
 
 func parseContent(content string) string {
-	html := blackfriday.MarkdownCommon([]byte(content))
-	safe := PostPolicy().SanitizeBytes(html)
-	return string(safe)
+	safe := PostPolicy().Sanitize(content)
+	html := bbcode(safe)
+	return string(html)
 }
 
 func parseTags(tags string) []string {

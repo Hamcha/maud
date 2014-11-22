@@ -19,7 +19,7 @@ func apiNewThread(rw http.ResponseWriter, req *http.Request) {
 
 	nickname, tripcode := parseNickname(postNickname)
 	user := User{nickname, tripcode}
-	content := parseContent(postContent)
+	content := postContent
 	tags := parseTags(postTags)
 
 	threadId, err := DBNewThread(user, postTitle, content, tags)
@@ -46,7 +46,7 @@ func apiReply(rw http.ResponseWriter, req *http.Request) {
 
 	nickname, tripcode := parseNickname(postNickname)
 	user := User{nickname, tripcode}
-	content := parseContent(postContent)
+	content := postContent
 
 	msgId, err := DBReplyThread(&thread, user, content)
 	if err != nil {

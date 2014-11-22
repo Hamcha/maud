@@ -1,10 +1,36 @@
 package main
 
 import (
+	"net/url"
 	"strings"
 )
 
 var bbElements map[string]func(string, string) string
+
+func initbbcode() {
+	bbElements = make(map[string]func(string, string) string)
+	// Standard BBcode -> HTML tags
+	bbElements["b"] = bbToHTML("b")
+	bbElements["i"] = bbToHTML("i")
+	bbElements["u"] = bbToHTML("u")
+	bbElements["strike"] = bbToHTML("s")
+	// Other BBcode tags
+	bbElements["img"] = func(_, con string) string {
+		return "<img src=\"" + url.QueryEscape(con) + "\" />"
+	}
+	bbElements["url"] = func(par, con string) string {
+		return "<a href=\"" + url.QueryEscape(par) + "\">" + con + "</a>"
+	}
+	bbElements["spoiler"] = func(_, con string) string {
+		return "<span class=\"spoiler\">" + con + "</span>"
+	}
+}
+
+func bbToHTML(tag string) func(string, string) string {
+	return func(_, con string) string {
+		return "<" + tag + ">" + con + "</" + tag + ">"
+	}
+}
 
 func index(str string, offset int, del uint8) int {
 	for i := offset; i < len(str); i++ {
@@ -39,15 +65,18 @@ func bbcode(code string) string {
 		tag := code[start+1 : end]
 
 		// Is it a closing tag?
-		if tag[0] == '/' {
+		if top >= 0 && tag[0] == '/' {
 			tag = tag[1:]
-			if stack[top].Name == tag {
-				content := code[stack[top].End:start]
-				parsed := bbElements[tag](stack[top].Parameter, content)
-				code = code[0:stack[top].Start] + parsed + code[offset:]
-				// Pop stack
-				stack = stack[:top]
-				top -= 1
+			for idx := top; idx >= 0; idx -= 1 {
+				if stack[idx].Name == tag {
+					content := code[stack[top].End:start]
+					parsed := bbElements[tag](stack[top].Parameter, content)
+					code = code[0:stack[top].Start] + parsed + code[offset:]
+					// Pop stack
+					stack = stack[:idx]
+					top = idx - 1
+					break
+				}
 			}
 		} else {
 			// Separate parameter, if given

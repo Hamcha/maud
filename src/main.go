@@ -12,6 +12,7 @@ import (
 )
 
 var siteInfo SiteInfo
+
 // absolute path to Maud root directory
 var maudRoot string
 
@@ -39,6 +40,9 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	// Initialize parsers
+	initbbcode()
 
 	// Initialize database
 	DBInit(*mongo, *dbname)
