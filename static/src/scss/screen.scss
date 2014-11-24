@@ -146,8 +146,8 @@ h2 { font-size: 1.3em; margin: 0; padding: 0; }
 
 /* blockquote { margin: 0; padding: 0; p { color: #cae; } } */
 span.spoiler {
-    background-color: #000; color: #000;
-    &:hover { color: #fff; }
+    background-color: #555; color: #555;
+    &:hover { color: inherit; background-color: inherit; }
 }
 
 /* Homepage */
