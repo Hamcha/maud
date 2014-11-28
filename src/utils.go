@@ -29,7 +29,8 @@ func tripcode(str string) string {
 
 func parseContent(content string) string {
 	safe := PostPolicy().Sanitize(content)
-	html := bbcode(safe)
+	bbc := bbcode(safe)
+	html := ParseMarkdown(bbc)
 	return string(html)
 }
 

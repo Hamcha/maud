@@ -99,5 +99,5 @@ func bbcode(code string) string {
 		}
 	}
 
-	return strings.Replace(code, "\n", "<br />", -1)
+	return code
 }

@@ -14,7 +14,6 @@
 package main
 
 import (
-	"bytes"
 	"regexp"
 	"strings"
 )
@@ -60,21 +59,17 @@ func mdConvertQuote(regex *regexp.Regexp, str string) string {
 func ParseMarkdown(content string) string {
 	lines := strings.Split(content, "\n")
 
-	var buffer bytes.Buffer
-
-	for _, line := range lines {
-		if len(strings.TrimSpace(line)) == 0 {
-			buffer.WriteString("<br/>\n")
+	for idx := range lines {
+		if len(strings.TrimSpace(lines[idx])) == 0 {
 			continue
 		}
 		for regex, fn := range mdElements {
-			for regex.MatchString(line) {
-				line = fn(regex, line)
+			for regex.MatchString(lines[idx]) {
+				lines[idx] = fn(regex, lines[idx])
 			}
 		}
-		line = trimEscape.ReplaceAllString(line, "$1")
-		buffer.WriteString(line + "<br/>\n")
+		lines[idx] = trimEscape.ReplaceAllString(lines[idx], "$1")
 	}
 
-	return buffer.String()
+	return strings.Join(lines, "<br />\n")
 }
