@@ -144,6 +144,8 @@ h2 { font-size: 1.3em; margin: 0; padding: 0; }
 
 .thread-content img, .post-content img, iframe { max-width: 100%; max-height: 320px; }
 
+.thread-content p { display: inline; }
+
 /* blockquote { margin: 0; padding: 0; p { color: #cae; } } */
 span.spoiler {
     background-color: #555; color: #555;
