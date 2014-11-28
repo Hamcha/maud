@@ -17,6 +17,9 @@
         <span class="tripcode">{{Tripcode}}</span>
         {{/Author}}
         <span class="date">{{Date}}</span>
+        {{#Tripcode}}
+        <span class="edit" id="edit_p{{i}}">Edit</span>
+        {{/Tripcode}}
     </h3>
     <div class="thread-content">{{{Content}}}</div>
     {{/ThreadPost}}
@@ -29,6 +32,12 @@
         <span class="tripcode">{{Tripcode}}</span>
         {{/Author}}
         <a href="#p{{i}}" class="date">{{Date}}</a>
+        {{#Author}}
+        {{#Tripcode}}
+        &nbsp;<a href='#p{{i}}' class="edit" id="edit_p{{i}}">Edit</a>
+        &nbsp;<a href='#p{{i}}' class="edit" id="edit_p{{i}}">Delete</a>
+        {{/Tripcode}}
+        {{/Author}}
     </h3>
     <div class="post-content">{{{Content}}}</div>
 </article>
