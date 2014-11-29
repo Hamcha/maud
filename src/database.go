@@ -42,11 +42,12 @@ func DBNewThread(user User, title, content string, tags []string) (string, error
 	}
 
 	post := Post{
-		Id:       pid,
-		ThreadId: tid,
-		Author:   user,
-		Content:  content,
-		Date:     now,
+		Id:          pid,
+		ThreadId:    tid,
+		Author:      user,
+		Content:     content,
+		Date:        now,
+		ContentType: "bbcode",
 	}
 
 	err := database.C("threads").Insert(thread)

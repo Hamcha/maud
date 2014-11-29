@@ -29,11 +29,12 @@ type Thread struct {
 }
 
 type Post struct {
-	Id       bson.ObjectId "_id"
-	ThreadId bson.ObjectId
-	Author   User
-	Content  string
-	Date     int64
+	Id          bson.ObjectId "_id"
+	ThreadId    bson.ObjectId
+	Author      User
+	Content     string
+	Date        int64
+	ContentType string
 }
 
 type Counter struct {
