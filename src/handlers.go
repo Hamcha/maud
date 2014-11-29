@@ -71,7 +71,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		sendError(rw, 500, err.Error())
 		return
 	}
-	threadPost.Content = parseContent(threadPost.Content)
+	threadPost.Content = parseContent(threadPost.Content, threadPost.ContentType)
 
 	posts, err := DBGetPosts(&thread, 0, 0)
 	if err != nil {
@@ -84,7 +84,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 	}
 	// Parse posts
 	for index := range posts {
-		posts[index].Content = parseContent(posts[index].Content)
+		posts[index].Content = parseContent(posts[index].Content, posts[index].ContentType)
 	}
 
 	send(rw, "thread", thread.Title, struct {
@@ -135,7 +135,7 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 			return
 		}
 
-		short, isbroken := shortify(parseContent(post.Content))
+		short, isbroken := shortify(parseContent(post.Content, post.ContentType))
 
 		threadlist[i] = ThreadData{
 			ShortUrl:     v.ShortUrl,
@@ -160,7 +160,7 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 			lp := &threadlist[i].LastPost
 			lp.Author = reply.Author
 			lp.Date = reply.Date
-			lp.ShortContent, lp.HasBroken = shortify(parseContent(reply.Content))
+			lp.ShortContent, lp.HasBroken = shortify(parseContent(reply.Content, reply.ContentType))
 		}
 	}
 

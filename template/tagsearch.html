@@ -14,7 +14,7 @@
         {{/Author}}
         <span class="date">{{Date}}</span>
     </h3>
-    <div class="thread-content">
+    <div class="thread-content type{{ContentType}}">
         {{{ShortContent}}}{{#HasBroken}}...<br /><br /><a href="/thread/{{ShortUrl}}">Post truncated, click here to view the full text.</a>{{/HasBroken}}
     </div>
 </article>
@@ -31,7 +31,7 @@
         {{/Author}}
         <span class="date">{{Date}}</span>
     </h3>
-    <div class="post-content">
+    <div class="post-content type{{ContentType}}">
         {{{ShortContent}}}{{#HasBroken}}...<br /><br /><a href="/thread/{{ShortUrl}}">Post truncated, click here to view the full text.</a>{{/HasBroken}}
     </div>
 </article>

@@ -16,5 +16,5 @@ window.onhashchange()
 
 # Fix greentext on old posts
 #TODO: move this to server parsing
-fromList(document.querySelectorAll ".old blockquote p").map (e) ->
+fromList(document.querySelectorAll ".type blockquote p").map (e) ->
     e.innerHTML = "> " + e.innerHTML.split("\n").join "<br />> "

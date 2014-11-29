@@ -18,7 +18,7 @@
         {{/Author}}
         <span class="date">{{Date}}</span>
     </h3>
-    <div class="thread-content">{{{Content}}}</div>
+    <div class="thread-content type{{ContentType}}">{{{Content}}}</div>
     {{/ThreadPost}}
 </article>
 {{#Posts:i}}
@@ -30,7 +30,7 @@
         {{/Author}}
         <a href="#p{{i}}" class="date">{{Date}}</a>
     </h3>
-    <div class="post-content">{{{Content}}}</div>
+    <div class="post-content type{{ContentType}}">{{{Content}}}</div>
 </article>
 {{/Posts}}
 <hr />
