@@ -32,8 +32,9 @@ func parseContent(content, ctype string) string {
 	/* New and hot BBcode + Markdown */
 	case "bbcode":
 		safe := PostPolicy().Sanitize(content)
-		html := bbcode(safe)
-		return string(html)
+		bbc := bbcode(safe)
+		html := ParseMarkdown(bbc)
+		return html
 	/* Old and busted preparsed */
 	default:
 		return content
