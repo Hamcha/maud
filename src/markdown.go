@@ -28,7 +28,7 @@ func initMarkdown() {
 		regexp.MustCompile("(?U)(^|\\\\\\\\|[^\\\\])!\\[(.*)\\]\\((.*)\\)"):   mdConvertTagParam("iframe", "src"),
 		regexp.MustCompile("(?U)(^|\\\\\\\\|[^\\\\])\\[(.*)\\]\\((.*)\\)"):    mdConvertTagParam("a", "href"),
 		regexp.MustCompile("(?U)(^|\\\\\\\\|[^\\\\])`(.*[^\\\\])`"):           mdConvertTag("code"),
-		regexp.MustCompile("^>.*$"):                                           mdConvertQuote,
+		regexp.MustCompile("^&gt;.*$"):                                        mdConvertQuote,
 	}
 	trimEscape = regexp.MustCompile("\\\\([*\\[!`\\\\])")
 }
@@ -46,7 +46,7 @@ func mdConvertTagParam(tag, param string) func(*regexp.Regexp, string) string {
 }
 
 func mdConvertQuote(regex *regexp.Regexp, str string) string {
-	return "<span class=\"purpletext\">&gt;" + strings.TrimSpace(str[1:]) + "</span>"
+	return "<span class=\"purpletext\">&gt; " + strings.TrimSpace(str[4:]) + "</span>"
 }
 
 // Allowed markdown snippets:

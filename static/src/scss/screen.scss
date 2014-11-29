@@ -146,7 +146,9 @@ h2 { font-size: 1.3em; margin: 0; padding: 0; }
 
 .thread-content p { display: inline; }
 
-.type blockquote { margin: 0; padding: 0; p { color: #cae; } }
+.type blockquote { margin: 0; padding: 0; }
+.type blockquote p, .purpletext { color: #cae; }
+
 span.spoiler {
     background-color: #555; color: #555;
     &:hover { color: inherit; background-color: inherit; }
@@ -179,4 +181,7 @@ textarea.verysmall { min-height: 100px; }
 
 /* Errors */
 
-.fullimage { width: 100%; max-width: 650px; }
+.error {
+    .fullimage { width: 100%; max-width: 650px; }
+    header p { display: inline-block; font-size: 2em; font-weight: 900; margin: 0.4em 0 0 0.5em; }
+}
