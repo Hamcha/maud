@@ -16,13 +16,20 @@ func initbbcode() {
 	bbElements["strike"] = bbToHTML("s")
 	// Other BBcode tags
 	bbElements["img"] = func(_, con string) string {
-		return "<img src=\"" + url.QueryEscape(con) + "\" />"
+		return "<a href=\"" + url.QueryEscape(con) + "\"><img src=\"" + url.QueryEscape(con) + "\" /></a>"
 	}
 	bbElements["url"] = func(par, con string) string {
 		return "<a href=\"" + url.QueryEscape(par) + "\">" + con + "</a>"
 	}
 	bbElements["spoiler"] = func(_, con string) string {
 		return "<span class=\"spoiler\">" + con + "</span>"
+	}
+	bbElements["youtube"] = func(_, con string) string {
+		idx := strings.Index(con, "?v=")
+		if idx > 0 {
+			con = con[idx+3:]
+		}
+		return "<iframe width=\"560\" height=\"315\" src=\"//www.youtube.com/embed/" + url.QueryEscape(con) + "\" frameborder=\"0\" allowfullscreen></iframe>"
 	}
 }
 
