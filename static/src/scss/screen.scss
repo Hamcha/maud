@@ -128,8 +128,8 @@ article.post-selected { background-color: rgba(0,0,0,.7); }
 
 .nickname { font-weight: 600; }
 .tripcode { color: #777; }
-.date     { font-size: 0.9em; color: #ccc; }
 a.date    { border: 0; color: #ccc; &:hover { color: #eee; }}
+.date, .postId { font-size: 0.9em; color: #ccc; }
 
 .tags { font-size: 0.9em; opacity: 0.8; padding: 3px 5px 5px 5px; }
 .tag, .tag:visited { color: #ccc; border: 0; &:hover { color: #fff; } }

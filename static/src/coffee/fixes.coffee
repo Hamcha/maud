@@ -3,6 +3,10 @@ fromList(document.querySelectorAll "img").map (e) ->
     # ALT fix - Set titles to alt text (xkcd style)
     e.title = e.alt if e.alt != ""
 
+# Put post ids (increased by one)
+fromList(document.querySelectorAll ".postId").map (e) ->
+    e.innerHTML = "#" + ((parseInt e.getAttribute "name") + 1)
+
 # Handle hash changes
 window.onhashchange = () ->
     return unless location.hash.length > 0
