@@ -11,6 +11,10 @@ fromList(document.querySelectorAll ".postId").map (e) ->
 window.onhashchange = () ->
     return unless location.hash.length > 0
     # Post selected
+    if location.hash is "#last"
+        o.className = o.className.replace "post-selected", "" for o in document.querySelectorAll ".post-selected"
+        doc = document.querySelectorAll ".post"
+        location.hash = "#" + doc[doc.length - 1].id
     if location.hash[1] is 'p'
         o.className = o.className.replace "post-selected", "" for o in document.querySelectorAll ".post-selected"
         doc = document.querySelector location.hash

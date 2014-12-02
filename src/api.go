@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
-	"strconv"
 )
 
 func apiNewThread(rw http.ResponseWriter, req *http.Request) {
@@ -48,12 +47,12 @@ func apiReply(rw http.ResponseWriter, req *http.Request) {
 	user := User{nickname, tripcode}
 	content := postContent
 
-	msgId, err := DBReplyThread(&thread, user, content)
+	_, err = DBReplyThread(&thread, user, content)
 	if err != nil {
 		fmt.Println(err.Error())
 		sendError(rw, 500, err.Error())
 		return
 	}
 
-	http.Redirect(rw, req, "/thread/"+thread.ShortUrl+"#p"+strconv.Itoa(msgId-1), http.StatusMovedPermanently)
+	http.Redirect(rw, req, "/thread/"+thread.ShortUrl+"#last", http.StatusMovedPermanently)
 }
