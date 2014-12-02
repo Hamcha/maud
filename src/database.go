@@ -190,3 +190,13 @@ func DBIncTag(name string, lastThread bson.ObjectId) error {
 	_, err := database.C("tags").Find(bson.M{"name": name}).Apply(inc, &doc)
 	return err
 }
+
+func DBEditPost(id bson.ObjectId, newContent string) error {
+	err := database.C("posts").UpdateId(id, bson.M{
+		"$set": bson.M{
+			"date": time.Now().UTC().Unix(),
+			"content": newContent,
+		},
+	})
+	return err
+}

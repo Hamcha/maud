@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
+	"strconv"
 )
 
 func apiNewThread(rw http.ResponseWriter, req *http.Request) {
@@ -55,4 +56,47 @@ func apiReply(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	http.Redirect(rw, req, "/thread/"+thread.ShortUrl+"#last", http.StatusMovedPermanently)
+}
+
+func apiEditPost(rw http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+	threadUrl := vars["thread"]
+	thread, err := DBGetThread(threadUrl)
+	// retreive post to edit
+	postId, err := strconv.Atoi(vars["post"])
+	if err != nil {
+		http.Error(rw, "Invalid post ID", 400)
+		return
+	}
+	posts, err := DBGetPosts(&thread, postId, postId)
+	if err != nil {
+		fmt.Println(err.Error())
+		http.Error(rw, err.Error(), 500)
+		return
+	}
+	if len(posts) < 1 {
+		http.Error(rw, "Post not found", 404)
+		return
+	}
+	post := posts[0]
+	// if post has no tripcode associated, refuse to edit
+	if len(post.Author.Tripcode) < 1 {
+		http.Error(rw, "Forbidden", 403);
+		return
+	}
+	// check tripcode
+	trip := req.PostFormValue("tripcode")
+	if tripcode(trip) != post.Author.Tripcode {
+		http.Error(rw, "Invalid tripcode", 401)
+		return
+	}
+	// update post content and date
+	newContent := req.PostFormValue("content")
+	err = DBEditPost(post.Id, newContent)
+	if err != nil {
+		http.Error(rw, err.Error(), 500)
+		return
+	}
+
+	http.Redirect(rw, req, "/thread/" + thread.ShortUrl + "#p" + string(postId), http.StatusMovedPermanently)
 }
