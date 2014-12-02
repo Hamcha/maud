@@ -21,16 +21,18 @@
     <div class="thread-content type{{ContentType}}">{{{Content}}}</div>
     {{/ThreadPost}}
 </article>
-{{#Posts:i}}
-<article class="post" id="p{{i}}">
+{{#Posts}}
+<article class="post" id="p{{PostId}}">
+    {{#Data}}
     <h3 class="post-author">
         {{#Author}}
         <span class="nickname">{{Nickname}}</span>
         <span class="tripcode">{{Tripcode}}</span>
         {{/Author}}
-        <a href="#p{{i}}" class="date">{{Date}}</a> <span class="postId" name="{{i}}"></span>
+        <a href="#p{{PostId}}" class="date">{{Date}}</a> <span class="postId">#{{PostId}}</span>
     </h3>
     <div class="post-content type{{ContentType}}">{{{Content}}}</div>
+    {{/Data}}
 </article>
 {{/Posts}}
 <hr />

@@ -83,18 +83,25 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		posts = posts[1:]
 	}
 	// Parse posts
+	type PostInfo struct {
+		PostId int
+		Data   Post
+	}
+	postsInfo := make([]PostInfo, len(posts))
 	for index := range posts {
 		posts[index].Content = parseContent(posts[index].Content, posts[index].ContentType)
+		postsInfo[index].Data = posts[index]
+		postsInfo[index].PostId = index + 1
 	}
 
 	send(rw, "thread", thread.Title, struct {
 		Thread     Thread
 		ThreadPost Post
-		Posts      []Post
+		Posts      []PostInfo
 	}{
 		thread,
 		threadPost,
-		posts,
+		postsInfo,
 	})
 }
 
