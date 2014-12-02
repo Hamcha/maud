@@ -10,7 +10,7 @@
 {{#Last}}
 <article class="thread-item">
     <h3 class="thread-name"><a href="/thread/{{ShortUrl}}" class="noborder">{{Title}}</a></h3>
-    <div>Last reply: <a href="/thread/{{ShortUrl}}#p{{Messages}}"><span class="date">{{LRDate}}</span></a></div>
+    <div>Last reply: <a href="/thread/{{ShortUrl}}#last"><span class="date">{{LRDate}}</span></a></div>
 </article>
 {{/Last}}
 <hr />
@@ -20,7 +20,7 @@
 {{#Tags}}
 <article class="tag-item">
     <h3 class="tag-name"><a href="/tag/{{Name}}" class="noborder">{{Name}}</a></h3>
-    <div>Last updated thread: {{#LastThread}}<a href="/thread/{{ShortUrl}}#p{{Messages}}" class="thread-title">{{Title}}</a>{{/LastThread}} (<span class="date">{{LastUpdate}}</span>)</div>
+    <div>Last updated thread: {{#LastThread}}<a href="/thread/{{ShortUrl}}#last" class="thread-title">{{Title}}</a>{{/LastThread}} (<span class="date">{{LastUpdate}}</span>)</div>
 </article>
 {{/Tags}}
 {{/Data}}

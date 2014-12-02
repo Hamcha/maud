@@ -42,6 +42,7 @@ func main() {
 	}
 
 	// Initialize parsers
+	initMarkdown()
 	initbbcode()
 
 	// Initialize database

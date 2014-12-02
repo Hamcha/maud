@@ -128,9 +128,7 @@ article.post-selected { background-color: rgba(0,0,0,.7); }
 
 .nickname { font-weight: 600; }
 .tripcode { color: #777; }
-.date     { font-size: 0.9em; color: #ccc; }
 a.date    { border: 0; color: #ccc; &:hover { color: #eee; }}
-.edit     { font-size: 0.9em; color: #ddd; }
 
 .tags { font-size: 0.9em; opacity: 0.8; padding: 3px 5px 5px 5px; }
 .tag, .tag:visited { color: #ccc; border: 0; &:hover { color: #fff; } }
@@ -145,7 +143,11 @@ h2 { font-size: 1.3em; margin: 0; padding: 0; }
 
 .thread-content img, .post-content img, iframe { max-width: 100%; max-height: 320px; }
 
-/* blockquote { margin: 0; padding: 0; p { color: #cae; } } */
+.thread-content p { display: inline; }
+
+.type blockquote { margin: 0; padding: 0; }
+.type blockquote p, .purpletext { color: #cae; }
+
 span.spoiler {
     background-color: #555; color: #555;
     &:hover { color: inherit; background-color: inherit; }
@@ -178,4 +180,7 @@ textarea.verysmall { min-height: 100px; }
 
 /* Errors */
 
-.fullimage { width: 100%; max-width: 650px; }
+.error {
+    .fullimage { width: 100%; max-width: 650px; }
+    header p { display: inline-block; font-size: 2em; font-weight: 900; margin: 0.4em 0 0 0.5em; }
+}

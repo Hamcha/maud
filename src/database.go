@@ -42,11 +42,12 @@ func DBNewThread(user User, title, content string, tags []string) (string, error
 	}
 
 	post := Post{
-		Id:       pid,
-		ThreadId: tid,
-		Author:   user,
-		Content:  content,
-		Date:     now,
+		Id:          pid,
+		ThreadId:    tid,
+		Author:      user,
+		Content:     content,
+		Date:        now,
+		ContentType: "bbcode",
 	}
 
 	err := database.C("threads").Insert(thread)
@@ -65,11 +66,12 @@ func DBNewThread(user User, title, content string, tags []string) (string, error
 
 func DBReplyThread(thread *Thread, user User, content string) (int, error) {
 	post := Post{
-		Id:       bson.NewObjectId(),
-		ThreadId: thread.Id,
-		Author:   user,
-		Content:  content,
-		Date:     time.Now().UTC().Unix(),
+		Id:          bson.NewObjectId(),
+		ThreadId:    thread.Id,
+		Author:      user,
+		Content:     content,
+		Date:        time.Now().UTC().Unix(),
+		ContentType: "bbcode",
 	}
 
 	err := database.C("posts").Insert(post)

@@ -21,25 +21,21 @@
         <span class="edit" id="edit_p{{i}}">Edit</span>
         {{/Tripcode}}
     </h3>
-    <div class="thread-content">{{{Content}}}</div>
+    <div class="thread-content type{{ContentType}}">{{{Content}}}</div>
     {{/ThreadPost}}
 </article>
-{{#Posts:i}}
-<article class="post" id="p{{i}}">
+{{#Posts}}
+<article class="post" id="p{{PostId}}">
+    {{#Data}}
     <h3 class="post-author">
         {{#Author}}
         <span class="nickname">{{Nickname}}</span>
         <span class="tripcode">{{Tripcode}}</span>
         {{/Author}}
-        <a href="#p{{i}}" class="date">{{Date}}</a>
-        {{#Author}}
-        {{#Tripcode}}
-        &nbsp;<a href='#p{{i}}' class="edit" id="edit_p{{i}}">Edit</a>
-        &nbsp;<a href='#p{{i}}' class="edit" id="edit_p{{i}}">Delete</a>
-        {{/Tripcode}}
-        {{/Author}}
+        <a href="#p{{PostId}}" class="date">{{Date}}</a> <span class="postId">#{{PostId}}</span>
     </h3>
-    <div class="post-content">{{{Content}}}</div>
+    <div class="post-content type{{ContentType}}">{{{Content}}}</div>
+    {{/Data}}
 </article>
 {{/Posts}}
 <hr />

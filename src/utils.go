@@ -27,10 +27,18 @@ func tripcode(str string) string {
 	return b64[0:6]
 }
 
-func parseContent(content string) string {
-	safe := PostPolicy().Sanitize(content)
-	html := bbcode(safe)
-	return string(html)
+func parseContent(content, ctype string) string {
+	switch ctype {
+	/* New and hot BBcode + Markdown */
+	case "bbcode":
+		safe := PostPolicy().Sanitize(content)
+		bbc := bbcode(safe)
+		html := ParseMarkdown(bbc)
+		return html
+	/* Old and busted preparsed */
+	default:
+		return content
+	}
 }
 
 func parseTags(tags string) []string {
