@@ -53,11 +53,11 @@ hr {
 
 /* Buttons and links */
 
-input[type="submit"], a.button, a.button:visited {
+button, input[type="submit"], a.button, a.button:visited {
     font-family: "Source Sans Pro", sans-serif;
     text-decoration: none; background-color: transparent;
     border: 1px solid #ccc; color: #fff;
-    padding: 3px 5px; margin: 0; margin-right: 2px;
+    padding: 3px 5px; margin: 0; margin-right: 3px;
     display: inline-block; cursor: pointer;
     font-size: 1.2em; font-weight: 300;
     @include transition-property(all);
@@ -178,9 +178,12 @@ textarea.full { margin: 6px auto; min-height: 200px; }
 .verysmall { font-size: 1rem; }
 textarea.verysmall { min-height: 100px; }
 
+input.short { max-width: 150px; }
+input.inline { display: inline-block; padding: 3px; margin-right: 5px; }
+
 /* Errors */
 
 .error {
-    .fullimage { width: 100%; max-width: 650px; }
-    header p { display: inline-block; font-size: 2em; font-weight: 900; margin: 0.4em 0 0 0.5em; }
+.fullimage { width: 100%; max-width: 650px; }
+header p { display: inline-block; font-size: 2em; font-weight: 900; margin: 0.4em 0 0 0.5em; }
 }
