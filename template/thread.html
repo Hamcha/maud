@@ -17,9 +17,6 @@
         <span class="tripcode">{{Tripcode}}</span>
         {{/Author}}
         <span class="date">{{Date}}</span>
-        {{#Tripcode}}
-        <span class="edit" id="edit_p{{i}}">Edit</span>
-        {{/Tripcode}}
     </h3>
     <div class="thread-content type{{ContentType}}">{{{Content}}}</div>
     {{/ThreadPost}}
@@ -33,6 +30,9 @@
         <span class="tripcode">{{Tripcode}}</span>
         {{/Author}}
         <a href="#p{{PostId}}" class="date">{{Date}}</a> <span class="postId">#{{PostId}}</span>
+        {{#Author}}{{#Tripcode}}
+        <a href="#p{{PostId}}" class="edit" onclick="editPost({{PostId}})">Edit</a>
+        {{/Tripcode}}{{/Author}}
     </h3>
     <div class="post-content type{{ContentType}}">{{{Content}}}</div>
     {{/Data}}

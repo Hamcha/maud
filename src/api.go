@@ -91,7 +91,7 @@ func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 	// update post content and date
-	newContent := req.PostFormValue("content")
+	newContent := req.PostFormValue("text")
 	err = DBEditPost(post.Id, newContent)
 	if err != nil {
 		http.Error(rw, err.Error(), 500)
