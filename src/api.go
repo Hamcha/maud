@@ -81,7 +81,7 @@ func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 	post := posts[0]
 	// if post has no tripcode associated, refuse to edit
 	if len(post.Author.Tripcode) < 1 {
-		http.Error(rw, "Forbidden", 403);
+		http.Error(rw, "Forbidden", 403)
 		return
 	}
 	// check tripcode
@@ -98,5 +98,5 @@ func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	http.Redirect(rw, req, "/thread/" + thread.ShortUrl + "#p" + string(postId), http.StatusMovedPermanently)
+	http.Redirect(rw, req, "/thread/"+thread.ShortUrl+"#p"+vars["post"], http.StatusMovedPermanently)
 }
