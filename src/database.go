@@ -194,7 +194,7 @@ func DBIncTag(name string, lastThread bson.ObjectId) error {
 func DBEditPost(id bson.ObjectId, newContent string) error {
 	err := database.C("posts").UpdateId(id, bson.M{
 		"$set": bson.M{
-			"date": time.Now().UTC().Unix(),
+			"date":    time.Now().UTC().Unix(),
 			"content": newContent,
 		},
 	})
