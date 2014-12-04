@@ -32,6 +32,7 @@
         <a href="#p{{PostId}}" class="date">{{Date}}</a> <span class="postId">#{{PostId}}</span>
         {{#Author}}{{#Tripcode}}
         <a href="#p{{PostId}}" class="edit" onclick="editPost({{PostId}})">Edit</a>
+        <a href="#p{{PostId}}" class="delete" onclick="deletePost({{PostId}})">Delete</a>
         {{/Tripcode}}{{/Author}}
     </h3>
     <div class="post-content type{{ContentType}}">{{{Content}}}</div>
