@@ -84,13 +84,15 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 	}
 	// Parse posts
 	type PostInfo struct {
-		PostId int
-		Data   Post
+		PostId    int
+		Data      Post
+		IsDeleted bool
 	}
 	postsInfo := make([]PostInfo, len(posts))
 	for index := range posts {
 		posts[index].Content = parseContent(posts[index].Content, posts[index].ContentType)
 		postsInfo[index].Data = posts[index]
+		postsInfo[index].IsDeleted = posts[index].ContentType == "deleted"
 		postsInfo[index].PostId = index + 1
 	}
 

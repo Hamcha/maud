@@ -35,6 +35,9 @@ func parseContent(content, ctype string) string {
 		bbc := bbcode(safe)
 		html := ParseMarkdown(bbc)
 		return html
+	/* Deleted posts */
+	case "deleted":
+		return "<em>Message deleted by the user</em>"
 	/* Old and busted preparsed */
 	default:
 		return content
