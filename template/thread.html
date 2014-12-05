@@ -7,7 +7,7 @@
 <section class="tags">
 {{#Tags}}<a href="/tag/{{.}}" class="tag">#{{.}}</a> {{/Tags}}
 </section>
-<article class="thread">
+<article class="thread" id="thread">
     <h2 class="thread-title">{{Title}}</h2>
     {{/Thread}}
     {{#ThreadPost}}
@@ -18,6 +18,13 @@
         {{/Author}}
         <span class="date">{{Date}}</span>
     </h3>
+    <div class="right">
+        {{#Author}}{{#Tripcode}}
+        <a href="#p{{PostId}}" class="edit nolink" onclick="editPost(0)">
+            <img src="/static/images/edit.svg" style="height: 18px;" />
+        </a>
+        {{/Tripcode}}{{/Author}}
+    </div>
     <div class="thread-content type{{ContentType}}">{{{Content}}}</div>
     {{/ThreadPost}}
 </article>
@@ -30,15 +37,14 @@
         <span class="tripcode">{{Tripcode}}</span>
         {{/Author}}
         <a href="#p{{PostId}}" class="date">{{Date}}</a> <span class="postId">#{{PostId}}</span>
-        {{#Author}}
-	  {{#Tripcode}}
-	    {{^IsDeleted}}
-        <a href="#p{{PostId}}" class="edit" onclick="editPost({{PostId}})">Edit</a>
-        <a href="#p{{PostId}}" class="delete" onclick="deletePost({{PostId}})">Delete</a>
-            {{/IsDeleted}}
-	  {{/Tripcode}}
-	{{/Author}}
     </h3>
+    <div class="right">
+        {{#Author}}{{#Tripcode}}
+        <a href="#p{{PostId}}" class="edit nolink" onclick="editPost({{PostId}})">
+            <img src="/static/images/edit.svg" style="height: 20px;" />
+        </a>
+        {{/Tripcode}}{{/Author}}
+    </div>
     <div class="post-content type{{ContentType}}">{{{Content}}}</div>
     {{/Data}}
 </article>

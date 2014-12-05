@@ -35,7 +35,7 @@ header {
 
 img.head { width: 100%; max-width: 410px; margin-top: 10px; }
 
-header a, header a:visited {
+header a[href], header a[href]:visited {
     color: #fff; border: 0;
     font-weight: 200;
 }
@@ -68,11 +68,11 @@ button, input[type="submit"], a.button, a.button:visited {
     }
 }
 
-a, a:visited {
+a[href], a[href]:visited {
     color: #fff; text-decoration: none; border-bottom: 1px dotted #ccc;
 }
 
-.noborder { border: 0; }
+a.nolink { border: 0; }
 
 /* Tag search */
 
@@ -111,6 +111,22 @@ a, a:visited {
 }
 
 /* Thread view */
+
+.post, .thread {
+    position: relative;
+}
+
+.right {
+    position: absolute; right: 0; left: 0; top: 0;
+    text-align: right;  padding: 0.5em;
+
+    .edit {
+        opacity: 0.5;
+        @include transition-property(all);
+        @include transition-duration(0.2s);
+        &:hover { opacity: 1; }
+    }
+}
 
 .thread-title {
     margin: 5px; padding: 0;
@@ -166,17 +182,18 @@ span.spoiler {
     font-size: 1.3rem; font-weight: 300; color: #eee;
     border: 1px solid #666; background-color: transparent;
     padding: 5px; outline: 0;
-    @include transition-property(all);
+    @include transition-property(border-color);
     @include transition-duration(0.2s);
     &:focus {
         border-color: #ccc;
     }
 }
 
-textarea.full { margin: 6px auto; min-height: 200px; }
+textarea.full { margin: 6px auto; min-height: 200px; overflow: auto; }
 .small { font-size: 1rem; }
 .verysmall { font-size: 1rem; }
 textarea.verysmall { min-height: 100px; }
+textarea.editor { margin: 2px 0 5px 0; width: 98%; min-height: 150px; }
 
 input.short { max-width: 150px; }
 input.inline { display: inline-block; padding: 3px; margin-right: 5px; }
