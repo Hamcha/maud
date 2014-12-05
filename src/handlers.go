@@ -71,39 +71,39 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		sendError(rw, 500, err.Error())
 		return
 	}
-	threadPost.Content = parseContent(threadPost.Content, threadPost.ContentType)
-
-	posts, err := DBGetPosts(&thread, 0, 0)
-	if err != nil {
-		sendError(rw, 500, err.Error())
-		return
-	}
-	// Filter threadpost away
-	if posts[0].Id == threadPost.Id {
-		posts = posts[1:]
-	}
+	
 	// Parse posts
 	type PostInfo struct {
 		PostId    int
 		Data      Post
 		IsDeleted bool
 	}
+	threadPost.Content = parseContent(threadPost.Content, threadPost.ContentType)
+	posts, err := DBGetPosts(&thread, 0, 0)
+	if err != nil {
+		sendError(rw, 500, err.Error())
+		return
+	}
+	// Filter threadpost away
+	//if posts[0].Id == threadPost.Id {
+	//	posts = posts[1:]
+	//}
 	postsInfo := make([]PostInfo, len(posts))
 	for index := range posts {
 		posts[index].Content = parseContent(posts[index].Content, posts[index].ContentType)
 		postsInfo[index].Data = posts[index]
 		postsInfo[index].IsDeleted = posts[index].ContentType == "deleted"
-		postsInfo[index].PostId = index + 1
+		postsInfo[index].PostId = index 
 	}
 
 	send(rw, "thread", thread.Title, struct {
 		Thread     Thread
-		ThreadPost Post
+		ThreadPost PostInfo
 		Posts      []PostInfo
 	}{
 		thread,
-		threadPost,
-		postsInfo,
+		postsInfo[0],
+		postsInfo[1:],
 	})
 }
 

@@ -31,7 +31,14 @@ editPost = (id) ->
 
 # post delete
 deletePost = (id) ->
-    post = document.getElementById "p#{id}"
+    if id == 0
+      pid = type = "thread"
+      idname = "OP"
+    else
+      pid = "p#{id}"
+      type = "post"
+      idname = "##{id}"
+    post = document.getElementById pid
     nick = document.querySelector("##{pid}  .nickname").innerHTML
     original[id] = post.innerHTML
     post.innerHTML = """
