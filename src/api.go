@@ -68,7 +68,7 @@ func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 		http.Error(rw, "Invalid post ID", 400)
 		return
 	}
-	posts, err := DBGetPosts(&thread, postId, postId)
+	posts, err := DBGetPosts(&thread, 1, postId)
 	if err != nil {
 		fmt.Println(err.Error())
 		http.Error(rw, err.Error(), 500)
@@ -124,7 +124,7 @@ func apiDeletePost(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 	post := posts[0]
-	// if post has no tripcode associated, refuse to delete 
+	// if post has no tripcode associated, refuse to delete
 	if len(post.Author.Tripcode) < 1 {
 		http.Error(rw, "Forbidden", 403)
 		return
