@@ -33,4 +33,4 @@ fromList(document.querySelectorAll ".lastedit").map (elem) ->
     if parseInt(elem.innerHTML) is 0
         elem.style.visibility = 'hidden'
         return
-    elem.innerHTML = "Last edited: #{since(parseInt(elem.innerHTML)*1000, true)}"
+    elem.innerHTML = "edited #{since(parseInt(elem.innerHTML)*1000, true)}"
