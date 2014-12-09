@@ -19,13 +19,13 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 		Name       string
 		LastUpdate int64
 		LastThread Thread
+		LastIndex  int64
 	}
 
 	tagdata := make([]TagData, len(tags))
 
 	for i := range tags {
 		thread, err := DBGetThreadById(tags[i].LastThread)
-		thread.Messages -= 2 // Last Post id fix
 		if err != nil {
 			sendError(rw, 500, err.Error())
 			return
@@ -82,7 +82,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		posts[index].Content = parseContent(posts[index].Content, posts[index].ContentType)
 		postsInfo[index].Data = posts[index]
 		postsInfo[index].IsDeleted = posts[index].ContentType == "deleted"
-		postsInfo[index].PostId = index 
+		postsInfo[index].PostId = index
 	}
 
 	send(rw, "thread", thread.Title, struct {

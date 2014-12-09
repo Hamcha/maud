@@ -10,7 +10,7 @@ window.onhashchange = () ->
     if location.hash is "#last"
         o.className = o.className.replace "post-selected", "" for o in document.querySelectorAll ".post-selected"
         doc = document.querySelectorAll ".post"
-        location.hash = "#" + doc[doc.length - 1].id
+        history.replaceState {}, document.title, location.pathname + "#" + doc[doc.length - 1].id
     if location.hash[1] is 'p'
         o.className = o.className.replace "post-selected", "" for o in document.querySelectorAll ".post-selected"
         doc = document.querySelector location.hash
