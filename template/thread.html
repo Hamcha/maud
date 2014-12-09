@@ -17,10 +17,11 @@
         <span class="nickname">{{Nickname}}</span>
         <span class="tripcode">{{Tripcode}}</span>
         {{/Author}}
-        <span class="date">{{Date}}</span>
+        <a href="#thread" class="date">{{Date}}</a>
     </h3>
     <div class="right">
         {{#Author}}{{#Tripcode}}{{^IsDeleted}}
+	<span class="lastedit">{{LastModified}}</span>
         <a href="#thread" class="edit nolink" onclick="editPost(0)">
             <img src="/static/images/edit.svg" style="height: 18px;" />
         </a>
@@ -43,6 +44,7 @@
     </h3>
     <div class="right">
         {{#Author}}{{#Tripcode}}{{^IsDeleted}}
+	<span class="lastedit">{{LastModified}}</span>
         <a href="#p{{PostId}}" class="edit nolink" onclick="editPost({{PostId}})">
             <img src="/static/images/edit.svg" style="height: 20px;" />
         </a>

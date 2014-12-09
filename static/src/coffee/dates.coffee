@@ -16,14 +16,21 @@ sincetime = (diff) ->
     return int + " "+plur("minute",int)+" ago" if int > 0
     return Math.floor(diff) + " seconds ago"
 
-since = (time) ->
+since = (time, brief) ->
     now = (new Date).getTime()
     diff = (now-time)/1000
 
     switch
-        when diff > 604800 then format(new Date(time))
-        when diff > 3600   then sincetime(diff)+" ("+format(new Date(time))+")"
-        else                    sincetime(diff)
+        when diff > 604800          then format(new Date(time))
+        when diff > 3600 && !brief  then sincetime(diff)+" ("+format(new Date(time))+")"
+        else                        sincetime(diff)
+
 
 fromList(document.querySelectorAll ".date").map (elem) ->
     elem.innerHTML = since(parseInt(elem.innerHTML)*1000)
+
+fromList(document.querySelectorAll ".lastedit").map (elem) ->
+    if parseInt(elem.innerHTML) is 0
+        elem.style.visibility = 'hidden'
+        return
+    elem.innerHTML = "Last edited: #{since(parseInt(elem.innerHTML)*1000, true)}"
