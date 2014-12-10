@@ -8,13 +8,6 @@ import (
 	"strconv"
 )
 
-type TagData struct {
-	Name       string
-	LastUpdate int64
-	LastThread Thread
-	LastIndex  int64
-}
-
 func httpHome(rw http.ResponseWriter, req *http.Request) {
 	tags, err := DBGetPopularTags()
 	if err != nil {
