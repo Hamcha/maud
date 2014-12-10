@@ -59,6 +59,8 @@ func main() {
 	GET.HandleFunc("/thread/{thread}", httpThread)
 	GET.HandleFunc("/thread/{thread}/page/{page}", httpThread)
 	GET.HandleFunc("/new", httpNewThread)
+	GET.HandleFunc("/threads", httpAllThreads)
+	GET.HandleFunc("/tags", httpAllTags)
 
 	POST.HandleFunc("/new", apiNewThread)
 	POST.HandleFunc("/thread/{thread}/reply", apiReply)
