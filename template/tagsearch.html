@@ -1,6 +1,9 @@
 <nav>
     <a href="/new" class="button">New thread</a>
-    <input type="text" id="tagsearch" placeholder="Filter by tag" />
+    <form style="display: inline-block" method="POST" action="/tagsearch">
+      <input type="text" name="tags" id="tagsearch" placeholder="Filter by tag" required />
+      <input type="submit" value="Search" />
+    </form>
 </nav>
 {{#Data}}
 <hr />

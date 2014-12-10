@@ -64,6 +64,7 @@ func main() {
 	POST.HandleFunc("/thread/{thread}/reply", apiReply)
 	POST.HandleFunc("/thread/{thread}/post/{post}/edit", apiEditPost)
 	POST.HandleFunc("/thread/{thread}/post/{post}/delete", apiDeletePost)
+	POST.HandleFunc("/tagsearch", apiTagSearch)
 
 	http.Handle("/", router)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(maudRoot+"/static"))))

@@ -144,3 +144,13 @@ func apiDeletePost(rw http.ResponseWriter, req *http.Request) {
 
 	http.Redirect(rw, req, "/thread/"+thread.ShortUrl+"#p"+vars["post"], http.StatusMovedPermanently)
 }
+
+func apiTagSearch(rw http.ResponseWriter, req *http.Request) {
+	tags := req.PostFormValue("tags")
+	if len(tags) < 1 {
+		// if no tags are specified, go back home
+		http.Redirect(rw, req, "/", http.StatusNoContent)
+		return
+	}
+	http.Redirect(rw, req, "/tag/" + tags, http.StatusMovedPermanently)
+}
