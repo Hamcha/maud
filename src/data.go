@@ -49,3 +49,10 @@ type Tag struct {
 	LastUpdate int64
 	LastThread bson.ObjectId
 }
+
+type TagData struct {
+	Name       string
+	LastUpdate int64
+	LastThread Thread
+	LastIndex  int64
+}

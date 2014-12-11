@@ -4,6 +4,7 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"sort"
+	"strings"
 	"time"
 )
 
@@ -100,7 +101,24 @@ func DBReplyThread(thread *Thread, user User, content string) (int, error) {
 func DBGetThreadList(tag string, limit, offset int) ([]Thread, error) {
 	var filterByTag bson.M
 	if tag != "" {
-		filterByTag = bson.M{"tags": tag}
+		/* NOT WORKING YET
+		if idx := strings.IndexRune(tag, '+'); idx > 0 {
+			// tag1+tag2+... means 'intersection'
+			tags := strings.Split(tag, "+")
+			filterByTag = bson.M{"tags": bson.M{"$setIntersection": tags}}
+		} else
+		*/
+		if idx := strings.IndexRune(tag, ','); idx > 0 {
+			// tag1,tag2,... means 'union'
+			tags := strings.Split(tag, ",")
+			for i, _ := range tags {
+				tags[i] = strings.TrimSpace(tags[i])
+			}
+			filterByTag = bson.M{"tags": bson.M{"$in": tags}}
+		} else {
+			// single tag
+			filterByTag = bson.M{"tags": tag}
+		}
 	} else {
 		filterByTag = nil
 	}
@@ -156,9 +174,13 @@ func (b ByThreads) Len() int           { return len(b) }
 func (b ByThreads) Swap(i, j int)      { b[i], b[j] = b[j], b[i] }
 func (b ByThreads) Less(i, j int) bool { return b[i].Posts < b[j].Posts }
 
-func DBGetPopularTags() ([]Tag, error) {
+func DBGetPopularTags(limit int) ([]Tag, error) {
 	var result []Tag
-	err := database.C("tags").Find(nil).Sort("-lastupdate").All(&result)
+	query := database.C("tags").Find(nil).Sort("-lastupdate")
+	if limit > 0 {
+		query = query.Limit(limit)
+	}
+	err := query.All(&result)
 	sort.Sort(sort.Reverse(ByThreads(result)))
 	return result, err
 }

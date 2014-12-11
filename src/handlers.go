@@ -6,20 +6,14 @@ import (
 	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func httpHome(rw http.ResponseWriter, req *http.Request) {
-	tags, err := DBGetPopularTags()
+	tags, err := DBGetPopularTags(10)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
-	}
-
-	type TagData struct {
-		Name       string
-		LastUpdate int64
-		LastThread Thread
-		LastIndex  int64
 	}
 
 	tagdata := make([]TagData, len(tags))
@@ -49,6 +43,48 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 		Tags []TagData
 	}{
 		threads,
+		tagdata,
+	})
+}
+
+func httpAllThreads(rw http.ResponseWriter, req *http.Request) {
+	threads, err := DBGetThreadList("", 0, 0)
+	if err != nil {
+		sendError(rw, 500, err.Error())
+		return
+	}
+	send(rw, "threads", "All threads", struct {
+		Last []Thread
+	}{
+		threads,
+	})
+}
+
+func httpAllTags(rw http.ResponseWriter, req *http.Request) {
+	tags, err := DBGetPopularTags(0)
+	if err != nil {
+		sendError(rw, 500, err.Error())
+		return
+	}
+	tagdata := make([]TagData, len(tags))
+
+	for i := range tags {
+		thread, err := DBGetThreadById(tags[i].LastThread)
+		if err != nil {
+			sendError(rw, 500, err.Error())
+			return
+		}
+
+		tagdata[i] = TagData{
+			Name:       tags[i].Name,
+			LastUpdate: tags[i].LastUpdate,
+			LastThread: thread,
+		}
+	}
+
+	send(rw, "tags", "All tags", struct {
+		Tags []TagData
+	}{
 		tagdata,
 	})
 }
@@ -98,7 +134,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 
 func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
-	tagName := vars["tag"]
+	tagName := strings.ToLower(vars["tag"])
 
 	threads, err := DBGetThreadList(tagName, 0, 0)
 	if err != nil {

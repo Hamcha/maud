@@ -1,0 +1,19 @@
+<nav>
+    <a href="/new" class="button">New thread</a>
+    <form style="display: inline-block" method="POST" action="/tagsearch">
+      <input type="text" name="tags" id="tagsearch" placeholder="Filter by tag" required title="Insert tags separated by commas" />
+      <input type="submit" value="Search" />
+    </form>
+</nav>
+<hr />
+{{#Data}}
+<article class="hidden2">
+    All tags, ordered by popularity
+</article>
+{{#Tags}}
+<article class="tag-item">
+    <h3 class="tag-name"><a href="/tag/{{Name}}" class="nolink">{{Name}}</a></h3>
+    <div>Last updated thread: {{#LastThread}}<a href="/thread/{{ShortUrl}}#last" class="thread-title">{{Title}}</a>{{/LastThread}} (<span class="date">{{LastUpdate}}</span>)</div>
+</article>
+{{/Tags}}
+{{/Data}}
