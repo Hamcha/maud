@@ -6,10 +6,11 @@ import (
 	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func httpHome(rw http.ResponseWriter, req *http.Request) {
-	tags, err := DBGetPopularTags()
+	tags, err := DBGetPopularTags(10)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -60,7 +61,7 @@ func httpAllThreads(rw http.ResponseWriter, req *http.Request) {
 }
 
 func httpAllTags(rw http.ResponseWriter, req *http.Request) {
-	tags, err := DBGetPopularTags()
+	tags, err := DBGetPopularTags(0)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -133,7 +134,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 
 func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
-	tagName := vars["tag"]
+	tagName := strings.ToLower(vars["tag"])
 
 	threads, err := DBGetThreadList(tagName, 0, 0)
 	if err != nil {

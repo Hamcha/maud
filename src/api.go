@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func apiNewThread(rw http.ResponseWriter, req *http.Request) {
@@ -152,5 +153,5 @@ func apiTagSearch(rw http.ResponseWriter, req *http.Request) {
 		http.Redirect(rw, req, "/", http.StatusNoContent)
 		return
 	}
-	http.Redirect(rw, req, "/tag/" + tags, http.StatusMovedPermanently)
+	http.Redirect(rw, req, "/tag/"+strings.ToLower(tags), http.StatusMovedPermanently)
 }

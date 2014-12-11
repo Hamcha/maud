@@ -4,8 +4,8 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"sort"
-	"time"
 	"strings"
+	"time"
 )
 
 var session *mgo.Session
@@ -106,7 +106,7 @@ func DBGetThreadList(tag string, limit, offset int) ([]Thread, error) {
 			// tag1+tag2+... means 'intersection'
 			tags := strings.Split(tag, "+")
 			filterByTag = bson.M{"tags": bson.M{"$setIntersection": tags}}
-		} else 
+		} else
 		*/
 		if idx := strings.IndexRune(tag, ','); idx > 0 {
 			// tag1,tag2,... means 'union'
@@ -174,9 +174,13 @@ func (b ByThreads) Len() int           { return len(b) }
 func (b ByThreads) Swap(i, j int)      { b[i], b[j] = b[j], b[i] }
 func (b ByThreads) Less(i, j int) bool { return b[i].Posts < b[j].Posts }
 
-func DBGetPopularTags() ([]Tag, error) {
+func DBGetPopularTags(limit int) ([]Tag, error) {
 	var result []Tag
-	err := database.C("tags").Find(nil).Sort("-lastupdate").Limit(10).All(&result)
+	query := database.C("tags").Find(nil).Sort("-lastupdate")
+	if limit > 0 {
+		query = query.Limit(limit)
+	}
+	err := query.All(&result)
 	sort.Sort(sort.Reverse(ByThreads(result)))
 	return result, err
 }
