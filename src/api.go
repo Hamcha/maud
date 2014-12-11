@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
+	"encoding/json"
 )
 
 func apiNewThread(rw http.ResponseWriter, req *http.Request) {
@@ -56,6 +57,24 @@ func apiReply(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	http.Redirect(rw, req, "/thread/"+thread.ShortUrl+"#last", http.StatusMovedPermanently)
+}
+
+func apiPreview(rw http.ResponseWriter, req *http.Request) {
+	postContent := req.PostFormValue("text")
+	if len(postContent) < 1 {
+		http.Error(rw, "Required fields are missing", 400)
+		return
+	}
+	content := parseContent(postContent, "bbcode")
+	
+	response, err := json.Marshal(map[string]string{
+		"content": content,
+	})
+	if err != nil {
+		http.Error(rw, err.Error(), 500)
+		return
+	}
+	fmt.Fprintln(rw, string(response))
 }
 
 func apiEditPost(rw http.ResponseWriter, req *http.Request) {

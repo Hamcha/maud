@@ -61,6 +61,44 @@ cancelForm = (id) ->
     post = document.getElementById pid
     post.innerHTML = original[id]
 
+# post preview
+showPreview = () ->
+    #form = document.getElementById 'reply-form'
+    text = document.querySelector("#reply-form textarea").value
+    nick = document.getElementById('reply-nickname').value
+    unless text
+        # TODO
+        console.log 'no data'
+        return
+    req =
+        nickname: nick
+        text:     text
+    # retreive content data from server
+    qwest.post('/postpreview', req)
+        .then (resp) ->
+            console.log resp
+            createPreview resp, nick
+        .catch (err) ->
+            console.log 'Error!'
+            console.log err
+
+createPreview = (content, nick) ->
+    # if preview post already exists, just update it
+    prevpost = document.getElementById 'post-preview'
+    if prevpost
+
+    else
+        prevpost = document.createElement 'article'
+        prevpost.innerHTML = """
+    <h3 class="post-author">
+""" + (nick ? """
+        <span class="nickname">#{nick}</span>
+""" : "") + """ 
+    </h3>
+    <div class="post-content type{{ContentType}}">{{{Content}}}</div>
+    """
+
 window.editPost = editPost
 window.deletePost = deletePost
 window.cancelForm = cancelForm
+window.showPreview = showPreview
