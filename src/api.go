@@ -130,7 +130,7 @@ func apiTagSearch(rw http.ResponseWriter, req *http.Request) {
 	http.Redirect(rw, req, "/tag/"+strings.ToLower(tags), http.StatusMovedPermanently)
 }
 
-// apiGetWar: retreive the raw content of a post.
+// apiGetRaw: retreive the raw content of a post.
 // POST params: none
 func apiGetRaw(rw http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
