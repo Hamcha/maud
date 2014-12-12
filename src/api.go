@@ -81,7 +81,7 @@ func apiPreview(rw http.ResponseWriter, req *http.Request) {
 // POST params: tripcode, text
 func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
-	thread, post, err := threadPostOrErr(rw, vars["thread"], vars["post"])
+	_, post, err := threadPostOrErr(rw, vars["thread"], vars["post"])
 	// if post has no tripcode associated, refuse to edit
 	if len(post.Author.Tripcode) < 1 {
 		http.Error(rw, "Forbidden", 403)
