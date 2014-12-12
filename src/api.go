@@ -5,7 +5,6 @@ import (
 	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
-	"encoding/json"
 )
 
 func apiNewThread(rw http.ResponseWriter, req *http.Request) {
@@ -66,15 +65,7 @@ func apiPreview(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 	content := parseContent(postContent, "bbcode")
-	
-	response, err := json.Marshal(map[string]string{
-		"content": content,
-	})
-	if err != nil {
-		http.Error(rw, err.Error(), 500)
-		return
-	}
-	fmt.Fprintln(rw, string(response))
+	fmt.Fprintln(rw, content)
 }
 
 func apiEditPost(rw http.ResponseWriter, req *http.Request) {
@@ -171,5 +162,5 @@ func apiTagSearch(rw http.ResponseWriter, req *http.Request) {
 		http.Redirect(rw, req, "/", http.StatusNoContent)
 		return
 	}
-	http.Redirect(rw, req, "/tag/" + tags, http.StatusMovedPermanently)
+	http.Redirect(rw, req, "/tag/"+tags, http.StatusMovedPermanently)
 }

@@ -63,17 +63,19 @@ cancelForm = (id) ->
 
 # post preview
 showPreview = () ->
-    #form = document.getElementById 'reply-form'
-    text = document.querySelector("#reply-form textarea").value
-    nick = document.getElementById('reply-nickname').value
+    form = document.getElementById 'reply-form'
+    text = document.querySelector("#reply-form textarea[name='text']").value
+    nick = document.querySelector("#reply-form input[name='nickname']").value
     unless text
-        # TODO
-        console.log 'no data'
+        errmsg = document.createElement 'p'
+        errmsg.className = 'errmsg'
+        errmsg.innerHTML = "Please insert some content."
+        form.insertBefore errmsg, form.firstChild
         return
     req =
         nickname: nick
         text:     text
-    # retreive content data from server
+    # retreive content data from the server
     qwest.post('/postpreview', req)
         .then (resp) ->
             console.log resp
@@ -87,13 +89,12 @@ createPreview = (content, nick) ->
     prevpost = document.getElementById 'post-preview'
     unless prevpost
         prevpost = document.createElement 'article'
-    prevpost.innerHTML = """
-    <h3 class="post-author">
-""" + (nick ? """
-        <span class="nickname">#{nick}</span>
-""" : "") + """ 
+        document.getElementById('replies').appendChild prevpost
+    prevpost.innerHTML = "<h3 class='post-author'>" + (if nick
+    then "<span class='nickname'>#{nick}</span>"
+    else "") + """ 
     </h3>
-    <div class="post-content type{{ContentType}}">{{{Content}}}</div>
+    <div class="post-content typebbcode">#{content}</div>
     """
 
 window.editPost = editPost
