@@ -46,7 +46,7 @@ editAJAX = (id) ->
             cancelForm(id)
             document.querySelector("#p#{id} textarea[name='text']").value = resp
         .catch (err) ->
-            section = document.getElementById(id)
+            section = document.getElementById id
             errmsg = document.createElement 'p'
             errmsg.className = "errmsg"
             errmsg.innerHTML = "An error occurred: #{err}"
@@ -91,6 +91,8 @@ showPreview = () ->
     text = document.querySelector("#reply-form textarea[name='text']").value
     nick = document.querySelector("#reply-form input[name='nickname']").value
     unless text
+        if form.firstChild.className == 'errmsg'
+            return
         errmsg = document.createElement 'p'
         errmsg.className = 'errmsg'
         errmsg.innerHTML = "Please insert some content."
@@ -103,21 +105,19 @@ showPreview = () ->
     qwest.post('/postpreview', req)
         .then (resp) ->
             console.log resp
-            createPreview resp, nick
+            createPreview resp
         .catch (err) ->
             console.log 'Error!'
             console.log err
 
-createPreview = (content, nick) ->
+createPreview = (content) ->
     # if preview post already exists, just update it
     prevpost = document.getElementById 'post-preview'
     unless prevpost
         prevpost = document.createElement 'article'
+        prevpost.id = 'post-preview'
         document.getElementById('replies').appendChild prevpost
-    prevpost.innerHTML = "<h3 class='post-author'>" + (if nick
-    then "<span class='nickname'>#{nick}</span>"
-    else "") + """ 
-    </h3>
+    prevpost.innerHTML = """<h4><em>Post preview</em></h4>
     <div class="post-content typebbcode">#{content}</div>
     """
 
