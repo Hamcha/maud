@@ -18,7 +18,7 @@ editPost = (id) ->
   <form method="POST" action="#{location.pathname + "/post/" + id + "/edit"}">
     <div>
       <span class="full verysmall nickname" style="display: inline-block; border: 0; width: auto">#{nick}</span>
-      <input class="full short inline verysmall" type="text" name="tripcode" placeholder="Tripcode (required)" />
+      <input class="full short inline verysmall" type="text" name="tripcode" placeholder="Tripcode (required)" required />
       <span style="color: #ccc; display: inline-block; width: auto; font-size: 0.9em;">editing #{idname}</span>
     </div>
     <textarea class="full small editor" name="text" required placeholder="Thread text (Markdown is supported)">#{content}</textarea>
@@ -46,7 +46,7 @@ deletePost = (id) ->
   <form method="POST" action="#{location.pathname + "/post/" + id + "/delete"}">
     <div>
       <span class="full verysmall nickname" style="display: inline-block; border: 0; width: auto">#{nick}</span>
-      <input class="full short inline verysmall" type="text" name="tripcode" placeholder="Tripcode (required)" />
+      <input class="full short inline verysmall" type="text" name="tripcode" placeholder="Tripcode (required)" required />
       <span style="color: #ccc; display: inline-block; width: auto; font-size: 0.9em;">deleting ##{id}</span>
     </div>
     <center>
@@ -85,11 +85,9 @@ showPreview = () ->
 createPreview = (content, nick) ->
     # if preview post already exists, just update it
     prevpost = document.getElementById 'post-preview'
-    if prevpost
-
-    else
+    unless prevpost
         prevpost = document.createElement 'article'
-        prevpost.innerHTML = """
+    prevpost.innerHTML = """
     <h3 class="post-author">
 """ + (nick ? """
         <span class="nickname">#{nick}</span>
