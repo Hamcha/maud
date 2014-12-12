@@ -7,7 +7,7 @@
 </nav>
 <hr />
 <article class="hidden2">
-    <a href='/threads' class="nolink">Recently updated threads, ordered by latest reply</a>
+	Recently updated threads, ordered by latest reply. 
 </article>
 {{#Data}}
 {{#Last}}
@@ -16,9 +16,10 @@
     <div>Last reply: <a href="/thread/{{ShortUrl}}#last"><span class="date">{{LRDate}}</span></a></div>
 </article>
 {{/Last}}
+<a href='/threads' class="article"><article>View all</article></a>
 <hr />
 <article class="hidden2">
-    <a href='/tags' class="nolink">Most popular tags, ordered by popularity</a>
+    Most popular tags, ordered by popularity.
 </article>
 {{#Tags}}
 <article class="tag-item">
@@ -26,4 +27,5 @@
     <div>Last updated thread: {{#LastThread}}<a href="/thread/{{ShortUrl}}#last" class="thread-title">{{Title}}</a>{{/LastThread}} (<span class="date">{{LastUpdate}}</span>)</div>
 </article>
 {{/Tags}}
+<a href='/tags' class="article"><article>View all</article></a>
 {{/Data}}

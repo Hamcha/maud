@@ -10,7 +10,18 @@ editPost = (id) ->
       type = "post"
       idname = "##{id}"
     post = document.getElementById pid
-    content = document.querySelector("##{pid} ." + type + "-content").innerHTML
+    content = "Retrieving content..."
+    qwest.post(location.pathname + "/post/" + id + "/raw")
+        .then (resp) ->
+            content = resp
+            document.querySelector("##{pid} textarea[name='text']").value = content
+        .catch (err) ->
+            content = ""
+            section = document.getElementById(id)
+            errmsg = document.createElement 'p'
+            errmsg.className = "errmsg"
+            errmsg.innerHTML = "Failed to retrieve content."
+            section.insertBefore errmsg, section.firstChild
     nick = document.querySelector("##{pid}  .nickname").innerHTML
     original[id] = post.innerHTML
     post.innerHTML = """
@@ -23,10 +34,23 @@ editPost = (id) ->
     </div>
     <textarea class="full small editor" name="text" required placeholder="Thread text (Markdown is supported)">#{content}</textarea>
     <center>
-      <button type="submit">Edit post</button><button type="button" onclick="cancelForm(#{id});">Cancel</button>
+      <button onclick="editAJAX(#{id})">Edit post</button><button type="button" onclick="cancelForm(#{id});">Cancel</button>
     </center>
   </form>
 </section>"""
+    return
+
+editAJAX = (id) ->
+    qwest.post(location.pathname + "/post/" + id + "/edit")
+        .then (resp) ->
+            cancelForm(id)
+            document.querySelector("#p#{id} textarea[name='text']").value = resp
+        .catch (err) ->
+            section = document.getElementById(id)
+            errmsg = document.createElement 'p'
+            errmsg.className = "errmsg"
+            errmsg.innerHTML = "An error occurred: #{err}"
+            section.insertBefore errmsg, section.firstChild
     return
 
 # post delete
