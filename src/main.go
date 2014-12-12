@@ -12,6 +12,7 @@ import (
 )
 
 var siteInfo SiteInfo
+var adminConf AdminConfig
 
 // absolute path to Maud root directory
 var maudRoot string
@@ -28,6 +29,7 @@ func main() {
 	bind := flag.String("port", ":8080", "Address to bind to")
 	mongo := flag.String("dburl", "localhost", "MongoDB servers, separated by comma")
 	dbname := flag.String("dbname", "maud", "MongoDB database to use")
+	adminfile := flag.String("admin", "admin.conf", "Admin configuration file")
 	flag.StringVar(&maudRoot, "root", maudRoot, "The HTTP server root directory")
 	flag.Parse()
 
@@ -37,6 +39,16 @@ func main() {
 	// Load Site info file
 	rawconf, _ := ioutil.ReadFile(maudRoot + "/info.json")
 	err = json.Unmarshal(rawconf, &siteInfo)
+	if err != nil {
+		panic(err)
+	}
+
+	// Load Admin config file
+	if (*adminfile)[0] != '/' {
+		*adminfile = maudRoot + "/" + *adminfile
+	}
+	rawadmin, _ := ioutil.ReadFile(*adminfile)
+	err = json.Unmarshal(rawadmin, &adminConf)
 	if err != nil {
 		panic(err)
 	}
@@ -67,6 +79,11 @@ func main() {
 	POST.HandleFunc("/thread/{thread}/post/{post}/edit", apiEditPost)
 	POST.HandleFunc("/thread/{thread}/post/{post}/delete", apiDeletePost)
 	POST.HandleFunc("/tagsearch", apiTagSearch)
+
+	// Admin mode pages
+	if adminConf.EnablePath {
+		AdminPath := router.PathPrefix("/admin").Subrouter()
+	}
 
 	http.Handle("/", router)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(maudRoot+"/static"))))
