@@ -34,7 +34,7 @@
     {{/Data}}
     {{/ThreadPost}}
 </article>
-<section id="replies">
+<div id="replies">
 {{#Posts}}
 <article class="post" id="p{{PostId}}">
     {{#Data}}
@@ -60,7 +60,7 @@
     {{/Data}}
 </article>
 {{/Posts}}
-</section>
+</div>
 <hr />
 <section class="form"><a name="reply" class="noborder"></a>
     <form id="reply-form" method="POST" action="/thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/reply">

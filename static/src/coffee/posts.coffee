@@ -111,13 +111,15 @@ showPreview = () ->
             console.log err
 
 createPreview = (content) ->
+    # deselect selected post, if any
+    o.className = o.className.replace "post-selected", "" for o in document.querySelectorAll ".post-selected"
     # if preview post already exists, just update it
     prevpost = document.getElementById 'post-preview'
     unless prevpost
         prevpost = document.createElement 'article'
         prevpost.id = 'post-preview'
         document.getElementById('replies').appendChild prevpost
-    prevpost.innerHTML = """<h4><em>Post preview</em></h4>
+    prevpost.innerHTML = """<h3 class="post-author">Post preview</h3>
     <div class="post-content typebbcode">#{content}</div>
     """
 

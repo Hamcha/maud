@@ -182,6 +182,17 @@ span.spoiler {
     &:hover { color: inherit; background-color: inherit; }
 }
 
+#post-preview {
+	background-color: rgba(0,0,0,.7);
+	h3 {
+		border-bottom: 1px dotted #555;
+		padding-bottom: 6px;
+		margin-bottom: 4px;
+		font-size: 0.7em;
+		text-transform: uppercase;
+	}
+}
+
 /* Homepage */
 
 .tag-item, .thread-item { font-size: 0.9em; padding: 10px; }
