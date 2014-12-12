@@ -84,7 +84,10 @@ func main() {
 
 	// Admin mode pages
 	if adminConf.EnablePath {
-		AdminPath := router.PathPrefix("/admin").Subrouter()
+		router.HandleFunc(adminConf.Path, wrapAdmin)
+	}
+	if adminConf.EnableDomain {
+		router.Host(adminConf.Domain).HandlerFunc(wrapAdmin)
 	}
 
 	http.Handle("/", router)
