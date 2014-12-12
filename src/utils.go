@@ -5,7 +5,10 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/binary"
+	"errors"
 	"math/rand"
+	"net/http"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -99,4 +102,24 @@ func shortify(content string) (string, bool) {
 	}
 
 	return PostPolicy().Sanitize(content[:300]), true
+}
+
+func threadPostOrErr(rw http.ResponseWriter, threadId, postIdStr string) (Thread, Post, error) {
+	thread, err := DBGetThread(threadId)
+	// retreive post
+	postId, err := strconv.Atoi(postIdStr)
+	if err != nil {
+		http.Error(rw, "Invalid post ID", 400)
+		return thread, Post{}, err
+	}
+	posts, err := DBGetPosts(&thread, 1, postId)
+	if err != nil {
+		http.Error(rw, err.Error(), 500)
+		return thread, posts[0], err
+	}
+	if len(posts) < 1 {
+		http.Error(rw, "Post not found", 404)
+		return thread, posts[0], errors.New("Post not found")
+	}
+	return thread, posts[0], nil
 }
