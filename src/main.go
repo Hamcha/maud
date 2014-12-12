@@ -78,7 +78,9 @@ func main() {
 	POST.HandleFunc("/thread/{thread}/reply", apiReply)
 	POST.HandleFunc("/thread/{thread}/post/{post}/edit", apiEditPost)
 	POST.HandleFunc("/thread/{thread}/post/{post}/delete", apiDeletePost)
+	POST.HandleFunc("/thread/{thread}/post/{post}/raw", apiGetRaw)
 	POST.HandleFunc("/tagsearch", apiTagSearch)
+	POST.HandleFunc("/postpreview", apiPreview)
 
 	// Admin mode pages
 	if adminConf.EnablePath {

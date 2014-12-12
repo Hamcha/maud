@@ -16,10 +16,24 @@ func initbbcode() {
 	bbElements["strike"] = bbToHTML("s")
 	// Other BBcode tags
 	bbElements["img"] = func(_, con string) string {
-		return "<a href=\"" + url.QueryEscape(con) + "\"><img src=\"" + url.QueryEscape(con) + "\" /></a>"
+		idx := strings.IndexRune(con, '?')
+		if idx > 0 {
+			con = con[0:idx] + url.QueryEscape(con[idx:])
+		}
+		return "<a href=\"" + con + "\"><img src=\"" + con + "\" /></a>"
 	}
 	bbElements["url"] = func(par, con string) string {
-		return "<a href=\"" + url.QueryEscape(par) + "\">" + con + "</a>"
+		if len(par) < 1 {
+			par = con
+		}
+		if !strings.HasPrefix(par, "http://") && !strings.HasPrefix(par, "https://") {
+			par = "http://" + par
+		}
+		idx := strings.IndexRune(con, '?')
+		if idx > 0 {
+			par = par[0:idx] + url.QueryEscape(par[idx:])
+		}
+		return "<a href=\"" + par + "\">" + con + "</a>"
 	}
 	bbElements["spoiler"] = func(_, con string) string {
 		return "<span class=\"spoiler\">" + con + "</span>"

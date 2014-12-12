@@ -21,7 +21,7 @@
     </h3>
     <div class="right">
         {{#Author}}{{#Tripcode}}{{^IsDeleted}}
-	<span class="lastedit">{{LastModified}}</span>
+        <span class="lastedit">{{LastModified}}</span>
         <a href="#thread" class="edit nolink" onclick="editPost(0)">
 			<img src="/static/images/edit.svg" style="height: 18px;" />
         </a>
@@ -34,6 +34,7 @@
     {{/Data}}
     {{/ThreadPost}}
 </article>
+<div id="replies">
 {{#Posts}}
 <article class="post" id="p{{PostId}}">
     {{#Data}}
@@ -46,7 +47,7 @@
     </h3>
     <div class="right">
         {{#Author}}{{#Tripcode}}{{^IsDeleted}}
-	<span class="lastedit">{{LastModified}}</span>
+        <span class="lastedit">{{LastModified}}</span>
         <a href="#p{{PostId}}" class="edit nolink" onclick="editPost({{PostId}})">
             <img src="/static/images/edit.svg" style="height: 20px;" />
         </a>
@@ -59,12 +60,17 @@
     {{/Data}}
 </article>
 {{/Posts}}
+</div>
 <hr />
 <section class="form"><a name="reply" class="noborder"></a>
-<form method="POST" action="/thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/reply">
-<input class="full verysmall" type="text" name="nickname" placeholder="Nickname#Tripcode (optional)" />
-<textarea class="full verysmall" name="text" required placeholder="Thread text (Markdown is supported)"></textarea>
-<center><input type="submit" value="Reply" /></center>
-</form>
+    <form id="reply-form" method="POST" action="/thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/reply">
+        <input class="full verysmall" type="text" name="nickname" placeholder="Nickname#Tripcode (optional)" />
+        <textarea class="full verysmall" name="text" required placeholder="Thread text (Markdown is supported)"></textarea>
+        <input type="hidden" name="preview" id="preview" />
+        <center>
+            <input type="submit" value="Reply" />
+            <input type="button" class="button" onclick="showPreview()" value="Preview" />
+        </center>
+    </form>
 </section>
 {{/Data}}

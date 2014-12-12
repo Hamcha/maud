@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
-	"strconv"
 	"strings"
 )
 
+// apiNewThread: creates a new thread with its OP.
+// POST params: title, text, [nickname, tags]
 func apiNewThread(rw http.ResponseWriter, req *http.Request) {
 	postTitle := req.PostFormValue("title")
 	postNickname := req.PostFormValue("nickname")
@@ -33,6 +34,8 @@ func apiNewThread(rw http.ResponseWriter, req *http.Request) {
 	http.Redirect(rw, req, "/thread/"+threadId, http.StatusMovedPermanently)
 }
 
+// apiReply: appends a post to a thread.
+// POST params: text, [nickname]
 func apiReply(rw http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	threadUrl := vars["thread"]
@@ -59,27 +62,26 @@ func apiReply(rw http.ResponseWriter, req *http.Request) {
 	http.Redirect(rw, req, "/thread/"+thread.ShortUrl+"#last", http.StatusMovedPermanently)
 }
 
+// apiPreview: returns the content that would be inserted in the post if this
+// were a reply.
+// POST params: text
+func apiPreview(rw http.ResponseWriter, req *http.Request) {
+	postContent := req.PostFormValue("text")
+	if len(postContent) < 1 {
+		http.Error(rw, "Required fields are missing", 400)
+		return
+	}
+	content := parseContent(postContent, "bbcode")
+	fmt.Fprintln(rw, content)
+}
+
+// apiEditPost: updates the content of a post and its LastModified field
+// (auth via tripcode); returns the new content as response so it can
+// be used to update the original post via AJAX
+// POST params: tripcode, text
 func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
-	threadUrl := vars["thread"]
-	thread, err := DBGetThread(threadUrl)
-	// retreive post to edit
-	postId, err := strconv.Atoi(vars["post"])
-	if err != nil {
-		http.Error(rw, "Invalid post ID", 400)
-		return
-	}
-	posts, err := DBGetPosts(&thread, 1, postId)
-	if err != nil {
-		fmt.Println(err.Error())
-		http.Error(rw, err.Error(), 500)
-		return
-	}
-	if len(posts) < 1 {
-		http.Error(rw, "Post not found", 404)
-		return
-	}
-	post := posts[0]
+	_, post, err := threadPostOrErr(rw, vars["thread"], vars["post"])
 	// if post has no tripcode associated, refuse to edit
 	if len(post.Author.Tripcode) < 1 {
 		http.Error(rw, "Forbidden", 403)
@@ -98,33 +100,18 @@ func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 		http.Error(rw, err.Error(), 500)
 		return
 	}
-
-	http.Redirect(rw, req, "/thread/"+thread.ShortUrl+"#p"+vars["post"], http.StatusMovedPermanently)
+	fmt.Fprintf(rw, post.Content)
 }
 
-// Sets the 'deleted flag' to a post, auth-ing request by tripcode.
+// apiDeletePost: Sets the 'deleted flag' to a post, auth-ing request by tripcode.
 // Original post content is retained in DB (for now)
+// POST params: tripcode
 func apiDeletePost(rw http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
-	threadUrl := vars["thread"]
-	thread, err := DBGetThread(threadUrl)
-	// retreive post to delete
-	postId, err := strconv.Atoi(vars["post"])
+	thread, post, err := threadPostOrErr(rw, vars["thread"], vars["post"])
 	if err != nil {
-		http.Error(rw, "Invalid post ID", 400)
 		return
 	}
-	posts, err := DBGetPosts(&thread, postId, postId)
-	if err != nil {
-		fmt.Println(err.Error())
-		http.Error(rw, err.Error(), 500)
-		return
-	}
-	if len(posts) < 1 {
-		http.Error(rw, "Post not found", 404)
-		return
-	}
-	post := posts[0]
 	// if post has no tripcode associated, refuse to delete
 	if len(post.Author.Tripcode) < 1 {
 		http.Error(rw, "Forbidden", 403)
@@ -154,4 +141,19 @@ func apiTagSearch(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 	http.Redirect(rw, req, "/tag/"+strings.ToLower(tags), http.StatusMovedPermanently)
+}
+
+// apiGetRaw: retreive the raw content of a post.
+// POST params: none
+func apiGetRaw(rw http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+	_, post, err := threadPostOrErr(rw, vars["thread"], vars["post"])
+	if err != nil {
+		return
+	}
+	if post.ContentType == "deleted" {
+		http.Error(rw, "Forbidden", 403)
+		return
+	}
+	fmt.Fprintln(rw, post.Content)
 }
