@@ -15,10 +15,7 @@ type AdminConfig struct {
 	EnableDomain bool
 	Path         string
 	Domain       string
-	Admins       []struct {
-		Username string
-		Password string
-	}
+	Admins       map[string]string
 }
 
 type User struct {

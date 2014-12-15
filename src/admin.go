@@ -1,6 +1,8 @@
 package main
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"github.com/gorilla/mux"
 	"net/http"
 )
@@ -14,7 +16,14 @@ func initAdmin() {
 func wrapAdmin(handler http.HandlerFunc) http.HandlerFunc {
 	return func(rw http.ResponseWriter, req *http.Request) {
 		adminRequests[req] = true
-		handler(rw, req)
+		user, pass, _ := req.BasicAuth()
+		if checkAdmin(user, pass) {
+			handler(rw, req)
+		} else {
+			http.Error(rw, "Unauthorized", 401)
+			return
+		}
+		delete(adminRequests, req)
 	}
 }
 
@@ -24,4 +33,20 @@ func SetHandler(router *mux.Router, path string, handler http.HandlerFunc, isAdm
 	}
 
 	router.HandleFunc(path, handler)
+}
+
+func isAdmin(req *http.Request) bool {
+	if val, ok := adminRequests[req]; ok {
+		return val
+	}
+	return false
+}
+
+func checkAdmin(user, pass string) bool {
+	if enc, ok := adminConf.Admins[user]; ok {
+		sum := sha256.Sum256([]byte(pass))
+		str := hex.EncodeToString(sum[:])
+		return str == enc
+	}
+	return false
 }
