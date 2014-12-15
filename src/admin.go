@@ -15,16 +15,16 @@ func initAdmin() {
 
 func wrapAdmin(handler http.HandlerFunc) http.HandlerFunc {
 	return func(rw http.ResponseWriter, req *http.Request) {
-		adminRequests[req] = true
 		user, pass, _ := req.BasicAuth()
 		if checkAdmin(user, pass) {
+			adminRequests[req] = true
 			handler(rw, req)
+			delete(adminRequests, req)
 		} else {
 			rw.Header().Set("WWW-Authenticate", "Basic Realm=\"maud\"")
 			http.Error(rw, "Unauthorized", 401)
 			return
 		}
-		delete(adminRequests, req)
 	}
 }
 
