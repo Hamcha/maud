@@ -5,7 +5,6 @@ import (
 	"encoding/hex"
 	"github.com/gorilla/mux"
 	"net/http"
-	"fmt"
 )
 
 var adminRequests map[*http.Request]bool
