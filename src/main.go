@@ -17,6 +17,27 @@ var adminConf AdminConfig
 // absolute path to Maud root directory
 var maudRoot string
 
+func setupHandlers(router *mux.Router, isAdmin bool) {
+	GET := router.Methods("GET").Subrouter()
+	POST := router.Methods("POST").Subrouter()
+
+	SetHandler(GET, "/", httpHome, isAdmin)
+	SetHandler(GET, "/tag/{tag}", httpTagSearch, isAdmin)
+	SetHandler(GET, "/thread/{thread}", httpThread, isAdmin)
+	SetHandler(GET, "/thread/{thread}/page/{page}", httpThread, isAdmin)
+	SetHandler(GET, "/new", httpNewThread, isAdmin)
+	SetHandler(GET, "/threads", httpAllThreads, isAdmin)
+	SetHandler(GET, "/tags", httpAllTags, isAdmin)
+
+	SetHandler(POST, "/new", apiNewThread, isAdmin)
+	SetHandler(POST, "/thread/{thread}/reply", apiReply, isAdmin)
+	SetHandler(POST, "/thread/{thread}/post/{post}/edit", apiEditPost, isAdmin)
+	SetHandler(POST, "/thread/{thread}/post/{post}/delete", apiDeletePost, isAdmin)
+	SetHandler(POST, "/thread/{thread}/post/{post}/raw", apiGetRaw, isAdmin)
+	SetHandler(POST, "/tagsearch", apiTagSearch, isAdmin)
+	SetHandler(POST, "/postpreview", apiPreview, isAdmin)
+}
+
 func main() {
 	// get executable path
 	maudExec, err := filepath.Abs(os.Args[0])
@@ -63,31 +84,17 @@ func main() {
 
 	// Setup request handlers
 	router := mux.NewRouter()
-	GET := router.Methods("GET").Subrouter()
-	POST := router.Methods("POST").Subrouter()
-
-	GET.HandleFunc("/", httpHome)
-	GET.HandleFunc("/tag/{tag}", httpTagSearch)
-	GET.HandleFunc("/thread/{thread}", httpThread)
-	GET.HandleFunc("/thread/{thread}/page/{page}", httpThread)
-	GET.HandleFunc("/new", httpNewThread)
-	GET.HandleFunc("/threads", httpAllThreads)
-	GET.HandleFunc("/tags", httpAllTags)
-
-	POST.HandleFunc("/new", apiNewThread)
-	POST.HandleFunc("/thread/{thread}/reply", apiReply)
-	POST.HandleFunc("/thread/{thread}/post/{post}/edit", apiEditPost)
-	POST.HandleFunc("/thread/{thread}/post/{post}/delete", apiDeletePost)
-	POST.HandleFunc("/thread/{thread}/post/{post}/raw", apiGetRaw)
-	POST.HandleFunc("/tagsearch", apiTagSearch)
-	POST.HandleFunc("/postpreview", apiPreview)
+	setupHandlers(router, false)
 
 	// Admin mode pages
+	initAdmin()
 	if adminConf.EnablePath {
-		router.HandleFunc(adminConf.Path, wrapAdmin)
+		router.PathPrefix(adminConf.Path).Subrouter()
+		setupHandlers(router, true)
 	}
 	if adminConf.EnableDomain {
-		router.Host(adminConf.Domain).HandlerFunc(wrapAdmin)
+		router.Host(adminConf.Domain).Subrouter()
+		setupHandlers(router, true)
 	}
 
 	http.Handle("/", router)
