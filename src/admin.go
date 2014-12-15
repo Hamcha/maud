@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"github.com/gorilla/mux"
 	"net/http"
+	"fmt"
 )
 
 var adminRequests map[*http.Request]bool
@@ -20,6 +21,7 @@ func wrapAdmin(handler http.HandlerFunc) http.HandlerFunc {
 		if checkAdmin(user, pass) {
 			handler(rw, req)
 		} else {
+			rw.Header().Set("WWW-Authenticate", "Basic Realm=\"maud\"")
 			http.Error(rw, "Unauthorized", 401)
 			return
 		}

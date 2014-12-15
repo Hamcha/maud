@@ -89,14 +89,12 @@ func main() {
 	// Admin mode pages
 	initAdmin()
 	if adminConf.EnablePath {
-		fmt.Println("Setting admin handlers for " + adminConf.Path)
-		router.PathPrefix(adminConf.Path).Subrouter()
-		setupHandlers(router, true)
+		adminPath := router.PathPrefix(adminConf.Path).Subrouter()
+		setupHandlers(adminPath, true)
 	}
 	if adminConf.EnableDomain {
-		fmt.Println("Setting admin handlers for " + adminConf.Domain)
-		router.Host(adminConf.Domain).Subrouter()
-		setupHandlers(router, true)
+		adminHost := router.Host(adminConf.Domain).Subrouter()
+		setupHandlers(adminHost, true)
 	}
 
 	http.Handle("/", router)
