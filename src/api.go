@@ -31,7 +31,12 @@ func apiNewThread(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	http.Redirect(rw, req, "/thread/"+threadId, http.StatusMovedPermanently)
+	basepath := "/"
+	if ok, val := isAdmin(req); ok {
+		basepath = val.BasePath
+	}
+
+	http.Redirect(rw, req, basepath+"thread/"+threadId, http.StatusMovedPermanently)
 }
 
 // apiReply: appends a post to a thread.
@@ -59,7 +64,12 @@ func apiReply(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	http.Redirect(rw, req, "/thread/"+thread.ShortUrl+"#last", http.StatusMovedPermanently)
+	basepath := "/"
+	if ok, val := isAdmin(req); ok {
+		basepath = val.BasePath
+	}
+
+	http.Redirect(rw, req, basepath+"thread/"+thread.ShortUrl+"#last", http.StatusMovedPermanently)
 }
 
 // apiPreview: returns the content that would be inserted in the post if this
@@ -81,15 +91,17 @@ func apiPreview(rw http.ResponseWriter, req *http.Request) {
 // POST params: tripcode, text
 func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
+	isAdmin, val := isAdmin(req)
+
 	thread, post, err := threadPostOrErr(rw, vars["thread"], vars["post"])
 	// if post has no tripcode associated, refuse to edit
-	if len(post.Author.Tripcode) < 1 {
+	if !isAdmin && len(post.Author.Tripcode) < 1 {
 		http.Error(rw, "Forbidden", 403)
 		return
 	}
 	// check tripcode
 	trip := req.PostFormValue("tripcode")
-	if tripcode(trip) != post.Author.Tripcode {
+	if !isAdmin && tripcode(trip) != post.Author.Tripcode {
 		http.Error(rw, "Invalid tripcode", 401)
 		return
 	}
@@ -100,7 +112,13 @@ func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 		http.Error(rw, err.Error(), 500)
 		return
 	}
-	http.Redirect(rw, req, "/thread/"+thread.ShortUrl+"#p"+vars["post"], http.StatusMovedPermanently)
+
+	basepath := "/"
+	if isAdmin {
+		basepath = val.BasePath
+	}
+
+	http.Redirect(rw, req, basepath+"thread/"+thread.ShortUrl+"#p"+vars["post"], http.StatusMovedPermanently)
 }
 
 // apiDeletePost: Sets the 'deleted flag' to a post, auth-ing request by tripcode.
@@ -108,29 +126,39 @@ func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 // POST params: tripcode
 func apiDeletePost(rw http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
+	isAdmin, val := isAdmin(req)
+
 	thread, post, err := threadPostOrErr(rw, vars["thread"], vars["post"])
 	if err != nil {
 		return
 	}
 	// if post has no tripcode associated, refuse to delete
-	if len(post.Author.Tripcode) < 1 {
+	if !isAdmin && len(post.Author.Tripcode) < 1 {
 		http.Error(rw, "Forbidden", 403)
 		return
 	}
 	// check tripcode
 	trip := req.PostFormValue("tripcode")
-	if tripcode(trip) != post.Author.Tripcode {
+	if !isAdmin && tripcode(trip) != post.Author.Tripcode {
 		http.Error(rw, "Invalid tripcode", 401)
 		return
 	}
 	// set ContentType to 'deleted'
 	post.ContentType = "deleted"
+	if isAdmin {
+		post.ContentType = "admin-deleted"
+	}
 	if err := database.C("posts").UpdateId(post.Id, post); err != nil {
 		http.Error(rw, err.Error(), 500)
 		return
 	}
 
-	http.Redirect(rw, req, "/thread/"+thread.ShortUrl+"#p"+vars["post"], http.StatusMovedPermanently)
+	basepath := "/"
+	if isAdmin {
+		basepath = val.BasePath
+	}
+
+	http.Redirect(rw, req, basepath+"thread/"+thread.ShortUrl+"#p"+vars["post"], http.StatusMovedPermanently)
 }
 
 func apiTagSearch(rw http.ResponseWriter, req *http.Request) {
@@ -140,7 +168,13 @@ func apiTagSearch(rw http.ResponseWriter, req *http.Request) {
 		http.Redirect(rw, req, "/", http.StatusNoContent)
 		return
 	}
-	http.Redirect(rw, req, "/tag/"+strings.ToLower(tags), http.StatusMovedPermanently)
+
+	basepath := "/"
+	if ok, val := isAdmin(req); ok {
+		basepath = val.BasePath
+	}
+
+	http.Redirect(rw, req, basepath+"tag/"+strings.ToLower(tags), http.StatusMovedPermanently)
 }
 
 // apiGetRaw: retreive the raw content of a post.

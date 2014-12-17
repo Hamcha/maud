@@ -93,6 +93,8 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	threadUrl := vars["thread"]
 	thread, err := DBGetThread(threadUrl)
+	isAdmin, _ := isAdmin(req)
+
 	if err != nil {
 		if err.Error() == "not found" {
 			sendError(rw, 404, nil)
@@ -107,6 +109,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		PostId    int
 		Data      Post
 		IsDeleted bool
+		Editable  bool
 	}
 	posts, err := DBGetPosts(&thread, 0, 0)
 	if err != nil {
@@ -117,8 +120,9 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 	for index := range posts {
 		posts[index].Content = parseContent(posts[index].Content, posts[index].ContentType)
 		postsInfo[index].Data = posts[index]
-		postsInfo[index].IsDeleted = posts[index].ContentType == "deleted"
+		postsInfo[index].IsDeleted = posts[index].ContentType == "deleted" || posts[index].ContentType == "admin-deleted"
 		postsInfo[index].PostId = index
+		postsInfo[index].Editable = !postsInfo[index].IsDeleted && (isAdmin || len(posts[index].Author.Tripcode) > 0)
 	}
 
 	send(rw, req, "thread", thread.Title, struct {
