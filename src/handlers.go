@@ -210,7 +210,8 @@ func send(rw http.ResponseWriter, req *http.Request, name string, title string, 
 		title = " ~ " + title
 	}
 	basepath := "/"
-	if ok, val := isAdmin(req); ok {
+	ok, val := isAdmin(req)
+	if ok {
 		basepath = val.BasePath
 	}
 	fmt.Fprintln(rw,
@@ -222,11 +223,13 @@ func send(rw http.ResponseWriter, req *http.Request, name string, title string, 
 				Title    string
 				Data     interface{}
 				BasePath string
+				IsAdmin  bool
 			}{
 				siteInfo,
 				siteInfo.Title + title,
 				context,
 				basepath,
+				ok,
 			}))
 }
 

@@ -15,6 +15,11 @@
     <meta name="msapplication-square150x150logo" content="/static/images/ms150.png" />
     <meta name="msapplication-square310x310logo" content="/static/images/ms310.png" />
     <meta name="msapplication-TileColor" content="#555555" />
+    {{#IsAdmin}}
+    <script>
+        window.adminMode = true;
+    </script>
+    {{/IsAdmin}}
 </head>
 <body>
     <div id="container">
