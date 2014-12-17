@@ -5,7 +5,7 @@
 {{#Data}}
 {{#Thread}}
 <section class="tags">
-{{#Tags}}<a href="/tag/{{.}}" class="tag">#{{.}}</a> {{/Tags}}
+{{#Tags}}<a href="{{BasePath}}tag/{{.}}" class="tag">#{{.}}</a> {{/Tags}}
 </section>
 <article class="thread" id="thread">
     <h2 class="thread-title">{{Title}}</h2>
@@ -63,7 +63,7 @@
 </div>
 <hr />
 <section class="form"><a name="reply" class="noborder"></a>
-    <form id="reply-form" method="POST" action="/thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/reply">
+    <form id="reply-form" method="POST" action="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/reply">
         <input class="full verysmall" type="text" name="nickname" placeholder="Nickname#Tripcode (optional)" />
         <textarea class="full verysmall" name="text" required placeholder="Thread text (Markdown is supported)"></textarea>
         <input type="hidden" name="preview" id="preview" />

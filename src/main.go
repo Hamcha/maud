@@ -17,25 +17,25 @@ var adminConf AdminConfig
 // absolute path to Maud root directory
 var maudRoot string
 
-func setupHandlers(router *mux.Router, isAdmin bool) {
+func setupHandlers(router *mux.Router, isAdmin, isSubdir bool) {
 	GET := router.Methods("GET").Subrouter()
 	POST := router.Methods("POST").Subrouter()
 
-	SetHandler(GET, "/", httpHome, isAdmin)
-	SetHandler(GET, "/tag/{tag}", httpTagSearch, isAdmin)
-	SetHandler(GET, "/thread/{thread}", httpThread, isAdmin)
-	SetHandler(GET, "/thread/{thread}/page/{page}", httpThread, isAdmin)
-	SetHandler(GET, "/new", httpNewThread, isAdmin)
-	SetHandler(GET, "/threads", httpAllThreads, isAdmin)
-	SetHandler(GET, "/tags", httpAllTags, isAdmin)
+	SetHandler(GET, "/", httpHome, isAdmin, isSubdir)
+	SetHandler(GET, "/tag/{tag}", httpTagSearch, isAdmin, isSubdir)
+	SetHandler(GET, "/thread/{thread}", httpThread, isAdmin, isSubdir)
+	SetHandler(GET, "/thread/{thread}/page/{page}", httpThread, isAdmin, isSubdir)
+	SetHandler(GET, "/new", httpNewThread, isAdmin, isSubdir)
+	SetHandler(GET, "/threads", httpAllThreads, isAdmin, isSubdir)
+	SetHandler(GET, "/tags", httpAllTags, isAdmin, isSubdir)
 
-	SetHandler(POST, "/new", apiNewThread, isAdmin)
-	SetHandler(POST, "/thread/{thread}/reply", apiReply, isAdmin)
-	SetHandler(POST, "/thread/{thread}/post/{post}/edit", apiEditPost, isAdmin)
-	SetHandler(POST, "/thread/{thread}/post/{post}/delete", apiDeletePost, isAdmin)
-	SetHandler(POST, "/thread/{thread}/post/{post}/raw", apiGetRaw, isAdmin)
-	SetHandler(POST, "/tagsearch", apiTagSearch, isAdmin)
-	SetHandler(POST, "/postpreview", apiPreview, isAdmin)
+	SetHandler(POST, "/new", apiNewThread, isAdmin, isSubdir)
+	SetHandler(POST, "/thread/{thread}/reply", apiReply, isAdmin, isSubdir)
+	SetHandler(POST, "/thread/{thread}/post/{post}/edit", apiEditPost, isAdmin, isSubdir)
+	SetHandler(POST, "/thread/{thread}/post/{post}/delete", apiDeletePost, isAdmin, isSubdir)
+	SetHandler(POST, "/thread/{thread}/post/{post}/raw", apiGetRaw, isAdmin, isSubdir)
+	SetHandler(POST, "/tagsearch", apiTagSearch, isAdmin, isSubdir)
+	SetHandler(POST, "/postpreview", apiPreview, isAdmin, isSubdir)
 }
 
 func main() {
@@ -84,17 +84,17 @@ func main() {
 
 	// Setup request handlers
 	router := mux.NewRouter()
-	setupHandlers(router, false)
+	setupHandlers(router, false, false)
 
 	// Admin mode pages
 	initAdmin()
 	if adminConf.EnablePath {
 		adminPath := router.PathPrefix(adminConf.Path).Subrouter()
-		setupHandlers(adminPath, true)
+		setupHandlers(adminPath, true, true)
 	}
 	if adminConf.EnableDomain {
 		adminHost := router.Host(adminConf.Domain).Subrouter()
-		setupHandlers(adminHost, true)
+		setupHandlers(adminHost, true, false)
 	}
 
 	http.Handle("/", router)

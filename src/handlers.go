@@ -38,7 +38,7 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	send(rw, "home", "", struct {
+	send(rw, req, "home", "", struct {
 		Last []Thread
 		Tags []TagData
 	}{
@@ -53,7 +53,7 @@ func httpAllThreads(rw http.ResponseWriter, req *http.Request) {
 		sendError(rw, 500, err.Error())
 		return
 	}
-	send(rw, "threads", "All threads", struct {
+	send(rw, req, "threads", "All threads", struct {
 		Last []Thread
 	}{
 		threads,
@@ -82,7 +82,7 @@ func httpAllTags(rw http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	send(rw, "tags", "All tags", struct {
+	send(rw, req, "tags", "All tags", struct {
 		Tags []TagData
 	}{
 		tagdata,
@@ -121,7 +121,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		postsInfo[index].PostId = index
 	}
 
-	send(rw, "thread", thread.Title, struct {
+	send(rw, req, "thread", thread.Title, struct {
 		Thread     Thread
 		ThreadPost PostInfo
 		Posts      []PostInfo
@@ -198,29 +198,35 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	send(rw, "tagsearch", "Threads under \""+tagName+"\"", threadlist)
+	send(rw, req, "tagsearch", "Threads under \""+tagName+"\"", threadlist)
 }
 
 func httpNewThread(rw http.ResponseWriter, req *http.Request) {
-	send(rw, "newthread", "New thread", nil)
+	send(rw, req, "newthread", "New thread", nil)
 }
 
-func send(rw http.ResponseWriter, name string, title string, context interface{}) {
+func send(rw http.ResponseWriter, req *http.Request, name string, title string, context interface{}) {
 	if len(title) > 0 {
 		title = " ~ " + title
+	}
+	basepath := "/"
+	if ok, val := isAdmin(req); ok {
+		basepath = val.BasePath
 	}
 	fmt.Fprintln(rw,
 		mustache.RenderFileInLayout(
 			maudRoot+"/template/"+name+".html",
 			maudRoot+"/template/layout.html",
 			struct {
-				Info  SiteInfo
-				Title string
-				Data  interface{}
+				Info     SiteInfo
+				Title    string
+				Data     interface{}
+				BasePath string
 			}{
 				siteInfo,
 				siteInfo.Title + title,
 				context,
+				basepath,
 			}))
 }
 
