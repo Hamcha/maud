@@ -10,6 +10,14 @@ type SiteInfo struct {
 	Footer string
 }
 
+type AdminConfig struct {
+	EnablePath   bool
+	EnableDomain bool
+	Path         string
+	Domain       string
+	Admins       map[string]string
+}
+
 type User struct {
 	Nickname string
 	Tripcode string

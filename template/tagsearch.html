@@ -1,6 +1,6 @@
 <nav>
-    <a href="/new" class="button">New thread</a>
-    <form style="display: inline-block" method="POST" action="/tagsearch">
+    <a href="{{BasePath}}new" class="button">New thread</a>
+    <form style="display: inline-block" method="POST" action="{{BasePath}}tagsearch">
       <input type="text" name="tags" id="tagsearch" placeholder="Filter by tag" required title="Insert tags separated by commas" />
       <input type="submit" value="Search" />
     </form>
@@ -9,7 +9,7 @@
 <hr />
 <article class="home-thread">
     <div class="last-update">Last activity: <span class="date">{{LRDate}}</span></div>
-    <h2 class="thread-title"><a href="/thread/{{ShortUrl}}" class="noborder">{{Title}}</a></h2>
+    <h2 class="thread-title"><a href="{{BasePath}}thread/{{ShortUrl}}" class="noborder">{{Title}}</a></h2>
     <h3 class="thread-author">
         {{#Author}}
         <span class="nickname">{{Nickname}}</span>
@@ -18,12 +18,12 @@
         <span class="date">{{Date}}</span>
     </h3>
     <div class="thread-content type{{ContentType}}">
-        {{{ShortContent}}}{{#HasBroken}}...<br /><br /><a href="/thread/{{ShortUrl}}">Post truncated, click here to view the full text.</a>{{/HasBroken}}
+        {{{ShortContent}}}{{#HasBroken}}...<br /><br /><a href="{{BasePath}}thread/{{ShortUrl}}">Post truncated, click here to view the full text.</a>{{/HasBroken}}
     </div>
 </article>
 {{#HasLR}}
 <article class="hidden hidden-link">
-    <a href="/thread/{{ShortUrl}}" class="noborder">Showing last reply (of {{Messages}}), click to view full thread</a>
+    <a href="{{BasePath}}thread/{{ShortUrl}}" class="noborder">Showing last reply (of {{Messages}}), click to view full thread</a>
 </article>
 {{#LastPost}}
 <article class="home-post">
@@ -35,14 +35,14 @@
         <span class="date">{{Date}}</span>
     </h3>
     <div class="post-content type{{ContentType}}">
-        {{{ShortContent}}}{{#HasBroken}}...<br /><br /><a href="/thread/{{ShortUrl}}#last">Post truncated, click here to view the full text.</a>{{/HasBroken}}
+        {{{ShortContent}}}{{#HasBroken}}...<br /><br /><a href="{{BasePath}}thread/{{ShortUrl}}#last">Post truncated, click here to view the full text.</a>{{/HasBroken}}
     </div>
 </article>
 {{/LastPost}}
 {{/HasLR}}
 <section class="tags">
 {{#Tags}}
-    <a href="/tag/{{.}}" class="tag">#{{.}}</a>
+    <a href="{{BasePath}}tag/{{.}}" class="tag">#{{.}}</a>
 {{/Tags}}
 </section>
 {{/Data}}

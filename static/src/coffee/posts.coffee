@@ -23,13 +23,14 @@ editPost = (id) ->
             errmsg.innerHTML = "Failed to retrieve content."
             section.insertBefore errmsg, section.firstChild
     nick = document.querySelector("##{pid}  .nickname").innerHTML
+    tripcodebar = if !window.adminMode then "<input class=\"full short inline verysmall\" type=\"text\" name=\"tripcode\" placeholder=\"Tripcode (required)\" required />" else ""
     original[id] = post.innerHTML
     post.innerHTML = """
 <section id="#{id}" class="form"><a name="edit" class="nolink"></a>
   <form method="POST" action="#{location.pathname + "/post/" + id + "/edit"}">
     <div>
       <span class="full verysmall nickname" style="display: inline-block; border: 0; width: auto">#{nick}</span>
-      <input class="full short inline verysmall" type="text" name="tripcode" placeholder="Tripcode (required)" required />
+      #{tripcodebar}
       <span style="color: #ccc; display: inline-block; width: auto; font-size: 0.9em;">editing #{idname}</span>
     </div>
     <textarea class="full small editor" name="text" required placeholder="Thread text (Markdown is supported)">#{content}</textarea>
@@ -52,12 +53,13 @@ deletePost = (id) ->
     post = document.getElementById pid
     nick = document.querySelector("##{pid}  .nickname").innerHTML
     original[id] = post.innerHTML
+    tripcodebar = if !window.adminMode then "<input class=\"full short inline verysmall\" type=\"text\" name=\"tripcode\" placeholder=\"Tripcode (required)\" required />" else ""
     post.innerHTML = """
 <section id="#{id}" class="form"><a name="delete" class="noborder"></a>
   <form method="POST" action="#{location.pathname + "/post/" + id + "/delete"}">
     <div>
       <span class="full verysmall nickname" style="display: inline-block; border: 0; width: auto">#{nick}</span>
-      <input class="full short inline verysmall" type="text" name="tripcode" placeholder="Tripcode (required)" required />
+      #{tripcodebar}
       <span style="color: #ccc; display: inline-block; width: auto; font-size: 0.9em;">deleting ##{id}</span>
     </div>
     <center>

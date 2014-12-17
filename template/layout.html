@@ -15,10 +15,15 @@
     <meta name="msapplication-square150x150logo" content="/static/images/ms150.png" />
     <meta name="msapplication-square310x310logo" content="/static/images/ms310.png" />
     <meta name="msapplication-TileColor" content="#555555" />
+    {{#IsAdmin}}
+    <script>
+        window.adminMode = true;
+    </script>
+    {{/IsAdmin}}
 </head>
 <body>
     <div id="container">
-        <header><a href="/"><img class="head" src="/static/images/header.png" /></a></header>
+        <header><a href="{{BasePath}}"><img class="head" src="/static/images/header.png" /></a></header>
         <main>{{{content}}}</main>
     </div>
     <footer>{{#Info}}{{{Footer}}}{{/Info}}</footer>

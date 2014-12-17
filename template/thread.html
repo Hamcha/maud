@@ -5,7 +5,7 @@
 {{#Data}}
 {{#Thread}}
 <section class="tags">
-{{#Tags}}<a href="/tag/{{.}}" class="tag">#{{.}}</a> {{/Tags}}
+{{#Tags}}<a href="{{BasePath}}tag/{{.}}" class="tag">#{{.}}</a> {{/Tags}}
 </section>
 <article class="thread" id="thread">
     <h2 class="thread-title">{{Title}}</h2>
@@ -20,7 +20,7 @@
         <a href="#thread" class="date">{{Date}}</a>
     </h3>
     <div class="right">
-        {{#Author}}{{#Tripcode}}{{^IsDeleted}}
+        {{#Editable}}
         <span class="lastedit">{{LastModified}}</span>
         <a href="#thread" class="edit nolink" onclick="editPost(0)">
 			<img src="/static/images/edit.svg" style="height: 18px;" />
@@ -28,7 +28,7 @@
         <a href="#thread" class="delete nolink" onclick="deletePost(0)">
 			<img src="/static/images/delete.svg" style="height: 18px;" />
 		</a>
-        {{/IsDeleted}}{{/Tripcode}}{{/Author}}
+        {{/Editable}}
     </div>
     <div class="thread-content type{{ContentType}}">{{{Content}}}</div>
     {{/Data}}
@@ -46,7 +46,7 @@
         <a href="#p{{PostId}}" class="date">{{Date}}</a> <span class="postId">#{{PostId}}</span>
     </h3>
     <div class="right">
-        {{#Author}}{{#Tripcode}}{{^IsDeleted}}
+        {{#Editable}}
         <span class="lastedit">{{LastModified}}</span>
         <a href="#p{{PostId}}" class="edit nolink" onclick="editPost({{PostId}})">
             <img src="/static/images/edit.svg" style="height: 20px;" />
@@ -54,7 +54,7 @@
         <a href="#p{{PostId}}" class="delete nolink" onclick="deletePost({{PostId}})">
 			<img src="/static/images/delete.svg" style="height: 18px;" />
 		</a>
-        {{/IsDeleted}}{{/Tripcode}}{{/Author}}
+        {{/Editable}}
     </div>
     <div class="post-content type{{ContentType}}">{{{Content}}}</div>
     {{/Data}}
@@ -63,7 +63,7 @@
 </div>
 <hr />
 <section class="form"><a name="reply" class="noborder"></a>
-    <form id="reply-form" method="POST" action="/thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/reply">
+    <form id="reply-form" method="POST" action="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/reply">
         <input class="full verysmall" type="text" name="nickname" placeholder="Nickname#Tripcode (optional)" />
         <textarea class="full verysmall" name="text" required placeholder="Thread text (Markdown is supported)"></textarea>
         <input type="hidden" name="preview" id="preview" />

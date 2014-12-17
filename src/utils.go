@@ -41,6 +41,8 @@ func parseContent(content, ctype string) string {
 	/* Deleted posts */
 	case "deleted":
 		return "<em>Message deleted by the user</em>"
+	case "admin-deleted":
+		return "<em>Message deleted by an admin</em>"
 	/* Old and busted preparsed */
 	default:
 		return content
