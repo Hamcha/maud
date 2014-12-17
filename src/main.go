@@ -84,7 +84,6 @@ func main() {
 
 	// Setup request handlers
 	router := mux.NewRouter()
-	setupHandlers(router, false, false)
 
 	// Admin mode pages
 	initAdmin()
@@ -97,6 +96,7 @@ func main() {
 		setupHandlers(adminHost, true, false)
 	}
 
+	setupHandlers(router, false, false)
 	http.Handle("/", router)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(maudRoot+"/static"))))
 

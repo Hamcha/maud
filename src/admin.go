@@ -21,7 +21,7 @@ func initAdmin() {
 func wrapAdmin(handler http.HandlerFunc, usePath bool) http.HandlerFunc {
 	return func(rw http.ResponseWriter, req *http.Request) {
 		user, pass, _ := req.BasicAuth()
-		basepath := ""
+		basepath := "/"
 		if usePath {
 			basepath = adminConf.Path
 		}
