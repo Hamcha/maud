@@ -101,23 +101,17 @@ func DBReplyThread(thread *Thread, user User, content string) (int, error) {
 func DBGetThreadList(tag string, limit, offset int) ([]Thread, error) {
 	var filterByTag bson.M
 	if tag != "" {
-		/* NOT WORKING YET
-		if idx := strings.IndexRune(tag, '+'); idx > 0 {
-			// tag1+tag2+... means 'intersection'
-			tags := strings.Split(tag, "+")
-			filterByTag = bson.M{"tags": bson.M{"$setIntersection": tags}}
-		} else
-		*/
 		if idx := strings.IndexRune(tag, ','); idx > 0 {
 			// tag1,tag2,... means 'union'
 			tags := strings.Split(tag, ",")
+			tagsRgx := make([]bson.RegEx, len(tags))
 			for i, _ := range tags {
-				tags[i] = strings.TrimSpace(tags[i])
+				tagsRgx[i] = bson.RegEx{strings.TrimSpace(tags[i]), "i"}
 			}
-			filterByTag = bson.M{"tags": bson.M{"$in": tags}}
+			filterByTag = bson.M{"tags": bson.M{"$in": tagsRgx}}
 		} else {
 			// single tag
-			filterByTag = bson.M{"tags": tag}
+			filterByTag = bson.M{"tags": bson.RegEx{tag, "i"}}
 		}
 	} else {
 		filterByTag = nil
