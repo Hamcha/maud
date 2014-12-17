@@ -18,3 +18,6 @@ dep:
 
 clean:
 	rm -f maud dep grunt
+
+go-clean:
+	rm -f maud
