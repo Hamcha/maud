@@ -27,7 +27,7 @@ editPost = (id) ->
     original[id] = post.innerHTML
     post.innerHTML = """
 <section id="#{id}" class="form"><a name="edit" class="nolink"></a>
-  <form method="POST" action="#{window.stripPage(location.pathname) + "/post/" + id + "/edit"}">
+  <form id="edit#{id}" method="POST" action="#{window.stripPage(location.pathname) + "/post/" + id + "/edit"}">
     <div>
       <span class="full verysmall nickname" style="display: inline-block; border: 0; width: auto">#{nick}</span>
       #{tripcodebar}
@@ -35,10 +35,12 @@ editPost = (id) ->
     </div>
     <textarea class="full small editor" name="text" required placeholder="Thread text (Markdown is supported)">#{content}</textarea>
     <center>
+      <div class="chars-count" data-maxlen="#{maxlen}"></div>
       <input type="Submit" value="Edit post"/><button type="button" onclick="cancelForm(#{id});">Cancel</button>
     </center>
   </form>
 </section>"""
+    charsCount "edit#{id}"
     return
 
 # post delete
