@@ -111,9 +111,9 @@ func httpAllThreads(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	send(rw, req, "threads", "All threads", struct {
-		Last []ThreadInfo
-		Page int
-		More bool
+		Last        []ThreadInfo
+		CurrentPage int
+		More        bool
 	}{
 		tinfos,
 		pageInt,
@@ -170,9 +170,9 @@ func httpAllTags(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	send(rw, req, "tags", "All tags", struct {
-		Tags []TagData
-		Page int
-		More bool
+		Tags        []TagData
+		CurrentPage int
+		More        bool
 	}{
 		tagdata,
 		pageInt,
@@ -263,7 +263,22 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	tagName := strings.ToLower(vars["tag"])
 
-	threads, err := DBGetThreadList(tagName, 0, 0)
+	var pageInt int
+	var pageOffset int
+	var err error
+	if page, ok := vars["page"]; ok {
+		pageInt, err = strconv.Atoi(page)
+		if err != nil {
+			sendError(rw, 400, "Invalid page number")
+			return
+		}
+		pageOffset = (pageInt - 1) * siteInfo.TagResultsPerPage
+	} else {
+		pageInt = 1
+		pageOffset = 0
+	}
+
+	threads, err := DBGetThreadList(tagName, siteInfo.TagResultsPerPage, pageOffset)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -334,7 +349,15 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	send(rw, req, "tagsearch", "Threads under \""+tagName+"\"", threadlist)
+	send(rw, req, "tagsearch", "Threads under \""+tagName+"\"", struct {
+		ThreadList  []ThreadData
+		CurrentPage int
+		More        bool
+	}{
+		threadlist,
+		pageInt,
+		len(threadlist) == siteInfo.TagResultsPerPage,
+	})
 }
 
 func httpNewThread(rw http.ResponseWriter, req *http.Request) {

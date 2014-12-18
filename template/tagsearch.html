@@ -6,6 +6,7 @@
     </form>
 </nav>
 {{#Data}}
+{{#ThreadList}}
 <hr />
 <article class="home-thread">
     <div class="last-update">Last activity: <span class="date">{{LRDate}}</span></div>
@@ -45,4 +46,6 @@
     <a href="{{BasePath}}tag/{{.}}" class="tag">#{{.}}</a>
 {{/Tags}}
 </section>
+{{/ThreadList}}
+<div id="pages" current="{{CurrentPage}}" max="nomax" more="{{#More}}yes{{/More}}{{^More}}no{{/More}}"></div>
 {{/Data}}

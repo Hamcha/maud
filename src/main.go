@@ -23,6 +23,7 @@ func setupHandlers(router *mux.Router, isAdmin, isSubdir bool) {
 
 	SetHandler(GET, "/", httpHome, isAdmin, isSubdir)
 	SetHandler(GET, "/tag/{tag}", httpTagSearch, isAdmin, isSubdir)
+	SetHandler(GET, "/tag/{tag}/page/{page}", httpTagSearch, isAdmin, isSubdir)
 	SetHandler(GET, "/thread/{thread}", httpThread, isAdmin, isSubdir)
 	SetHandler(GET, "/thread/{thread}/page/{page}", httpThread, isAdmin, isSubdir)
 	SetHandler(GET, "/new", httpNewThread, isAdmin, isSubdir)
