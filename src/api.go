@@ -108,7 +108,7 @@ func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 
 	postId, err := strconv.Atoi(vars["post"])
 	if err != nil {
-		http.Error(rw, "Invalid psot id", 400)
+		http.Error(rw, "Invalid post id", 400)
 		return
 	}
 
@@ -150,7 +150,7 @@ func apiDeletePost(rw http.ResponseWriter, req *http.Request) {
 
 	postId, err := strconv.Atoi(vars["post"])
 	if err != nil {
-		http.Error(rw, "Invalid psot id", 400)
+		http.Error(rw, "Invalid post id", 400)
 		return
 	}
 
