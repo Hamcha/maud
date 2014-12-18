@@ -22,3 +22,14 @@ window.onhashchange()
 #TODO: move this to server parsing
 fromList(document.querySelectorAll ".type blockquote p").map (e) ->
     e.innerHTML = "> " + e.innerHTML.split("\n").join "<br />> "
+
+# Make page lists
+pageDiv = document.getElementById "pages"
+if pageDiv?
+    page = parseInt pageDiv.getAttribute "current"
+    max = parseInt pageDiv.getAttribute "max"
+    if max > 1
+        pageHTML = "PAGE &nbsp;"
+        baseurl = stripPage location.pathname
+        pageHTML += (if page == n then "<b>#{n}</b> " else "<a href=\"#{baseurl}/page/#{n}\">#{n}</a> ") for n in [1..max]
+        pageDiv.innerHTML = pageHTML

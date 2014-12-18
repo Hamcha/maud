@@ -10,6 +10,7 @@
 <article class="thread" id="thread">
     <h2 class="thread-title">{{Title}}</h2>
     {{/Thread}}
+    {{#HasOP}}
     {{#ThreadPost}}
     {{#Data}}
     <h3 class="thread-author">
@@ -33,6 +34,7 @@
     <div class="thread-content type{{ContentType}}">{{{Content}}}</div>
     {{/Data}}
     {{/ThreadPost}}
+    {{/HasOP}}
 </article>
 <div id="replies">
 {{#Posts}}
@@ -61,6 +63,7 @@
 </article>
 {{/Posts}}
 </div>
+<div id="pages" current="{{Page}}" max="{{MaxPages}}"></div>
 <hr />
 <section class="form"><a name="reply" class="noborder"></a>
     <form id="reply-form" method="POST" action="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/reply">

@@ -162,6 +162,10 @@ func DBGetPosts(thread *Thread, limit, offset int) ([]Post, error) {
 	return posts, err
 }
 
+func DBPostCount(thread *Thread) (int, error) {
+	return database.C("posts").Find(bson.M{"threadid": thread.Id}).Count()
+}
+
 type ByThreads []Tag
 
 func (b ByThreads) Len() int           { return len(b) }
