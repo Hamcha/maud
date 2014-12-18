@@ -76,9 +76,9 @@ cancelForm = (id) ->
 
 # post preview
 showPreview = () ->
-    form = document.getElementById 'reply-form'
-    text = document.querySelector("#reply-form textarea[name='text']").value
-    nick = document.querySelector("#reply-form input[name='nickname']").value
+    form = document.getElementById 'prev-form'
+    text = document.querySelector("#prev-form textarea[name='text']").value
+    nick = document.querySelector("#prev-form input[name='nickname']").value
     unless text
         if form.firstChild.className == 'errmsg'
             return
@@ -107,7 +107,8 @@ createPreview = (content) ->
     unless prevpost
         prevpost = document.createElement 'article'
         prevpost.id = 'post-preview'
-        document.getElementById('replies').appendChild prevpost
+        # insert preview before the preview form
+        document.getElementById('prev-form').parentNode.insertBefore prevpost, document.getElementById 'prev-form'
     prevpost.innerHTML = """<h3 class="post-author">Post preview</h3>
     <div class="post-content typebbcode">#{content}</div>
     """

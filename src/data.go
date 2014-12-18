@@ -11,6 +11,10 @@ type SiteInfo struct {
 	ThreadsPerPage    int
 	TagResultsPerPage int
 	TagsPerPage       int
+	MaxPostLength     int
+	Footer            string
+	Title             string
+	Secret            string
 	Footer            string
 }
 

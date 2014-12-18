@@ -41,3 +41,11 @@ if pageDiv?
             pageHTML = "PAGE &nbsp;"
             pageHTML += (if page == n then "<b>#{n}</b> " else "<a href=\"#{baseurl}/page/#{n}\">#{n}</a> ") for n in [1..max]
             pageDiv.innerHTML = pageHTML
+
+do charsCount = ->
+    form = document.getElementById 'prev-form'
+    if form?
+        text = document.querySelector("#prev-form textarea")
+        span = document.querySelector("#prev-form .chars-count")
+        text.onkeyup = () ->
+            span.innerHTML = "#{span.dataset.maxlen - text.value.length} characters left"
