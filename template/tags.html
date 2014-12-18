@@ -16,5 +16,5 @@
     <div>Last updated thread: {{#LastThread}}{{#Thread}}<a href="{{BasePath}}thread/{{ShortUrl}}/page/{{Page}}#p{{LastMessage}}" class="thread-title">{{Title}}</a>{{/Thread}}{{/LastThread}} (<span class="date">{{LastUpdate}}</span>)</div>
 </article>
 {{/Tags}}
-<div class="pages" current="{{CurrentPage}}" max="nomax" more="{{#More}}yes{{/More}}{{^More}}no{{/More}}"></div>
+<div class="pages" data-current="{{CurrentPage}}" data-max="nomax" data-more="{{#More}}yes{{/More}}{{^More}}no{{/More}}"></div>
 {{/Data}}
