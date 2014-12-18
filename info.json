@@ -1,5 +1,6 @@
 {
     "Title" : "Maud pie lair",
     "Secret" : "secret key",
+    "MaxPostLength" : 15000,
     "Footer" : "It's not like I'm production-ready or anything, b-baka! - <a href=\"https://github.com/hamcha/maud\">Github</a>"
 }

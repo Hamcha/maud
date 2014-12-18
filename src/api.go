@@ -24,6 +24,11 @@ func apiNewThread(rw http.ResponseWriter, req *http.Request) {
 	content := postContent
 	tags := parseTags(postTags)
 
+	if siteInfo.MaxPostLength > 0 && len(content) > siteInfo.MaxPostLength {
+		http.Error(rw, "Post is too long.", 400)
+		return
+	}
+
 	threadId, err := DBNewThread(user, postTitle, content, tags)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -57,6 +62,10 @@ func apiReply(rw http.ResponseWriter, req *http.Request) {
 	user := User{nickname, tripcode}
 	content := postContent
 
+	if siteInfo.MaxPostLength > 0 && len(content) > siteInfo.MaxPostLength {
+		http.Error(rw, "Post is too long.", 400)
+		return
+	}
 	_, err = DBReplyThread(&thread, user, content)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -79,6 +88,9 @@ func apiPreview(rw http.ResponseWriter, req *http.Request) {
 	postContent := req.PostFormValue("text")
 	if len(postContent) < 1 {
 		http.Error(rw, "Required fields are missing", 400)
+		return
+	} else if siteInfo.MaxPostLength > 0 && len(postContent) > siteInfo.MaxPostLength {
+		http.Error(rw, "Post is too long", 400)
 		return
 	}
 	content := parseContent(postContent, "bbcode")
@@ -107,6 +119,11 @@ func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 	}
 	// update post content and date
 	newContent := req.PostFormValue("text")
+	if siteInfo.MaxPostLength > 0 && len(newContent) > siteInfo.MaxPostLength {
+		http.Error(rw, "Post is too long.", 400)
+		return
+	}
+
 	err = DBEditPost(post.Id, newContent)
 	if err != nil {
 		http.Error(rw, err.Error(), 500)

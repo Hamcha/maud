@@ -5,9 +5,10 @@ import (
 )
 
 type SiteInfo struct {
-	Title  string
-	Secret string
-	Footer string
+	Title         string
+	Secret        string
+	Footer        string
+	MaxPostLength int
 }
 
 type AdminConfig struct {
