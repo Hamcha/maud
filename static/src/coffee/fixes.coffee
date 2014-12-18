@@ -22,3 +22,11 @@ window.onhashchange()
 #TODO: move this to server parsing
 fromList(document.querySelectorAll ".type blockquote p").map (e) ->
     e.innerHTML = "> " + e.innerHTML.split("\n").join "<br />> "
+
+do charsCount = ->
+    form = document.getElementById 'prev-form'
+    if form?
+        text = document.querySelector("#prev-form textarea")
+        span = document.querySelector("#prev-form .chars-count")
+        text.onkeyup = () ->
+            span.innerHTML = "#{span.dataset.maxlen - text.value.length} characters left"

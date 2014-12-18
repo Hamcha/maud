@@ -223,14 +223,16 @@ func send(rw http.ResponseWriter, req *http.Request, name string, title string, 
 			maudRoot+"/template/"+name+".html",
 			maudRoot+"/template/layout.html",
 			struct {
-				Info     SiteInfo
-				Title    string
-				Data     interface{}
-				BasePath string
-				IsAdmin  bool
+				Info          SiteInfo
+				Title         string
+				MaxPostLength int
+				Data          interface{}
+				BasePath      string
+				IsAdmin       bool
 			}{
 				siteInfo,
 				siteInfo.Title + title,
+				siteInfo.MaxPostLength,
 				context,
 				basepath,
 				ok,

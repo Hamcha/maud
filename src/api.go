@@ -24,7 +24,7 @@ func apiNewThread(rw http.ResponseWriter, req *http.Request) {
 	content := postContent
 	tags := parseTags(postTags)
 
-	if siteInfo.MaxPostLength > 0 && len(content) > siteInfo.MaxPostLength {
+	if postTooLong(content) {
 		http.Error(rw, "Post is too long.", 400)
 		return
 	}
@@ -62,7 +62,7 @@ func apiReply(rw http.ResponseWriter, req *http.Request) {
 	user := User{nickname, tripcode}
 	content := postContent
 
-	if siteInfo.MaxPostLength > 0 && len(content) > siteInfo.MaxPostLength {
+	if postTooLong(content) {
 		http.Error(rw, "Post is too long.", 400)
 		return
 	}
@@ -89,7 +89,7 @@ func apiPreview(rw http.ResponseWriter, req *http.Request) {
 	if len(postContent) < 1 {
 		http.Error(rw, "Required fields are missing", 400)
 		return
-	} else if siteInfo.MaxPostLength > 0 && len(postContent) > siteInfo.MaxPostLength {
+	} else if postTooLong(postContent) {
 		http.Error(rw, "Post is too long", 400)
 		return
 	}
@@ -119,7 +119,7 @@ func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 	}
 	// update post content and date
 	newContent := req.PostFormValue("text")
-	if siteInfo.MaxPostLength > 0 && len(newContent) > siteInfo.MaxPostLength {
+	if postTooLong(newContent) {
 		http.Error(rw, "Post is too long.", 400)
 		return
 	}

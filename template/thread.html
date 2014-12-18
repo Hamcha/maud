@@ -63,14 +63,17 @@
 </div>
 <hr />
 <section class="form"><a name="reply" class="noborder"></a>
-    <form id="reply-form" method="POST" action="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/reply">
+    <form id="prev-form" method="POST" action="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/reply">
         <input class="full verysmall" type="text" name="nickname" placeholder="Nickname#Tripcode (optional)" />
         <textarea class="full verysmall" name="text" required placeholder="Thread text (Markdown is supported)"></textarea>
         <input type="hidden" name="preview" id="preview" />
-        <center>
-            <input type="submit" value="Reply" />
-            <input type="button" class="button" onclick="showPreview()" value="Preview" />
-        </center>
+        <div>
+            <center>
+                <input type="submit" value="Reply" />
+                <input type="button" class="button" onclick="showPreview()" value="Preview" />
+            </center>
+            <span class="chars-count" data-maxlen="{{MaxPostLength}}"></span>
+        </div>
     </form>
 </section>
 {{/Data}}

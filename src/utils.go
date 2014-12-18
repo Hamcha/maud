@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode/utf8"
 )
 
 func parseNickname(nickname string) (string, string) {
@@ -124,4 +125,8 @@ func threadPostOrErr(rw http.ResponseWriter, threadId, postIdStr string) (Thread
 		return thread, posts[0], errors.New("Post not found")
 	}
 	return thread, posts[0], nil
+}
+
+func postTooLong(content string) bool {
+	return siteInfo.MaxPostLength > 0 && utf8.RuneCountInString(content) > siteInfo.MaxPostLength
 }
