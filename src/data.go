@@ -5,9 +5,13 @@ import (
 )
 
 type SiteInfo struct {
-	Title  string
-	Secret string
-	Footer string
+	Title             string
+	Secret            string
+	PostsPerPage      int
+	ThreadsPerPage    int
+	TagResultsPerPage int
+	TagsPerPage       int
+	Footer            string
 }
 
 type AdminConfig struct {
@@ -61,6 +65,12 @@ type Tag struct {
 type TagData struct {
 	Name       string
 	LastUpdate int64
-	LastThread Thread
+	LastThread ThreadInfo
 	LastIndex  int64
+}
+
+type ThreadInfo struct {
+	Thread      Thread
+	LastMessage int
+	Page        int
 }

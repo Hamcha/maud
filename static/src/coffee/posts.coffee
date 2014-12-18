@@ -11,7 +11,7 @@ editPost = (id) ->
       idname = "##{id}"
     post = document.getElementById pid
     content = "Retrieving content..."
-    qwest.post(location.pathname + "/post/" + id + "/raw")
+    qwest.post(window.stripPage(location.pathname) + "/post/" + id + "/raw")
         .then (resp) ->
             content = resp
             document.querySelector("##{pid} textarea[name='text']").value = content
@@ -27,7 +27,7 @@ editPost = (id) ->
     original[id] = post.innerHTML
     post.innerHTML = """
 <section id="#{id}" class="form"><a name="edit" class="nolink"></a>
-  <form method="POST" action="#{location.pathname + "/post/" + id + "/edit"}">
+  <form method="POST" action="#{window.stripPage(location.pathname) + "/post/" + id + "/edit"}">
     <div>
       <span class="full verysmall nickname" style="display: inline-block; border: 0; width: auto">#{nick}</span>
       #{tripcodebar}
@@ -56,7 +56,7 @@ deletePost = (id) ->
     tripcodebar = if !window.adminMode then "<input class=\"full short inline verysmall\" type=\"text\" name=\"tripcode\" placeholder=\"Tripcode (required)\" required />" else ""
     post.innerHTML = """
 <section id="#{id}" class="form"><a name="delete" class="noborder"></a>
-  <form method="POST" action="#{location.pathname + "/post/" + id + "/delete"}">
+  <form method="POST" action="#{window.stripPage(location.pathname) + "/post/" + id + "/delete"}">
     <div>
       <span class="full verysmall nickname" style="display: inline-block; border: 0; width: auto">#{nick}</span>
       #{tripcodebar}

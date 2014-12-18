@@ -6,6 +6,7 @@
     </form>
 </nav>
 {{#Data}}
+{{#ThreadList}}
 <hr />
 <article class="home-thread">
     <div class="last-update">Last activity: <span class="date">{{LRDate}}</span></div>
@@ -35,7 +36,7 @@
         <span class="date">{{Date}}</span>
     </h3>
     <div class="post-content type{{ContentType}}">
-        {{{ShortContent}}}{{#HasBroken}}...<br /><br /><a href="{{BasePath}}thread/{{ShortUrl}}#last">Post truncated, click here to view the full text.</a>{{/HasBroken}}
+        {{{ShortContent}}}{{#HasBroken}}...<br /><br /><a href="{{BasePath}}thread/{{ShortUrl}}/page/{{Page}}#p{{Number}}">Post truncated, click here to view the full text.</a>{{/HasBroken}}
     </div>
 </article>
 {{/LastPost}}
@@ -45,4 +46,6 @@
     <a href="{{BasePath}}tag/{{.}}" class="tag">#{{.}}</a>
 {{/Tags}}
 </section>
+{{/ThreadList}}
+<div id="pages" current="{{CurrentPage}}" max="nomax" more="{{#More}}yes{{/More}}{{^More}}no{{/More}}"></div>
 {{/Data}}

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -45,6 +46,18 @@ func apiReply(rw http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	threadUrl := vars["thread"]
 	thread, err := DBGetThread(threadUrl)
+	if err != nil {
+		fmt.Println(err.Error())
+		sendError(rw, 500, err.Error())
+		return
+	}
+	count, err := DBPostCount(&thread)
+	if err != nil {
+		fmt.Println(err.Error())
+		sendError(rw, 500, err.Error())
+		return
+	}
+	page := (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage
 
 	postNickname := req.PostFormValue("nickname")
 	postContent := req.PostFormValue("text")
@@ -69,7 +82,7 @@ func apiReply(rw http.ResponseWriter, req *http.Request) {
 		basepath = val.BasePath
 	}
 
-	http.Redirect(rw, req, basepath+"thread/"+thread.ShortUrl+"#last", http.StatusMovedPermanently)
+	http.Redirect(rw, req, basepath+"thread/"+thread.ShortUrl+"/page/"+strconv.Itoa(page)+"#p"+strconv.Itoa(count), http.StatusMovedPermanently)
 }
 
 // apiPreview: returns the content that would be inserted in the post if this
@@ -92,6 +105,12 @@ func apiPreview(rw http.ResponseWriter, req *http.Request) {
 func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	isAdmin, val := isAdmin(req)
+
+	postId, err := strconv.Atoi(vars["post"])
+	if err != nil {
+		http.Error(rw, "Invalid post id", 400)
+		return
+	}
 
 	thread, post, err := threadPostOrErr(rw, vars["thread"], vars["post"])
 	// if post has no tripcode associated, refuse to edit
@@ -118,7 +137,8 @@ func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 		basepath = val.BasePath
 	}
 
-	http.Redirect(rw, req, basepath+"thread/"+thread.ShortUrl+"#p"+vars["post"], http.StatusMovedPermanently)
+	page := (postId + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage
+	http.Redirect(rw, req, basepath+"thread/"+thread.ShortUrl+"/page/"+strconv.Itoa(page)+"#p"+vars["post"], http.StatusMovedPermanently)
 }
 
 // apiDeletePost: Sets the 'deleted flag' to a post, auth-ing request by tripcode.
@@ -127,6 +147,12 @@ func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 func apiDeletePost(rw http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	isAdmin, val := isAdmin(req)
+
+	postId, err := strconv.Atoi(vars["post"])
+	if err != nil {
+		http.Error(rw, "Invalid post id", 400)
+		return
+	}
 
 	thread, post, err := threadPostOrErr(rw, vars["thread"], vars["post"])
 	if err != nil {
@@ -158,7 +184,8 @@ func apiDeletePost(rw http.ResponseWriter, req *http.Request) {
 		basepath = val.BasePath
 	}
 
-	http.Redirect(rw, req, basepath+"thread/"+thread.ShortUrl+"#p"+vars["post"], http.StatusMovedPermanently)
+	page := (postId + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage
+	http.Redirect(rw, req, basepath+"thread/"+thread.ShortUrl+"/page/"+strconv.Itoa(page)+"#p"+vars["post"], http.StatusMovedPermanently)
 }
 
 func apiTagSearch(rw http.ResponseWriter, req *http.Request) {
@@ -185,7 +212,7 @@ func apiGetRaw(rw http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		return
 	}
-	if post.ContentType == "deleted" {
+	if post.ContentType == "deleted" || post.ContentType == "admin-deleted" {
 		http.Error(rw, "Forbidden", 403)
 		return
 	}

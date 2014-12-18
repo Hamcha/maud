@@ -10,7 +10,7 @@ import (
 )
 
 func httpHome(rw http.ResponseWriter, req *http.Request) {
-	tags, err := DBGetPopularTags(10)
+	tags, err := DBGetPopularTags(10, 0)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -24,11 +24,20 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 			sendError(rw, 500, err.Error())
 			return
 		}
+		count, err := DBPostCount(&thread)
+		if err != nil {
+			sendError(rw, 500, err.Error())
+			return
+		}
 
 		tagdata[i] = TagData{
 			Name:       tags[i].Name,
 			LastUpdate: tags[i].LastUpdate,
-			LastThread: thread,
+			LastThread: ThreadInfo{
+				Thread:      thread,
+				LastMessage: count - 1,
+				Page:        (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
+			},
 		}
 	}
 
@@ -38,30 +47,99 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	tinfos := make([]ThreadInfo, len(threads))
+	for i, _ := range threads {
+		count, err := DBPostCount(&threads[i])
+		if err != nil {
+			sendError(rw, 500, err.Error())
+			return
+		}
+
+		tinfos[i] = ThreadInfo{
+			Thread:      threads[i],
+			LastMessage: count - 1,
+			Page:        (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
+		}
+	}
+
 	send(rw, req, "home", "", struct {
-		Last []Thread
+		Last []ThreadInfo
 		Tags []TagData
 	}{
-		threads,
+		tinfos,
 		tagdata,
 	})
 }
 
 func httpAllThreads(rw http.ResponseWriter, req *http.Request) {
-	threads, err := DBGetThreadList("", 0, 0)
+	var pageInt int
+	var pageOffset int
+	var err error
+	vars := mux.Vars(req)
+
+	if page, ok := vars["page"]; ok {
+		pageInt, err = strconv.Atoi(page)
+		if err != nil {
+			sendError(rw, 400, "Invalid page number")
+			return
+		}
+		pageOffset = (pageInt - 1) * siteInfo.ThreadsPerPage
+	} else {
+		pageInt = 1
+		pageOffset = 0
+	}
+
+	threads, err := DBGetThreadList("", siteInfo.ThreadsPerPage, pageOffset)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
 	}
+
+	tinfos := make([]ThreadInfo, len(threads))
+	for i, _ := range threads {
+		count, err := DBPostCount(&threads[i])
+		if err != nil {
+			sendError(rw, 500, err.Error())
+			return
+		}
+
+		tinfos[i] = ThreadInfo{
+			Thread:      threads[i],
+			LastMessage: count - 1,
+			Page:        (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
+		}
+	}
+
 	send(rw, req, "threads", "All threads", struct {
-		Last []Thread
+		Last        []ThreadInfo
+		CurrentPage int
+		More        bool
 	}{
-		threads,
+		tinfos,
+		pageInt,
+		len(threads) == siteInfo.ThreadsPerPage,
 	})
 }
 
 func httpAllTags(rw http.ResponseWriter, req *http.Request) {
-	tags, err := DBGetPopularTags(0)
+	var pageInt int
+	var pageOffset int
+	var err error
+	vars := mux.Vars(req)
+
+	if page, ok := vars["page"]; ok {
+		pageInt, err = strconv.Atoi(page)
+		if err != nil {
+			sendError(rw, 400, "Invalid page number")
+			return
+		}
+		pageOffset = (pageInt - 1) * siteInfo.TagsPerPage
+	} else {
+		pageInt = 1
+		pageOffset = 0
+	}
+
+	tags, err := DBGetPopularTags(siteInfo.TagsPerPage, pageOffset)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -74,18 +152,31 @@ func httpAllTags(rw http.ResponseWriter, req *http.Request) {
 			sendError(rw, 500, err.Error())
 			return
 		}
+		count, err := DBPostCount(&thread)
+		if err != nil {
+			sendError(rw, 500, err.Error())
+			return
+		}
 
 		tagdata[i] = TagData{
 			Name:       tags[i].Name,
 			LastUpdate: tags[i].LastUpdate,
-			LastThread: thread,
+			LastThread: ThreadInfo{
+				Thread:      thread,
+				LastMessage: count - 1,
+				Page:        (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
+			},
 		}
 	}
 
 	send(rw, req, "tags", "All tags", struct {
-		Tags []TagData
+		Tags        []TagData
+		CurrentPage int
+		More        bool
 	}{
 		tagdata,
+		pageInt,
+		len(tags) == siteInfo.TagsPerPage,
 	})
 }
 
@@ -104,6 +195,26 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	var pageInt int
+	var pageOffset int
+	if page, ok := vars["page"]; ok {
+		pageInt, err = strconv.Atoi(page)
+		if err != nil {
+			sendError(rw, 400, "Invalid page number")
+			return
+		}
+		pageOffset = (pageInt - 1) * siteInfo.PostsPerPage
+	} else {
+		pageInt = 1
+		pageOffset = 0
+	}
+
+	postCount, err := DBPostCount(&thread)
+	if err != nil {
+		sendError(rw, 500, err.Error())
+		return
+	}
+
 	// Parse posts
 	type PostInfo struct {
 		PostId    int
@@ -111,7 +222,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		IsDeleted bool
 		Editable  bool
 	}
-	posts, err := DBGetPosts(&thread, 0, 0)
+	posts, err := DBGetPosts(&thread, siteInfo.PostsPerPage, pageOffset)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -121,18 +232,30 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		posts[index].Content = parseContent(posts[index].Content, posts[index].ContentType)
 		postsInfo[index].Data = posts[index]
 		postsInfo[index].IsDeleted = posts[index].ContentType == "deleted" || posts[index].ContentType == "admin-deleted"
-		postsInfo[index].PostId = index
+		postsInfo[index].PostId = index + pageOffset
 		postsInfo[index].Editable = !postsInfo[index].IsDeleted && (isAdmin || len(posts[index].Author.Tripcode) > 0)
+	}
+
+	var threadPost PostInfo
+	if pageInt == 1 {
+		threadPost = postsInfo[0]
+		postsInfo = postsInfo[1:]
 	}
 
 	send(rw, req, "thread", thread.Title, struct {
 		Thread     Thread
 		ThreadPost PostInfo
 		Posts      []PostInfo
+		Page       int
+		MaxPages   int
+		HasOP      bool
 	}{
 		thread,
-		postsInfo[0],
-		postsInfo[1:],
+		threadPost,
+		postsInfo,
+		pageInt,
+		(postCount + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
+		pageInt == 1,
 	})
 }
 
@@ -140,7 +263,22 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	tagName := strings.ToLower(vars["tag"])
 
-	threads, err := DBGetThreadList(tagName, 0, 0)
+	var pageInt int
+	var pageOffset int
+	var err error
+	if page, ok := vars["page"]; ok {
+		pageInt, err = strconv.Atoi(page)
+		if err != nil {
+			sendError(rw, 400, "Invalid page number")
+			return
+		}
+		pageOffset = (pageInt - 1) * siteInfo.TagResultsPerPage
+	} else {
+		pageInt = 1
+		pageOffset = 0
+	}
+
+	threads, err := DBGetThreadList(tagName, siteInfo.TagResultsPerPage, pageOffset)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -162,6 +300,8 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 			Date         int64
 			HasBroken    bool
 			ShortContent string
+			Number       int
+			Page         int
 		}
 	}
 
@@ -194,15 +334,30 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 				sendError(rw, 500, err.Error())
 				return
 			}
+			count, err := DBPostCount(&v)
+			if err != nil {
+				sendError(rw, 500, err.Error())
+				return
+			}
 
 			lp := &threadlist[i].LastPost
 			lp.Author = reply.Author
 			lp.Date = reply.Date
 			lp.ShortContent, lp.HasBroken = shortify(parseContent(reply.Content, reply.ContentType))
+			lp.Number = count - 1
+			lp.Page = (count + siteInfo.PostsPerPage - 2) / siteInfo.PostsPerPage
 		}
 	}
 
-	send(rw, req, "tagsearch", "Threads under \""+tagName+"\"", threadlist)
+	send(rw, req, "tagsearch", "Threads under \""+tagName+"\"", struct {
+		ThreadList  []ThreadData
+		CurrentPage int
+		More        bool
+	}{
+		threadlist,
+		pageInt,
+		len(threadlist) == siteInfo.TagResultsPerPage,
+	})
 }
 
 func httpNewThread(rw http.ResponseWriter, req *http.Request) {
