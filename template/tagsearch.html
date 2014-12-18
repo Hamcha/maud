@@ -6,6 +6,7 @@
     </form>
 </nav>
 {{#Data}}
+<div class="pages" current="{{CurrentPage}}" max="nomax" more="{{#More}}yes{{/More}}{{^More}}no{{/More}}"></div>
 {{#ThreadList}}
 <hr />
 <article class="home-thread">
@@ -47,5 +48,5 @@
 {{/Tags}}
 </section>
 {{/ThreadList}}
-<div id="pages" current="{{CurrentPage}}" max="nomax" more="{{#More}}yes{{/More}}{{^More}}no{{/More}}"></div>
+<div class="pages" current="{{CurrentPage}}" max="nomax" more="{{#More}}yes{{/More}}{{^More}}no{{/More}}"></div>
 {{/Data}}

@@ -20,8 +20,8 @@ fromList(document.querySelectorAll ".type blockquote p").map (e) ->
     e.innerHTML = "> " + e.innerHTML.split("\n").join "<br />> "
 
 # Make page lists
-pageDiv = document.getElementById "pages"
-if pageDiv?
+pageDivs = document.querySelectorAll ".pages"
+for pageDiv in pageDivs
     page = parseInt pageDiv.getAttribute "current"
     baseurl = stripPage location.pathname
     maxstr = pageDiv.getAttribute "max"

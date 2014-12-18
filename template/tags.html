@@ -6,15 +6,15 @@
     </form>
 </nav>
 <hr />
-{{#Data}}
 <article class="hidden2">
     All tags, ordered by popularity
 </article>
+{{#Data}}
 {{#Tags}}
 <article class="tag-item">
     <h3 class="tag-name"><a href="{{BasePath}}tag/{{Name}}" class="nolink">{{Name}}</a></h3>
     <div>Last updated thread: {{#LastThread}}{{#Thread}}<a href="{{BasePath}}thread/{{ShortUrl}}/page/{{Page}}#p{{LastMessage}}" class="thread-title">{{Title}}</a>{{/Thread}}{{/LastThread}} (<span class="date">{{LastUpdate}}</span>)</div>
 </article>
 {{/Tags}}
-<div id="pages" current="{{CurrentPage}}" max="nomax" more="{{#More}}yes{{/More}}{{^More}}no{{/More}}"></div>
+<div class="pages" current="{{CurrentPage}}" max="nomax" more="{{#More}}yes{{/More}}{{^More}}no{{/More}}"></div>
 {{/Data}}
