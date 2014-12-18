@@ -10,7 +10,7 @@ import (
 )
 
 func httpHome(rw http.ResponseWriter, req *http.Request) {
-	tags, err := DBGetPopularTags(10)
+	tags, err := DBGetPopularTags(10, 0)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -72,7 +72,24 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 }
 
 func httpAllThreads(rw http.ResponseWriter, req *http.Request) {
-	threads, err := DBGetThreadList("", 0, 0)
+	var pageInt int
+	var pageOffset int
+	var err error
+	vars := mux.Vars(req)
+
+	if page, ok := vars["page"]; ok {
+		pageInt, err = strconv.Atoi(page)
+		if err != nil {
+			sendError(rw, 400, "Invalid page number")
+			return
+		}
+		pageOffset = (pageInt - 1) * siteInfo.ThreadsPerPage
+	} else {
+		pageInt = 1
+		pageOffset = 0
+	}
+
+	threads, err := DBGetThreadList("", siteInfo.ThreadsPerPage, pageOffset)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -95,13 +112,34 @@ func httpAllThreads(rw http.ResponseWriter, req *http.Request) {
 
 	send(rw, req, "threads", "All threads", struct {
 		Last []ThreadInfo
+		Page int
+		More bool
 	}{
 		tinfos,
+		pageInt,
+		len(threads) == siteInfo.ThreadsPerPage,
 	})
 }
 
 func httpAllTags(rw http.ResponseWriter, req *http.Request) {
-	tags, err := DBGetPopularTags(0)
+	var pageInt int
+	var pageOffset int
+	var err error
+	vars := mux.Vars(req)
+
+	if page, ok := vars["page"]; ok {
+		pageInt, err = strconv.Atoi(page)
+		if err != nil {
+			sendError(rw, 400, "Invalid page number")
+			return
+		}
+		pageOffset = (pageInt - 1) * siteInfo.TagsPerPage
+	} else {
+		pageInt = 1
+		pageOffset = 0
+	}
+
+	tags, err := DBGetPopularTags(siteInfo.TagsPerPage, pageOffset)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -133,8 +171,12 @@ func httpAllTags(rw http.ResponseWriter, req *http.Request) {
 
 	send(rw, req, "tags", "All tags", struct {
 		Tags []TagData
+		Page int
+		More bool
 	}{
 		tagdata,
+		pageInt,
+		len(tags) == siteInfo.TagsPerPage,
 	})
 }
 

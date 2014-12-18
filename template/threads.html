@@ -11,9 +11,12 @@
 </article>
 {{#Data}}
 {{#Last}}
+{{#Thread}}
 <article class="thread-item">
     <h3 class="thread-name"><a href="{{BasePath}}thread/{{ShortUrl}}" class="nolink">{{Title}}</a></h3>
     <div>Last reply: <a href="{{BasePath}}thread/{{ShortUrl}}/page/{{Page}}#p{{LastMessage}}"><span class="date">{{LRDate}}</span></a></div>
 </article>
+{{/Thread}}
 {{/Last}}
 {{/Data}}
+<div id="pages" current="{{Page}}" max="nomax" more="{{#More}}yes{{/More}}{{^More}}no{{/More}}"></div>

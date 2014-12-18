@@ -172,9 +172,12 @@ func (b ByThreads) Len() int           { return len(b) }
 func (b ByThreads) Swap(i, j int)      { b[i], b[j] = b[j], b[i] }
 func (b ByThreads) Less(i, j int) bool { return b[i].Posts < b[j].Posts }
 
-func DBGetPopularTags(limit int) ([]Tag, error) {
+func DBGetPopularTags(limit, offset int) ([]Tag, error) {
 	var result []Tag
 	query := database.C("tags").Find(nil).Sort("-lastupdate")
+	if offset > 0 {
+		query = query.Skip(offset)
+	}
 	if limit > 0 {
 		query = query.Limit(limit)
 	}
