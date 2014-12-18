@@ -3,7 +3,7 @@
 </nav>
 <hr />
 {{#Data}}
-<div class="pages" current="{{Page}}" max="{{MaxPages}}"></div>
+<div class="pages" data-current="{{Page}}" data-max="{{MaxPages}}"></div>
 {{#Thread}}
 <section class="tags">
 {{#Tags}}<a href="{{BasePath}}tag/{{.}}" class="tag">#{{.}}</a> {{/Tags}}
@@ -64,7 +64,7 @@
 </article>
 {{/Posts}}
 </div>
-<div class="pages" current="{{Page}}" max="{{MaxPages}}"></div>
+<div class="pages" data-current="{{Page}}" data-max="{{MaxPages}}"></div>
 <hr />
 <section class="form"><a name="reply" class="noborder"></a>
     <form id="prev-form" method="POST" action="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/reply">
