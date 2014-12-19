@@ -238,9 +238,10 @@ func apiGetRaw(rw http.ResponseWriter, req *http.Request) {
 }
 
 // apiTagList: get a JSON array containing all tags
-// POST params: none
+// POST params: tag
 func apiTagList(rw http.ResponseWriter, req *http.Request) {
-	tags, err := DBGetPopularTags(0, 0)
+	tag := req.PostFormValue("tag")
+	tags, err := DBGetMatchingTags(tag, 0, 0)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
