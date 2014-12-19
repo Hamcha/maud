@@ -42,6 +42,7 @@ for pageDiv in pageDivs
             pageHTML += (if page == n then "<b>#{n}</b> " else "<a href=\"#{baseurl}/page/#{n}\">#{n}</a> ") for n in [1..max]
             pageDiv.innerHTML = pageHTML
 
+# count remaining characters in a post
 charsCount = (id) ->
     form = document.getElementById id
     if form?
