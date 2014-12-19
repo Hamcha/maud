@@ -22,10 +22,10 @@ fromList(document.querySelectorAll ".type blockquote p").map (e) ->
 # Make page lists
 pageDivs = document.querySelectorAll ".pages"
 for pageDiv in pageDivs
-    page = parseInt pageDiv.getAttribute "current"
+    page = parseInt pageDiv.dataset.current
     baseurl = stripPage location.pathname
-    maxstr = pageDiv.getAttribute "max"
-    more = pageDiv.getAttribute "more"
+    maxstr = pageDiv.dataset.max
+    more = pageDiv.dataset.more
     # Do Next/Previous only when we don't know the number of pages
     if maxstr == "nomax"
         pageHTML = ""
