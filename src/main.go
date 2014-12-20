@@ -39,6 +39,7 @@ func setupHandlers(router *mux.Router, isAdmin, isSubdir bool) {
 	SetHandler(POST, "/thread/{thread}/post/{post}/raw", apiGetRaw, isAdmin, isSubdir)
 	SetHandler(POST, "/tagsearch", apiTagSearch, isAdmin, isSubdir)
 	SetHandler(POST, "/postpreview", apiPreview, isAdmin, isSubdir)
+	SetHandler(POST, "/taglist", apiTagList, isAdmin, isSubdir)
 }
 
 func main() {

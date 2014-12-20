@@ -6,5 +6,12 @@
     "TagResultsPerPage": 10,
     "TagsPerPage" : 20,
     "MaxPostLength" : 15000,
-    "Footer" : "It's not like I'm production-ready or anything, b-baka! - <a href=\"https://github.com/hamcha/maud\">Github</a>"
+    "Footer" : [
+    	"It's not like I'm production-ready or anything, b-baka!",
+	"Like brony.it, but <em>waay</em> more intense.",
+	"Up da più di un mese e ancora niente autopruning!",
+	"Nulla è bannato, tutto è permesso. Tranne le nuzlocke",
+	"No alicorns. No mods. Only rocks."
+    ],
+    "PostFooter": " - <a href=\"https://github.com/hamcha/maud\">GitHub</a>"
 }

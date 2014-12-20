@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -234,4 +235,25 @@ func apiGetRaw(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 	fmt.Fprintln(rw, post.Content)
+}
+
+// apiTagList: get a JSON array containing all tags
+// POST params: tag
+func apiTagList(rw http.ResponseWriter, req *http.Request) {
+	tag := req.PostFormValue("tag")
+	tags, err := DBGetMatchingTags(tag, 0, 0)
+	if err != nil {
+		sendError(rw, 500, err.Error())
+		return
+	}
+	tagnames := make([]string, len(tags))
+	for i, tag := range tags {
+		tagnames[i] = tag.Name
+	}
+	tagJSON, err := json.Marshal(tagnames)
+	if err != nil {
+		sendError(rw, 500, err.Error())
+		return
+	}
+	fmt.Fprintln(rw, string(tagJSON))
 }
