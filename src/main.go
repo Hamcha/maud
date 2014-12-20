@@ -31,9 +31,6 @@ func main() {
 	flag.StringVar(&maudRoot, "root", maudRoot, "The HTTP server root directory")
 	flag.Parse()
 
-	// Seed RNG
-	seedRand()
-
 	// Load Site info file
 	rawconf, _ := ioutil.ReadFile(maudRoot + "/info.json")
 	err = json.Unmarshal(rawconf, &siteInfo)

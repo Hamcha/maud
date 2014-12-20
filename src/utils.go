@@ -5,7 +5,6 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/binary"
-	"math/rand"
 	"strings"
 	"time"
 )
@@ -75,10 +74,6 @@ func removeDuplicates(in []string) []string {
 	}
 
 	return out
-}
-
-func seedRand() {
-	rand.Seed(time.Now().UnixNano())
 }
 
 func generateURL(name string) string {
