@@ -12,7 +12,8 @@ type SiteInfo struct {
 	TagResultsPerPage int
 	TagsPerPage       int
 	MaxPostLength     int
-	Footer            string
+	Footer            []string
+	PostFooter        string
 }
 
 type AdminConfig struct {

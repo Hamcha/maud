@@ -4,6 +4,7 @@ import (
 	"../mustache"
 	"fmt"
 	"github.com/gorilla/mux"
+	"math/rand"
 	"net/http"
 	"strconv"
 	"strings"
@@ -373,6 +374,10 @@ func send(rw http.ResponseWriter, req *http.Request, name string, title string, 
 	if ok {
 		basepath = val.BasePath
 	}
+	footer := siteInfo.Footer[rand.Intn(len(siteInfo.Footer))]
+	if len(siteInfo.PostFooter) > 0 {
+		footer += siteInfo.PostFooter
+	}
 	fmt.Fprintln(rw,
 		mustache.RenderFileInLayout(
 			maudRoot+"/template/"+name+".html",
@@ -381,6 +386,7 @@ func send(rw http.ResponseWriter, req *http.Request, name string, title string, 
 				Info          SiteInfo
 				Title         string
 				MaxPostLength int
+				Footer        string
 				Data          interface{}
 				BasePath      string
 				IsAdmin       bool
@@ -388,6 +394,7 @@ func send(rw http.ResponseWriter, req *http.Request, name string, title string, 
 				siteInfo,
 				siteInfo.Title + title,
 				siteInfo.MaxPostLength,
+				footer,
 				context,
 				basepath,
 				ok,
