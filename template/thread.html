@@ -3,31 +3,41 @@
 </nav>
 <hr />
 {{#Data}}
+<div class="pages" data-current="{{Page}}" data-max="{{MaxPages}}"></div>
 {{#Thread}}
 <section class="tags">
-{{#Tags}}<a href="/tag/{{.}}" class="tag">#{{.}}</a> {{/Tags}}
+{{#Tags}}<a href="{{BasePath}}tag/{{.}}" class="tag">#{{.}}</a> {{/Tags}}
 </section>
 <article class="thread" id="thread">
     <h2 class="thread-title">{{Title}}</h2>
     {{/Thread}}
+    {{#HasOP}}
     {{#ThreadPost}}
+    {{#Data}}
     <h3 class="thread-author">
         {{#Author}}
         <span class="nickname">{{Nickname}}</span>
         <span class="tripcode">{{Tripcode}}</span>
         {{/Author}}
-        <span class="date">{{Date}}</span>
+        <a href="#thread" class="date">{{Date}}</a>
     </h3>
     <div class="right">
-        {{#Author}}{{#Tripcode}}
-        <a href="#p{{PostId}}" class="edit nolink" onclick="editPost(0)">
+        {{#Editable}}
+        <span class="lastedit">{{LastModified}}</span>
+        <a href="#thread" class="edit nolink" onclick="editPost(0)">
             <img src="/static/images/edit.svg" style="height: 18px;" />
         </a>
-        {{/Tripcode}}{{/Author}}
+        <a href="#thread" class="delete nolink" onclick="deletePost(0)">
+            <img src="/static/images/delete.svg" style="height: 18px;" />
+        </a>
+        {{/Editable}}
     </div>
     <div class="thread-content type{{ContentType}}">{{{Content}}}</div>
+    {{/Data}}
     {{/ThreadPost}}
+    {{/HasOP}}
 </article>
+<div id="replies">
 {{#Posts}}
 <article class="post" id="p{{PostId}}">
     {{#Data}}
@@ -39,22 +49,35 @@
         <a href="#p{{PostId}}" class="date">{{Date}}</a> <span class="postId">#{{PostId}}</span>
     </h3>
     <div class="right">
-        {{#Author}}{{#Tripcode}}
+        {{#Editable}}
+        <span class="lastedit">{{LastModified}}</span>
         <a href="#p{{PostId}}" class="edit nolink" onclick="editPost({{PostId}})">
             <img src="/static/images/edit.svg" style="height: 20px;" />
         </a>
-        {{/Tripcode}}{{/Author}}
+        <a href="#p{{PostId}}" class="delete nolink" onclick="deletePost({{PostId}})">
+            <img src="/static/images/delete.svg" style="height: 18px;" />
+        </a>
+        {{/Editable}}
     </div>
     <div class="post-content type{{ContentType}}">{{{Content}}}</div>
     {{/Data}}
 </article>
 {{/Posts}}
+</div>
+<div class="pages" data-current="{{Page}}" data-max="{{MaxPages}}"></div>
 <hr />
 <section class="form"><a name="reply" class="noborder"></a>
-<form method="POST" action="/thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/reply">
-<input class="full verysmall" type="text" name="nickname" placeholder="Nickname#Tripcode (optional)" />
-<textarea class="full verysmall" name="text" required placeholder="Thread text (Markdown is supported)"></textarea>
-<center><input type="submit" value="Reply" /></center>
-</form>
+    <form id="prev-form" method="POST" action="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/reply">
+        <input class="full verysmall" type="text" name="nickname" placeholder="Nickname#Tripcode (optional)" />
+        <textarea class="full verysmall" name="text" required placeholder="Thread text (Markdown is supported)"></textarea>
+        <input type="hidden" name="preview" id="preview" />
+        <div>
+            <center>
+                <div class="chars-count" data-maxlen="{{MaxPostLength}}"></div>
+                <input type="submit" value="Reply" />
+                <input type="button" class="button" onclick="showPreview()" value="Preview" />
+            </center>
+        </div>
+    </form>
 </section>
 {{/Data}}

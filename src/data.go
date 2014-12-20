@@ -5,9 +5,23 @@ import (
 )
 
 type SiteInfo struct {
-	Title  string
-	Secret string
-	Footer string
+	Title             string
+	Secret            string
+	PostsPerPage      int
+	ThreadsPerPage    int
+	TagResultsPerPage int
+	TagsPerPage       int
+	MaxPostLength     int
+	Footer            []string
+	PostFooter        string
+}
+
+type AdminConfig struct {
+	EnablePath   bool
+	EnableDomain bool
+	Path         string
+	Domain       string
+	Admins       map[string]string
 }
 
 type User struct {
@@ -29,12 +43,13 @@ type Thread struct {
 }
 
 type Post struct {
-	Id          bson.ObjectId "_id"
-	ThreadId    bson.ObjectId
-	Author      User
-	Content     string
-	Date        int64
-	ContentType string
+	Id           bson.ObjectId "_id"
+	ThreadId     bson.ObjectId
+	Author       User
+	Content      string
+	Date         int64
+	LastModified int64
+	ContentType  string
 }
 
 type Counter struct {
@@ -47,4 +62,17 @@ type Tag struct {
 	Posts      int64
 	LastUpdate int64
 	LastThread bson.ObjectId
+}
+
+type TagData struct {
+	Name       string
+	LastUpdate int64
+	LastThread ThreadInfo
+	LastIndex  int64
+}
+
+type ThreadInfo struct {
+	Thread      Thread
+	LastMessage int
+	Page        int
 }

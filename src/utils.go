@@ -5,8 +5,12 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/binary"
+	"errors"
+	"net/http"
+	"strconv"
 	"strings"
 	"time"
+	"unicode/utf8"
 )
 
 func parseNickname(nickname string) (string, string) {
@@ -34,6 +38,11 @@ func parseContent(content, ctype string) string {
 		bbc := bbcode(safe)
 		html := ParseMarkdown(bbc)
 		return html
+	/* Deleted posts */
+	case "deleted":
+		return "<em>Message deleted by the user</em>"
+	case "admin-deleted":
+		return "<em>Message deleted by an admin</em>"
 	/* Old and busted preparsed */
 	default:
 		return content
@@ -91,4 +100,28 @@ func shortify(content string) (string, bool) {
 	}
 
 	return PostPolicy().Sanitize(content[:300]), true
+}
+
+func threadPostOrErr(rw http.ResponseWriter, threadId, postIdStr string) (Thread, Post, error) {
+	thread, err := DBGetThread(threadId)
+	// retreive post
+	postId, err := strconv.Atoi(postIdStr)
+	if err != nil {
+		http.Error(rw, "Invalid post ID", 400)
+		return thread, Post{}, err
+	}
+	posts, err := DBGetPosts(&thread, 1, postId)
+	if err != nil {
+		http.Error(rw, err.Error(), 500)
+		return thread, posts[0], err
+	}
+	if len(posts) < 1 {
+		http.Error(rw, "Post not found", 404)
+		return thread, posts[0], errors.New("Post not found")
+	}
+	return thread, posts[0], nil
+}
+
+func postTooLong(content string) bool {
+	return siteInfo.MaxPostLength > 0 && utf8.RuneCountInString(content) > siteInfo.MaxPostLength
 }

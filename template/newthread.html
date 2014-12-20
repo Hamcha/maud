@@ -1,10 +1,15 @@
 <section><h2>Creating a new thread</h2></section>
 <section class="form">
-<form method="POST" action="/new">
-<input class="full small" type="text" name="nickname" placeholder="Nickname#Tripcode (optional)" autofocus />
-<input class="full" type="text" name="title" placeholder="Thread title" required />
-<textarea class="full small" name="text" required placeholder="Thread text (Markdown is supported)"></textarea>
-<input class="full small" type="text" name="tags" placeholder="Tags (separated by comma)" /><hr />
-<center><input type="submit" value="Create thread" /></center>
-</form>
+    <form id="prev-form" method="POST" action="{{BasePath}}new">
+        <input class="full small" type="text" name="nickname" placeholder="Nickname#Tripcode (optional)" autofocus />
+        <input class="full" type="text" name="title" placeholder="Thread title" required />
+        <textarea class="full small" name="text" required placeholder="Thread text (Markdown is supported)"></textarea>
+        <input class="full small" type="text" name="tags" placeholder="Tags (separated by comma)" />
+        <hr />
+        <center>
+			<div class="chars-count" data-maxlen="{{MaxPostLength}}"></div>
+            <input type="submit" value="Create thread" />
+            <input type="button" class="button" onclick="showPreview()" value="Preview" />
+        </center>
+    </form>
 </section>

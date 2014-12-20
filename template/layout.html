@@ -15,13 +15,21 @@
     <meta name="msapplication-square150x150logo" content="/static/images/ms150.png" />
     <meta name="msapplication-square310x310logo" content="/static/images/ms310.png" />
     <meta name="msapplication-TileColor" content="#555555" />
+    
+    <script>
+    {{#IsAdmin}}
+        window.adminMode = true;
+    {{/IsAdmin}}
+        window.maxlen = {{MaxPostLength}};
+    </script>
 </head>
 <body>
     <div id="container">
-        <header><a href="/"><img class="head" src="/static/images/header.png" /></a></header>
+        <header><a href="{{BasePath}}"><img class="head" src="/static/images/header.png" /></a></header>
         <main>{{{content}}}</main>
     </div>
-    <footer>{{#Info}}{{{Footer}}}{{/Info}}</footer>
+    <footer>{{{Footer}}}</footer>
+    <script src="/static/lib/qwest.min.js"></script>
     <script src="/static/js/utils.js"></script>
     <script src="/static/js/fixes.js"></script>
     <script src="/static/js/dates.js"></script>

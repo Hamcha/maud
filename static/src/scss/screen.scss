@@ -53,7 +53,7 @@ hr {
 
 /* Buttons and links */
 
-button, input[type="submit"], a.button, a.button:visited {
+button, input[type="submit"], input[type="button"], a.button, a.button:visited, a.article, a.article:visited {
     font-family: "Source Sans Pro", sans-serif;
     text-decoration: none; background-color: transparent;
     border: 1px solid #ccc; color: #fff;
@@ -68,9 +68,39 @@ button, input[type="submit"], a.button, a.button:visited {
     }
 }
 
+a[href].article, a[href].article:visited {
+	border: 0; margin: 0; display: block; padding: 0; border-bottom: 0;
+	font-size: 1.1em; color: #bbb;
+	&:hover {
+		color: #fff;
+		background-color: inherit;
+	}
+	& > article { 
+		padding: 3px 10px;
+	}
+}
+
 a[href], a[href]:visited {
     color: #fff; text-decoration: none; border-bottom: 1px dotted #ccc;
 }
+
+.pages {
+    text-align: center;
+    padding: 0.5em;
+
+    b {
+        display: inline-block;
+        padding: 0px 5px;
+    }
+
+    a, a:visited {
+        display: inline-block;
+        padding: 0px 5px;
+        border: 1px solid #aaa;
+        &:hover { border-color: #ccc; }
+    }
+}
+
 
 a.nolink { border: 0; }
 
@@ -117,10 +147,10 @@ a.nolink { border: 0; }
 }
 
 .right {
-    position: absolute; right: 0; left: 0; top: 0;
+    position: absolute; right: 0; top: 0;
     text-align: right;  padding: 0.5em;
 
-    .edit {
+    .edit, .delete {
         opacity: 0.5;
         @include transition-property(all);
         @include transition-duration(0.2s);
@@ -145,6 +175,7 @@ article.post-selected { background-color: rgba(0,0,0,.7); }
 .nickname { font-weight: 600; }
 .tripcode { color: #777; }
 a.date    { border: 0; color: #ccc; &:hover { color: #eee; }}
+.lastedit { font-size: 0.8em; color: #ddd; opacity: 0.6; }
 
 .tags { font-size: 0.9em; opacity: 0.8; padding: 3px 5px 5px 5px; }
 .tag, .tag:visited { color: #ccc; border: 0; &:hover { color: #fff; } }
@@ -167,6 +198,17 @@ h2 { font-size: 1.3em; margin: 0; padding: 0; }
 span.spoiler {
     background-color: #555; color: #555;
     &:hover { color: inherit; background-color: inherit; }
+}
+
+#post-preview {
+	background-color: rgba(0,0,0,.7);
+	h3 {
+		border-bottom: 1px dotted #555;
+		padding-bottom: 6px;
+		margin-bottom: 4px;
+		font-size: 0.7em;
+		text-transform: uppercase;
+	}
 }
 
 /* Homepage */
@@ -203,4 +245,12 @@ input.inline { display: inline-block; padding: 3px; margin-right: 5px; }
 .error {
 .fullimage { width: 100%; max-width: 650px; }
 header p { display: inline-block; font-size: 2em; font-weight: 900; margin: 0.4em 0 0 0.5em; }
+}
+
+.errmsg {
+	padding: 5px; margin: 0;
+}
+
+.chars-count {
+    font-size: 1.1em; font-weight: 300;
 }
