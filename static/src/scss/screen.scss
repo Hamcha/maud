@@ -53,7 +53,11 @@ hr {
 
 /* Buttons and links */
 
-button, input[type="submit"], input[type="button"], a.button, a.button:visited, a.article, a.article:visited {
+a[href].noborder { border: 0 };
+
+button, input[type="submit"], input[type="button"],
+a.button, a.button:visited, a.article, a.article:visited,
+a[href].button, a[href].button:visited {
     font-family: "Source Sans Pro", sans-serif;
     text-decoration: none; background-color: transparent;
     border: 1px solid #ccc; color: #fff;
@@ -75,7 +79,7 @@ a[href].article, a[href].article:visited {
 		color: #fff;
 		background-color: inherit;
 	}
-	& > article { 
+	& > article {
 		padding: 3px 10px;
 	}
 }

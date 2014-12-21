@@ -73,6 +73,7 @@ type TagData struct {
 
 type ThreadInfo struct {
 	Thread      Thread
+	LastPost    Post
 	LastMessage int
 	Page        int
 }

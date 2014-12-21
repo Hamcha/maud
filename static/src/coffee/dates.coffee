@@ -25,12 +25,11 @@ since = (time, brief) ->
         when diff > 3600 && !brief  then sincetime(diff)+" ("+format(new Date(time))+")"
         else                        sincetime(diff)
 
-
 fromList(document.querySelectorAll ".date").map (elem) ->
     elem.innerHTML = since(parseInt(elem.innerHTML)*1000)
 
 fromList(document.querySelectorAll ".lastedit").map (elem) ->
-    if parseInt(elem.innerHTML) is 0
+    if elem.innerHTML is "0"
         elem.style.visibility = 'hidden'
         return
     elem.innerHTML = "edited #{since(parseInt(elem.innerHTML)*1000, true)}"

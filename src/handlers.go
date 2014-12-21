@@ -56,9 +56,16 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 			return
 		}
 
+		lastPost, err := DBGetPost(threads[i].LastReply)
+		if err != nil {
+			sendError(rw, 500, err.Error())
+			return
+		}
+
 		tinfos[i] = ThreadInfo{
 			Thread:      threads[i],
 			LastMessage: count - 1,
+			LastPost:    lastPost,
 			Page:        (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
 		}
 	}
@@ -104,9 +111,16 @@ func httpAllThreads(rw http.ResponseWriter, req *http.Request) {
 			return
 		}
 
+		lastPost, err := DBGetPost(threads[i].LastReply)
+		if err != nil {
+			sendError(rw, 500, err.Error())
+			return
+		}
+
 		tinfos[i] = ThreadInfo{
 			Thread:      threads[i],
 			LastMessage: count - 1,
+			LastPost:    lastPost,
 			Page:        (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
 		}
 	}
