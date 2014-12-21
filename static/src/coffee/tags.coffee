@@ -1,1 +1,3 @@
-new Taggle 'newthread-tags'
+new Taggle 'newthread-tags', {
+	duplicateTagClass: 'bounce'
+}
