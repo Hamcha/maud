@@ -4,18 +4,29 @@
     <title>{{Title}}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=yes, target-densitydpi=device-dpi, minimal-ui" />
+    <link href="/static/css/screen.css" rel="stylesheet" type="text/css" />
+    <!-- Standard favicon (all browsers) -->
+    <link rel="shortcut icon" href="/static/images/favicons/favicon.ico">
+    <link rel="icon" href="/static/images/favicons/favicon.ico">
     <!-- iOS -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="{{#Info}}{{Title}}{{/Info}}">
-    <link href="/static/css/screen.css" rel="stylesheet" type="text/css" />
+    <link rel="apple-touch-icon-precomposed" href="/static/images/favicons/favicon-152.png">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="/static/images/favicons/favicon-152.png">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/static/images/favicons/favicon-144.png">
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="/static/images/favicons/favicon-120.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/static/images/favicons/favicon-114.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/static/images/favicons/favicon-72.png">
+    <!-- Chrome -->
+    <link rel="icon" href="/path/to/favicon-128.png" sizes="128x128">
     <!-- Windows 8 / Phone -->
     <meta name="application-name" content="{{#Info}}{{Title}}{{/Info}}"/>
-    <meta name="msapplication-square70x70logo" content="/static/images/ms70.png" />
-    <meta name="msapplication-square150x150logo" content="/static/images/ms150.png" />
-    <meta name="msapplication-square310x310logo" content="/static/images/ms310.png" />
+    <meta name="msapplication-square70x70logo" content="/static/images/favicons/ms70.png" />
+    <meta name="msapplication-square150x150logo" content="/static/images/favicons/ms150.png" />
+    <meta name="msapplication-square310x310logo" content="/static/images/favicons/ms310.png" />
     <meta name="msapplication-TileColor" content="#555555" />
-    
+
     <script>
     {{#IsAdmin}}
         window.adminMode = true;
