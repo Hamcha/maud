@@ -4,10 +4,11 @@
         <input class="full small" type="text" name="nickname" placeholder="Nickname#Tripcode (optional)" autofocus />
         <input class="full" type="text" name="title" placeholder="Thread title" required />
         <textarea class="full small" name="text" required placeholder="Thread text (Markdown is supported)"></textarea>
-        <input class="full small" type="text" name="tags" placeholder="Tags (separated by comma)" />
+        <!--<input class="full small" type="text" name="tags" placeholder="Tags (separated by comma)" />-->
+	<div id='newthread-tags' class="full small"></div>
         <hr />
         <center>
-			<div class="chars-count" data-maxlen="{{MaxPostLength}}"></div>
+            <div class="chars-count" data-maxlen="{{MaxPostLength}}"></div>
             <input type="submit" value="Create thread" />
             <input type="button" class="button" onclick="showPreview()" value="Preview" />
         </center>
