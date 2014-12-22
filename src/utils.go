@@ -7,6 +7,7 @@ import (
 	"encoding/binary"
 	"errors"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 	"unicode/utf8"
@@ -123,4 +124,15 @@ func threadPostOrErr(rw http.ResponseWriter, threadId, postIdStr string) (Thread
 
 func postTooLong(content string) bool {
 	return siteInfo.MaxPostLength > 0 && utf8.RuneCountInString(content) > siteInfo.MaxPostLength
+}
+
+func isLightVersion(req *http.Request) bool {
+	return len(siteInfo.LightVersionDomain) > 0 && req.URL.Host == siteInfo.LightVersionDomain
+}
+
+func lightify(content string) string {
+	img := regexp.MustCompile("(?:<a [^>]+>)?<img .*src=(\"[^\"]+\"|'[^']+'|[^'\"][^\\s]+).*>(?:</a>)?")
+	content = img.ReplaceAllString(content, "<a href=$1>Click to view image</a>")
+	iframe := regexp.MustCompile("<iframe .*src=(\"[^\"]+\"|'[^']+'|[^'\"][^\\s]+).*>")
+	return iframe.ReplaceAllString(content, "<a href=$1>Click to view iframe</a>")
 }

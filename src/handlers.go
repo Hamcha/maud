@@ -245,6 +245,9 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 	postsInfo := make([]PostInfo, len(posts))
 	for index := range posts {
 		posts[index].Content = parseContent(posts[index].Content, posts[index].ContentType)
+		if isLightVersion(req) {
+			posts[index].Content = lightify(posts[index].Content)
+		}
 		postsInfo[index].Data = posts[index]
 		postsInfo[index].IsDeleted = posts[index].ContentType == "deleted" || posts[index].ContentType == "admin-deleted"
 		postsInfo[index].PostId = index + pageOffset

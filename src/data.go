@@ -5,15 +5,16 @@ import (
 )
 
 type SiteInfo struct {
-	Title             string
-	Secret            string
-	PostsPerPage      int
-	ThreadsPerPage    int
-	TagResultsPerPage int
-	TagsPerPage       int
-	MaxPostLength     int
-	Footer            []string
-	PostFooter        string
+	Title              string
+	Secret             string
+	PostsPerPage       int
+	ThreadsPerPage     int
+	TagResultsPerPage  int
+	TagsPerPage        int
+	MaxPostLength      int
+	Footer             []string
+	PostFooter         string
+	LightVersionDomain string
 }
 
 type AdminConfig struct {
