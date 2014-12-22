@@ -95,7 +95,6 @@ showPreview = () ->
     # retreive content data from the server
     qwest.post('/postpreview', req)
         .then (resp) ->
-            console.log resp
             createPreview resp
         .catch (err) ->
             console.log 'Error!'

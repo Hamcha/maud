@@ -1,5 +1,10 @@
-.taggle_placeholder {
-	display: none;
+div {
+	.taggle_placeholder {
+		float: left;
+	}
+	.active .taggle_placeholder {
+		display: none;
+	}
 }
 
 .taggle_list {
