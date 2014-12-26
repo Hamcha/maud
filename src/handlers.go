@@ -246,6 +246,9 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 	postsInfo := make([]PostInfo, len(posts))
 	for index := range posts {
 		posts[index].Content = parseContent(posts[index].Content, posts[index].ContentType)
+		if isLightVersion(req) {
+			posts[index].Content = lightify(posts[index].Content)
+		}
 		postsInfo[index].Data = posts[index]
 		postsInfo[index].IsDeleted = posts[index].ContentType == "deleted" || posts[index].ContentType == "admin-deleted"
 		postsInfo[index].PostId = index + pageOffset
@@ -329,7 +332,11 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 			return
 		}
 
-		short, isbroken := shortify(parseContent(post.Content, post.ContentType))
+		content := parseContent(post.Content, post.ContentType)
+		if isLightVersion(req) {
+			content = lightify(content)
+		}
+		short, isbroken := shortify(content)
 
 		threadlist[i] = ThreadData{
 			ShortUrl:     v.ShortUrl,
@@ -359,7 +366,11 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 			lp := &threadlist[i].LastPost
 			lp.Author = reply.Author
 			lp.Date = reply.Date
-			lp.ShortContent, lp.HasBroken = shortify(parseContent(reply.Content, reply.ContentType))
+			content = parseContent(reply.Content, reply.ContentType)
+			if isLightVersion(req) {
+				content = lightify(content)
+			}
+			lp.ShortContent, lp.HasBroken = shortify(content)
 			lp.Number = count - 1
 			lp.Page = (count + siteInfo.PostsPerPage - 2) / siteInfo.PostsPerPage
 		}

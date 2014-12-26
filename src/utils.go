@@ -7,6 +7,7 @@ import (
 	"encoding/binary"
 	"errors"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 	"unicode/utf8"
@@ -131,4 +132,15 @@ func filterFromCookie(req *http.Request) []string {
 		return nil
 	}
 	return strings.Split(cookie.String(), ":")
+}
+
+func isLightVersion(req *http.Request) bool {
+	return len(siteInfo.LightVersionDomain) > 0 && req.URL.Host == siteInfo.LightVersionDomain
+}
+
+func lightify(content string) string {
+	img := regexp.MustCompile("(?:<a [^>]+>)?<img .*src=(\"[^\"]+\"|'[^']+'|[^'\"][^\\s]+).*>(?:</a>)?")
+	content = img.ReplaceAllString(content, "<a href=$1>Click to view image</a>")
+	iframe := regexp.MustCompile("<iframe .*src=(\"[^\"]+\"|'[^']+'|[^'\"][^\\s]+).*>")
+	return iframe.ReplaceAllString(content, "<a href=$1>Click to view iframe</a>")
 }
