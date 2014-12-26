@@ -142,6 +142,6 @@ func lightify(content string) string {
 	img := regexp.MustCompile("(?:<a [^>]+>)?<img .*src=(\"[^\"]+\"|'[^']+'|[^'\"][^\\s]+).*>(?:</a>)?")
 	content = img.ReplaceAllString(content, "<a class='toggleImage' data-url=$1>[Click to view image]</a>")
 	iframe := regexp.MustCompile("<iframe .*src=(\"[^\"]+\"|'[^']+'|[^'\"][^\\s]+).*>")
-	content = iframe.ReplaceAllString(content, "<a class='toggleImage' data-url=$1>[Click to view embedded content]</a>")
+	content = iframe.ReplaceAllString(content, "<a target=\"_blank\" href=$1>[Click to open embedded content]</a>")
 	return content
 }

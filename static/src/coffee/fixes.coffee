@@ -86,10 +86,3 @@ imgsetup = (btn) ->
         url = btn.dataset.url
         btn.outerHTML = "<a href=\"#{url}\"><img src=\"#{url}\" /></a>"
 imgsetup imgbtn for imgbtn in lightimagebtn
-
-lightiframebtn = document.querySelectorAll ".toggleIframe"
-iframesetup = (btn) ->
-    iframebtn.onclick = () ->
-        url = iframebtn.dataset.url
-        imgbtn.outerHTML = "<iframe src=\"url\"></iframe>"
-iframesetup iframebtn for iframebtn in lightiframebtn
