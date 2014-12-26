@@ -104,7 +104,7 @@ func DBReplyThread(thread *Thread, user User, content string) (int, error) {
 // a tag matching it (i.e. thread.tag ~ /tag/i); else, return all
 // threads with at least 1 tag matching at least 1 of the words in
 // the `tag` string.
-func DBGetThreadList(tag string, limit, offset int) ([]Thread, error) {
+func DBGetThreadList(tag string, limit, offset int, filter []string) ([]Thread, error) {
 	var filterByTag bson.M
 	if tag != "" {
 		if idx := strings.IndexRune(tag, ','); idx > 0 {
@@ -116,11 +116,19 @@ func DBGetThreadList(tag string, limit, offset int) ([]Thread, error) {
 			}
 			filterByTag = bson.M{"tags": bson.M{"$in": tagsRgx}}
 		} else {
-			// single tag
+			// single tag:
 			filterByTag = bson.M{"tags": bson.RegEx{tag, "i"}}
 		}
 	} else {
 		filterByTag = nil
+	}
+	if filter != nil {
+		cond := bson.M{"tags": bson.M{"$nin": filter}}
+		if filterByTag != nil {
+			filterByTag = bson.M{"$and": []bson.M{filterByTag, cond}}
+		} else {
+			filterByTag = cond
+		}
 	}
 	query := database.C("threads").Find(filterByTag).Sort("-lrdate")
 	if offset > 0 {
@@ -184,9 +192,19 @@ func (b ByThreads) Less(i, j int) bool { return b[i].Posts < b[j].Posts }
 // DBGetPopularTags returns a slice of Tags (up to `limit`, starting
 // from `offset`-th) ordered by "popularity". Popularity is greater
 // for tags whose threads have been updated more recently.
-func DBGetPopularTags(limit, offset int) ([]Tag, error) {
+func DBGetPopularTags(limit, offset int, filter []string) ([]Tag, error) {
 	var result []Tag
-	query := database.C("tags").Find(nil).Sort("-lastupdate")
+	var cond bson.M
+	if filter != nil {
+		condParts := make([]bson.M, 0)
+		for i := range filter {
+			condParts = append(condParts, bson.M{"name": filter[i]})
+		}
+		cond = bson.M{"$nor": condParts}
+	} else {
+		cond = nil
+	}
+	query := database.C("tags").Find(cond).Sort("-lastupdate")
 	if offset > 0 {
 		query = query.Skip(offset)
 	}
@@ -242,11 +260,15 @@ func DBEditPost(id bson.ObjectId, newContent string) error {
 
 // DBGetMatchingTags returns a slice of Tags matching the given word.
 // If word given is "", the behaviour is the same as DBGetPopularTags.
-func DBGetMatchingTags(word string, limit, offset int) ([]Tag, error) {
+func DBGetMatchingTags(word string, limit, offset int, filter []string) ([]Tag, error) {
 	if len(word) < 1 {
-		return DBGetPopularTags(limit, offset)
+		return DBGetPopularTags(limit, offset, filter)
 	}
 	matching := bson.M{"name": bson.RegEx{word, "i"}}
+	if filter != nil {
+		cond := bson.M{"tags": bson.M{"$nin": filter}}
+		matching = bson.M{"$and": []bson.M{matching, cond}}
+	}
 	query := database.C("tags").Find(matching).Sort("-lrdate")
 	if offset > 0 {
 		query = query.Skip(offset)

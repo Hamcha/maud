@@ -241,7 +241,7 @@ func apiGetRaw(rw http.ResponseWriter, req *http.Request) {
 // POST params: tag
 func apiTagList(rw http.ResponseWriter, req *http.Request) {
 	tag := req.PostFormValue("tag")
-	tags, err := DBGetMatchingTags(tag, 0, 0)
+	tags, err := DBGetMatchingTags(tag, 0, 0, filterFromCookie(req))
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return

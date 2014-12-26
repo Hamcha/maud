@@ -11,7 +11,8 @@ window.onhashchange = () ->
         o.className = o.className.replace "post-selected", "" for o in document.querySelectorAll ".post-selected"
         doc = document.querySelector location.hash
         doc.className = "post post-selected" if doc?
-        return
+    return
+
 window.onhashchange()
 
 # Fix greentext on old posts
@@ -42,7 +43,7 @@ for pageDiv in pageDivs
             pageHTML += (if page == n then "<b>#{n}</b> " else "<a href=\"#{baseurl}/page/#{n}\">#{n}</a> ") for n in [1..max]
             pageDiv.innerHTML = pageHTML
 
-# count remaining characters in a post
+# Count remaining characters in a post
 charsCount = (id) ->
     form = document.getElementById id
     if form?
@@ -53,6 +54,27 @@ charsCount = (id) ->
             div.innerHTML = "#{remaining} characters left"
             div.style.padding = "0 0 0.5em 0"
             text.style.borderColor = if remaining < 0 then "#E33" else ""
+    return
+
 charsCount "prev-form"
 
 window.charsCount = charsCount
+
+# Setup Safe mode button
+safeButton = document.getElementById "safeBtn"
+filter = window.getFilter()
+if "nsfw" in filter
+    safeButton.innerHTML = "EXIT SAFE MODE"
+    safeButton.style.boxShadow = "0 0 0 1px green inset"
+    safeButton.onclick = (e) ->
+        status = window.removeFilter ["nsfw"]
+        location.reload()
+        return
+else
+    safeButton.style.boxShadow = "0 0 0 1px darkred inset"
+    safeButton.onclick = (e) ->
+        status = window.addFilter ["nsfw"]
+        if status == false
+            alert "Cookies are not enabled, Safe mode couldn't be enabled"
+        location.reload()
+        return

@@ -31,14 +31,32 @@ header {
     background-image: url(/static/images/headerbg.png), url(/static/images/maud.gif);
     background-repeat: no-repeat;
     background-position: left, right;
+
+    a[href], a[href]:visited {
+        color: #fff; border: 0;
+        font-weight: 200;
+    }
+}
+
+nav.upper {
+    display: block;
+    padding: 0; font-size: 0.9em;
+    background: none; margin-top: 5px;
+    a[href], a[href]:visited {
+        background: rgba(0,0,0,0.5);
+        display: inline-block;
+        color: #fff; border: 0; text-transform: uppercase;
+        padding: 3px; font-weight: 300;
+        @include transition-property(all);
+        @include transition-duration(0.2s);
+        &:hover {
+            background-color: #fff;
+            color: #000;
+        }
+    }
 }
 
 img.head { width: 100%; max-width: 410px; margin-top: 10px; }
-
-header a[href], header a[href]:visited {
-    color: #fff; border: 0;
-    font-weight: 200;
-}
 
 footer {
     margin: 10px;

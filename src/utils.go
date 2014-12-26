@@ -124,3 +124,11 @@ func threadPostOrErr(rw http.ResponseWriter, threadId, postIdStr string) (Thread
 func postTooLong(content string) bool {
 	return siteInfo.MaxPostLength > 0 && utf8.RuneCountInString(content) > siteInfo.MaxPostLength
 }
+
+func filterFromCookie(req *http.Request) []string {
+	cookie, err := req.Cookie("filter")
+	if err != nil {
+		return nil
+	}
+	return strings.Split(cookie.String(), ":")
+}

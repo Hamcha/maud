@@ -11,7 +11,8 @@ import (
 )
 
 func httpHome(rw http.ResponseWriter, req *http.Request) {
-	tags, err := DBGetPopularTags(10, 0)
+	filter := filterFromCookie(req)
+	tags, err := DBGetPopularTags(10, 0, filter)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -42,7 +43,7 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	threads, err := DBGetThreadList("", 5, 0)
+	threads, err := DBGetThreadList("", 5, 0, filter)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -97,7 +98,7 @@ func httpAllThreads(rw http.ResponseWriter, req *http.Request) {
 		pageOffset = 0
 	}
 
-	threads, err := DBGetThreadList("", siteInfo.ThreadsPerPage, pageOffset)
+	threads, err := DBGetThreadList("", siteInfo.ThreadsPerPage, pageOffset, filterFromCookie(req))
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -154,7 +155,7 @@ func httpAllTags(rw http.ResponseWriter, req *http.Request) {
 		pageOffset = 0
 	}
 
-	tags, err := DBGetPopularTags(siteInfo.TagsPerPage, pageOffset)
+	tags, err := DBGetPopularTags(siteInfo.TagsPerPage, pageOffset, filterFromCookie(req))
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -293,7 +294,7 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 		pageOffset = 0
 	}
 
-	threads, err := DBGetThreadList(tagName, siteInfo.TagResultsPerPage, pageOffset)
+	threads, err := DBGetThreadList(tagName, siteInfo.TagResultsPerPage, pageOffset, filterFromCookie(req))
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
