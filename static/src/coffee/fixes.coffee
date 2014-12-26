@@ -81,12 +81,15 @@ else
 
 # Setup toggle buttons in light mode
 lightimagebtn = document.querySelectorAll ".toggleImage"
-for imgbtn in lightimagebtn
-    imgbtn.onclick = () ->
-        url = imgbtn.dataset.url
-        imgbtn.outerHTML = "<a href=\"#{url}\"><img src=\"#{url}\" /></a>"
+imgsetup = (btn) ->
+    btn.onclick = () ->
+        url = btn.dataset.url
+        btn.outerHTML = "<a href=\"#{url}\"><img src=\"#{url}\" /></a>"
+imgsetup imgbtn for imgbtn in lightimagebtn
+
 lightiframebtn = document.querySelectorAll ".toggleIframe"
-for iframebtn in lightiframebtn
+iframesetup = (btn) ->
     iframebtn.onclick = () ->
         url = iframebtn.dataset.url
         imgbtn.outerHTML = "<iframe src=\"url\"></iframe>"
+iframesetup iframebtn for iframebtn in lightiframebtn
