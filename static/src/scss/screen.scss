@@ -233,6 +233,11 @@ span.spoiler {
 	}
 }
 
+a.toggleImage, a.toggleIframe {
+    cursor: pointer;
+    border-bottom: 1px dotted #ccc;
+}
+
 /* Homepage */
 
 .tag-item, .thread-item { font-size: 0.9em; padding: 10px; }

@@ -409,21 +409,23 @@ func send(rw http.ResponseWriter, req *http.Request, name string, title string, 
 			maudRoot+"/template/"+name+".html",
 			maudRoot+"/template/layout.html",
 			struct {
-				Info          SiteInfo
-				Title         string
-				MaxPostLength int
-				Footer        string
-				Data          interface{}
-				BasePath      string
-				IsAdmin       bool
+				Info     SiteInfo
+				Title    string
+				Footer   string
+				Data     interface{}
+				BasePath string
+				UrlPath  string
+				IsAdmin  bool
+				IsLight  bool
 			}{
 				siteInfo,
 				siteInfo.Title + title,
-				siteInfo.MaxPostLength,
 				footer,
 				context,
 				basepath,
+				req.URL.String(),
 				ok,
+				isLightVersion(req),
 			}))
 }
 

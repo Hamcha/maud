@@ -7,7 +7,11 @@ window.stripPage = (url) ->
 window.setFilter = (tags) ->
 	tagList = tags.join ":"
 	return false unless Cookies.enabled
-	Cookies.set "filter", tagList
+	props =
+		domain: '.' + window.domain.split(":")[0]
+		explires: Infinity
+	console.log props
+	Cookies.set "filter", tagList, props
 	return true
 
 window.getFilter = (tags) ->

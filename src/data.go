@@ -14,6 +14,7 @@ type SiteInfo struct {
 	MaxPostLength      int
 	Footer             []string
 	PostFooter         string
+	FullVersionDomain  string
 	LightVersionDomain string
 }
 

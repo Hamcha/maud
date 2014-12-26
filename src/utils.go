@@ -135,12 +135,13 @@ func filterFromCookie(req *http.Request) []string {
 }
 
 func isLightVersion(req *http.Request) bool {
-	return len(siteInfo.LightVersionDomain) > 0 && req.URL.Host == siteInfo.LightVersionDomain
+	return len(siteInfo.LightVersionDomain) > 0 && req.Host == siteInfo.LightVersionDomain
 }
 
 func lightify(content string) string {
 	img := regexp.MustCompile("(?:<a [^>]+>)?<img .*src=(\"[^\"]+\"|'[^']+'|[^'\"][^\\s]+).*>(?:</a>)?")
-	content = img.ReplaceAllString(content, "<a href=$1>Click to view image</a>")
+	content = img.ReplaceAllString(content, "<a class='toggleImage' data-url=$1>[Click to view image]</a>")
 	iframe := regexp.MustCompile("<iframe .*src=(\"[^\"]+\"|'[^']+'|[^'\"][^\\s]+).*>")
-	return iframe.ReplaceAllString(content, "<a href=$1>Click to view iframe</a>")
+	content = iframe.ReplaceAllString(content, "<a class='toggleImage' data-url=$1>[Click to view embedded content]</a>")
+	return content
 }

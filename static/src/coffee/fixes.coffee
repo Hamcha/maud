@@ -66,15 +66,27 @@ filter = window.getFilter()
 if "nsfw" in filter
     safeButton.innerHTML = "EXIT SAFE MODE"
     safeButton.style.boxShadow = "0 0 0 1px green inset"
-    safeButton.onclick = (e) ->
+    safeButton.onclick = () ->
         status = window.removeFilter ["nsfw"]
         location.reload()
         return
 else
     safeButton.style.boxShadow = "0 0 0 1px darkred inset"
-    safeButton.onclick = (e) ->
+    safeButton.onclick = () ->
         status = window.addFilter ["nsfw"]
         if status == false
             alert "Cookies are not enabled, Safe mode couldn't be enabled"
         location.reload()
         return
+
+# Setup toggle buttons in light mode
+lightimagebtn = document.querySelectorAll ".toggleImage"
+for imgbtn in lightimagebtn
+    imgbtn.onclick = () ->
+        url = imgbtn.dataset.url
+        imgbtn.outerHTML = "<a href=\"#{url}\"><img src=\"#{url}\" /></a>"
+lightiframebtn = document.querySelectorAll ".toggleIframe"
+for iframebtn in lightiframebtn
+    iframebtn.onclick = () ->
+        url = iframebtn.dataset.url
+        imgbtn.outerHTML = "<iframe src=\"url\"></iframe>"

@@ -31,7 +31,8 @@
     {{#IsAdmin}}
         window.adminMode = true;
     {{/IsAdmin}}
-        window.maxlen = {{MaxPostLength}};
+        window.domain = "{{#Info}}{{FullVersionDomain}}{{/Info}}";
+        window.maxlen = {{#Info}}{{MaxPostLength}}{{/Info}};
     </script>
 </head>
 <body>
@@ -41,8 +42,13 @@
     </div>
     <footer>{{{Footer}}}<br />
     <nav class="upper">
-            <a href="https://little.crunchy.rocks/">LIGHT VERSION</a>
-            <a id="safeBtn" href="#">ENTER SAFE MODE</a>
+    {{^IsLight}}
+            <a href="//{{#Info}}{{LightVersionDomain}}{{/Info}}{{UrlPath}}" style="box-shadow: 0 0 0 1px darkred inset;">LIGHT VERSION</a>
+    {{/IsLight}}
+    {{#IsLight}}
+            <a href="//{{#Info}}{{FullVersionDomain}}{{/Info}}{{UrlPath}}" style="box-shadow: 0 0 0 1px green inset;">EXIT LIGHT VERSION</a>
+    {{/IsLight}}
+            <a id="safeBtn" href="#">SAFE MODE</a>
     </nav></footer>
     <script src="/static/lib/qwest.min.js"></script>
     <script src="/static/lib/cookies.min.js"></script>
