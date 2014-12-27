@@ -41,6 +41,9 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 				Page:        (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
 			},
 		}
+		if tagdata[i].LastThread.Page < 1 {
+			tagdata[i].LastThread.Page = 1
+		}
 	}
 
 	threads, err := DBGetThreadList("", 5, 0, filter)
@@ -68,6 +71,9 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 			LastMessage: count - 1,
 			LastPost:    lastPost,
 			Page:        (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
+		}
+		if tinfos[i].Page < 1 {
+			tinfos[i].Page = 1
 		}
 	}
 
@@ -124,6 +130,9 @@ func httpAllThreads(rw http.ResponseWriter, req *http.Request) {
 			LastPost:    lastPost,
 			Page:        (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
 		}
+		if tinfos[i].Page < 1 {
+			tinfos[i].Page = 1
+		}
 	}
 
 	send(rw, req, "threads", "All threads", struct {
@@ -148,6 +157,9 @@ func httpAllTags(rw http.ResponseWriter, req *http.Request) {
 		if err != nil {
 			sendError(rw, 400, "Invalid page number")
 			return
+		}
+		if pageInt < 1 {
+			pageInt = 1
 		}
 		pageOffset = (pageInt - 1) * siteInfo.TagsPerPage
 	} else {
@@ -182,6 +194,9 @@ func httpAllTags(rw http.ResponseWriter, req *http.Request) {
 				LastMessage: count - 1,
 				Page:        (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
 			},
+		}
+		if tagdata[i].LastThread.Page < 1 {
+			tagdata[i].LastThread.Page = 1
 		}
 	}
 
@@ -218,6 +233,9 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		if err != nil {
 			sendError(rw, 400, "Invalid page number")
 			return
+		}
+		if pageInt < 1 {
+			pageInt = 1
 		}
 		pageOffset = (pageInt - 1) * siteInfo.PostsPerPage
 	} else {

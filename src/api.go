@@ -64,6 +64,9 @@ func apiReply(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 	page := (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage
+	if page < 1 {
+		page = 1
+	}
 
 	postNickname := req.PostFormValue("nickname")
 	postContent := req.PostFormValue("text")
@@ -156,6 +159,9 @@ func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	page := (postId + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage
+	if page < 1 {
+		page = 1
+	}
 	http.Redirect(rw, req, basepath+"thread/"+thread.ShortUrl+"/page/"+strconv.Itoa(page)+"#p"+vars["post"], http.StatusMovedPermanently)
 }
 
@@ -203,6 +209,9 @@ func apiDeletePost(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	page := (postId + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage
+	if page < 1 {
+		page = 1
+	}
 	http.Redirect(rw, req, basepath+"thread/"+thread.ShortUrl+"/page/"+strconv.Itoa(page)+"#p"+vars["post"], http.StatusMovedPermanently)
 }
 
