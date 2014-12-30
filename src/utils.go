@@ -99,7 +99,42 @@ func shortify(content string) (string, bool) {
 		return content, false
 	}
 
-	return PostPolicy().Sanitize(content[:300]), true
+	// count open HTML tags in content
+	short := content[:300]
+	stack := make([]string, 0)
+	stackindex := -1
+	offset := -1
+	for offset < len(short) {
+		offset = index(short, offset+1, '<')
+		if offset < 0 {
+			break
+		}
+		end := index(short, offset+1, '>')
+		if end < 0 {
+			break
+		}
+		tagname := short[offset+1 : end]
+
+		if tagname[0] == '/' {
+			if stackindex < 1 {
+				continue
+			}
+			if tagname[1:] == stack[stackindex] {
+				stack = stack[:stackindex]
+				stackindex--
+			}
+		} else {
+			stack = append(stack, tagname)
+			stackindex++
+		}
+	}
+	// close unclosed tags
+	for stackindex > 0 {
+		short += "</" + stack[stackindex] + ">"
+		stackindex--
+	}
+
+	return PostPolicy().Sanitize(short), true
 }
 
 func threadPostOrErr(rw http.ResponseWriter, threadId, postIdStr string) (Thread, Post, error) {
