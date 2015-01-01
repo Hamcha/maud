@@ -3,12 +3,12 @@ original = []
 # post edit
 editPost = (id) ->
     if id == 0
-      pid = type = "thread"
-      idname = "OP"
+        pid = type = "thread"
+        idname = "OP"
     else
-      pid = "p#{id}"
-      type = "post"
-      idname = "##{id}"
+        pid = "p#{id}"
+        type = "post"
+        idname = "##{id}"
     post = document.getElementById pid
     content = "Retrieving content..."
     qwest.post(window.stripPage(location.pathname) + "/post/" + id + "/raw")
@@ -24,6 +24,11 @@ editPost = (id) ->
             section.insertBefore errmsg, section.firstChild
     nick = document.querySelector("##{pid}  .nickname").innerHTML
     tripcodebar = if !window.adminMode then "<input class=\"full short inline verysmall\" type=\"text\" name=\"tripcode\" placeholder=\"Tripcode (required)\" required />" else ""
+    # if post is OP, allow editing thread tags
+    tagsbar = ""
+    tags = post.dataset?.tags
+    if idname is "OP" and tags.replace(/// ///g, '').length > 0
+        tagsbar = "<input class=\"full small\" type=\"text\" name=\"tags\" placeholder=\"Tags (separated by comma)\" value=\"#{tags.substring(0, tags.length-2)}\"/>"
     original[id] = post.innerHTML
     post.innerHTML = """
 <section id="#{id}" class="form"><a name="edit" class="nolink"></a>
@@ -34,6 +39,7 @@ editPost = (id) ->
       <span style="color: #ccc; display: inline-block; width: auto; font-size: 0.9em;">editing #{idname}</span>
     </div>
     <textarea class="full small editor" name="text" required placeholder="Thread text (Markdown is supported)">#{content}</textarea>
+    #{tagsbar}
     <center>
       <div class="chars-count" data-maxlen="#{maxlen}"></div>
       <input type="Submit" value="Edit post"/><button type="button" onclick="cancelForm(#{id});">Cancel</button>
@@ -46,12 +52,12 @@ editPost = (id) ->
 # post delete
 deletePost = (id) ->
     if id == 0
-      pid = type = "thread"
-      idname = "OP"
+        pid = type = "thread"
+        idname = "OP"
     else
-      pid = "p#{id}"
-      type = "post"
-      idname = "##{id}"
+        pid = "p#{id}"
+        type = "post"
+        idname = "##{id}"
     post = document.getElementById pid
     nick = document.querySelector("##{pid}  .nickname").innerHTML
     original[id] = post.innerHTML

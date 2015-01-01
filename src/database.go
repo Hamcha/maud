@@ -246,6 +246,20 @@ func DBIncTag(name string, lastThread bson.ObjectId) error {
 	return err
 }
 
+// DBDecTag updates the tag named `name` by decreasing its number of
+// posts by 1. LastThread remains the old one.
+func DBDecTag(name string) error {
+	inc := mgo.Change{
+		Update: bson.M{
+			"$inc": bson.M{"posts": -1},
+		},
+		ReturnNew: true,
+	}
+	var doc Tag
+	_, err := database.C("tags").Find(bson.M{"name": name}).Apply(inc, &doc)
+	return err
+}
+
 // DBEditPost updates the post with id `id` by changing its content to
 // newContent and its lastmodified date to the current date.
 func DBEditPost(id bson.ObjectId, newContent string) error {
@@ -254,6 +268,15 @@ func DBEditPost(id bson.ObjectId, newContent string) error {
 			"lastmodified": time.Now().UTC().Unix(),
 			"content":      newContent,
 		},
+	})
+	return err
+}
+
+// DBSetThreadTags changes the tags of the thread with id `id` to `newTags`
+// and returns an error, or nil if no error occurred
+func DBSetThreadTags(id bson.ObjectId, newTags []string) error {
+	err := database.C("threads").UpdateId(id, bson.M{
+		"$set": bson.M{"tags": newTags},
 	})
 	return err
 }

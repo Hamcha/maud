@@ -115,9 +115,9 @@ func apiPreview(rw http.ResponseWriter, req *http.Request) {
 }
 
 // apiEditPost: updates the content of a post and its LastModified field
-// (auth via tripcode); returns the new content as response so it can
-// be used to update the original post via AJAX
-// POST params: tripcode, text
+// (auth via tripcode); if post is OP, also accepts 'tags' param to edit
+// thread tags.
+// POST params: tripcode, text, [tags]
 func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	isAdmin, val := isAdmin(req)
@@ -145,6 +145,27 @@ func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 	if postTooLong(newContent) {
 		http.Error(rw, "Post is too long.", 400)
 		return
+	}
+	// update tags
+	tags := parseTags(req.PostFormValue("tags"))
+	if post.Id == thread.ThreadPost && len(tags) > 0 {
+		oldtags := make(map[string]bool, len(thread.Tags))
+		for _, tag := range thread.Tags {
+			oldtags[tag] = true
+		}
+		err = DBSetThreadTags(thread.Id, tags)
+		for _, tag := range tags {
+			if oldtags[tag] {
+				delete(oldtags, tag)
+				continue // no need to inc/dec tag
+			}
+			// increment new tag
+			DBIncTag(tag, thread.Id)
+		}
+		// decrement any tag which was removed
+		for tag := range oldtags {
+			DBDecTag(tag)
+		}
 	}
 
 	err = DBEditPost(post.Id, newContent)
