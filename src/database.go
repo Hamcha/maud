@@ -257,6 +257,10 @@ func DBDecTag(name string) error {
 	}
 	var doc Tag
 	_, err := database.C("tags").Find(bson.M{"name": name}).Apply(inc, &doc)
+	// remove tag if not referred by any thread.
+	if doc.Posts < 1 {
+		err = database.C("tags").Remove(bson.M{"name": name})
+	}
 	return err
 }
 
