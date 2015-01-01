@@ -262,7 +262,7 @@ textarea.full { margin: 6px auto; min-height: 200px; overflow: auto; }
 .small { font-size: 1rem; }
 .verysmall { font-size: 1rem; }
 textarea.verysmall { min-height: 100px; }
-textarea.editor { margin: 2px 0 5px 0; width: 98%; min-height: 150px; }
+textarea.editor { min-height: 150px; }
 
 input.short { max-width: 150px; }
 input.inline { display: inline-block; padding: 3px; margin-right: 5px; }
