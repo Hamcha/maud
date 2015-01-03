@@ -14,7 +14,7 @@ import (
 func apiNewThread(rw http.ResponseWriter, req *http.Request) {
 	postTitle := req.PostFormValue("title")
 	postNickname := req.PostFormValue("nickname")
-	postContent := req.PostFormValue("text")
+	postContent := strings.TrimRight(req.PostFormValue("text"), "\r\n") + "\r\n"
 	postTags := req.PostFormValue("tags")
 	if len(postTitle) < 1 || len(postContent) < 1 {
 		http.Error(rw, "Required fields are missing", 400)
@@ -69,7 +69,7 @@ func apiReply(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	postNickname := req.PostFormValue("nickname")
-	postContent := req.PostFormValue("text")
+	postContent := strings.TrimRight(req.PostFormValue("text"), "\r\n") + "\r\n"
 	if len(postContent) < 1 {
 		http.Error(rw, "Required fields are missing", 400)
 		return
@@ -102,7 +102,7 @@ func apiReply(rw http.ResponseWriter, req *http.Request) {
 // were a reply.
 // POST params: text
 func apiPreview(rw http.ResponseWriter, req *http.Request) {
-	postContent := req.PostFormValue("text")
+	postContent := strings.TrimRight(req.PostFormValue("text"), "\r\n") + "\r\n"
 	if len(postContent) < 1 {
 		http.Error(rw, "Required fields are missing", 400)
 		return
@@ -140,8 +140,8 @@ func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 		http.Error(rw, "Invalid tripcode", 401)
 		return
 	}
-	// update post content and date
-	newContent := req.PostFormValue("text")
+	// update post content and date (strip multiple whitespaces at the end of the text)
+	newContent := strings.TrimRight(req.PostFormValue("text"), "\r\n") + "\r\n"
 	if postTooLong(newContent) {
 		http.Error(rw, "Post is too long.", 400)
 		return
