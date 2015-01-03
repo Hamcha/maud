@@ -87,7 +87,7 @@ func bbcode(code string) string {
 
 		// Is it a closing tag?
 		if top >= 0 && tag[0] == '/' {
-			tag = tag[1:]
+			tag = strings.ToLower(tag[1:])
 			for idx := top; idx >= 0; idx -= 1 {
 				if stack[idx].Name == tag {
 					content := code[stack[top].End:start]
@@ -104,7 +104,7 @@ func bbcode(code string) string {
 			parameter := ""
 			if index(tag, 0, '=') > 0 {
 				parts := strings.SplitN(tag, "=", 2)
-				tag = parts[0]
+				tag = strings.ToLower(parts[0])
 				parameter = parts[1]
 			}
 			// Is it a registered bbcode?
