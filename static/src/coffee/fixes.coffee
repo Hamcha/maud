@@ -68,7 +68,7 @@ if "nsfw" in filter
     safeButton.style.boxShadow = "0 0 0 1px green inset"
     safeButton.onclick = () ->
         status = window.removeFilter ["nsfw"]
-        location.reload()
+        location.reload true
         return
 else
     safeButton.style.boxShadow = "0 0 0 1px darkred inset"
@@ -76,7 +76,7 @@ else
         status = window.addFilter ["nsfw"]
         if status == false
             alert "Cookies are not enabled, Safe mode couldn't be enabled"
-        location.reload()
+        location.reload true
         return
 
 # Setup toggle buttons in light mode
