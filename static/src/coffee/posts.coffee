@@ -28,7 +28,7 @@ editPost = (id) ->
     tagsbar = ""
     tags = post.dataset?.tags
     if idname is "OP" and tags.replace(/// ///g, '').length > 0
-        tagsbar = "<input class=\"full small\" type=\"text\" name=\"tags\" placeholder=\"Tags (separated by comma)\" value=\"#{tags.substring(0, tags.length-2)}\"/>"
+        tagsbar = "<input class=\"full small\" type=\"text\" name=\"tags\" placeholder=\"Tags (separated by #)\" value=\"#{tags}\"/>"
     original[id] = post.innerHTML
     post.innerHTML = """
 <section id="#{id}" class="form"><a name="edit" class="nolink"></a>
@@ -37,6 +37,17 @@ editPost = (id) ->
       <span class="full verysmall nickname" style="display: inline-block; border: 0; width: auto">#{nick}</span>
       #{tripcodebar}
       <span style="color: #ccc; display: inline-block; width: auto; font-size: 0.9em;">editing #{idname}</span>
+    </div>
+    <!-- Editor buttons -->
+    <div id="editorButtons" class="small">
+        <a onclick="editorAdd(this, 'b')"><b>B</b></a>
+        <a onclick="editorAdd(this, 'i')"><i>i</i></a>
+        <a onclick="editorAdd(this, 'u')"><u>u</u></a>
+        <a onclick="editorAdd(this, 'strike')"><strike>strike</strike></a>
+        <a onclick="editorAdd(this, 'img')">img</a>
+        <a onclick="editorAdd(this, 'url')"><span style="border-bottom: 1px dotted #fff">url</span></a>
+        <a onclick="editorAdd(this, 'spoiler')">spoiler</a>
+        <a onclick="editorAdd(this, 'youtube')">youtube</a>
     </div>
     <textarea class="full small editor" name="text" required placeholder="Thread text (Markdown is supported)">#{content}</textarea>
     #{tagsbar}
