@@ -28,7 +28,7 @@ editPost = (id) ->
     tagsbar = ""
     tags = post.dataset?.tags
     if idname is "OP" and tags.replace(/// ///g, '').length > 0
-        tagsbar = "<input class=\"full small\" type=\"text\" name=\"tags\" placeholder=\"Tags (separated by comma)\" value=\"#{tags.substring(0, tags.length-2)}\"/>"
+        tagsbar = "<input class=\"full small\" type=\"text\" name=\"tags\" placeholder=\"Tags (separated by #)\" value=\"#{tags}\"/>"
     original[id] = post.innerHTML
     post.innerHTML = """
 <section id="#{id}" class="form"><a name="edit" class="nolink"></a>

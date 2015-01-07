@@ -53,17 +53,25 @@ func parseTags(tags string) []string {
 	if len(tags) < 1 {
 		return nil
 	}
-	list := strings.Split(tags, ",")
+	list := strings.Split(tags, "#")
+	list = removeEmpty(list)
 	for i := range list {
 		// Spaces begone
 		list[i] = strings.ToLower(strings.TrimSpace(list[i]))
-		// Strip initial # if any
-		if list[i][0] == '#' {
-			list[i] = list[i][1:]
-		}
 	}
 	list = removeDuplicates(list)
 	return list
+}
+
+func removeEmpty(in []string) []string {
+	out := make([]string, 0)
+	for _, i := range in {
+		if len(i) > 0 {
+			out = append(out, i)
+		}
+	}
+
+	return out
 }
 
 func removeDuplicates(in []string) []string {

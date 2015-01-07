@@ -8,7 +8,7 @@
 <section class="tags">
 {{#Tags}}<a href="{{BasePath}}tag/{{.}}" class="tag">#{{.}}</a> {{/Tags}}
 </section>
-<article class="thread" id="thread" data-tags="{{#Tags}}#{{.}}, {{/Tags}}">
+<article class="thread" id="thread" data-tags="{{#Tags}} #{{.}}{{/Tags}}">
     <h2 class="thread-title">{{Title}}</h2>
     {{/Thread}}
     {{#HasOP}}
