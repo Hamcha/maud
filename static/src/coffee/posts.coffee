@@ -38,6 +38,17 @@ editPost = (id) ->
       #{tripcodebar}
       <span style="color: #ccc; display: inline-block; width: auto; font-size: 0.9em;">editing #{idname}</span>
     </div>
+    <!-- Editor buttons -->
+    <div id="editorButtons" class="small">
+        <a onclick="editorAdd(this, 'b')"><b>B</b></a>
+        <a onclick="editorAdd(this, 'i')"><i>i</i></a>
+        <a onclick="editorAdd(this, 'u')"><u>u</u></a>
+        <a onclick="editorAdd(this, 'strike')"><strike>strike</strike></a>
+        <a onclick="editorAdd(this, 'img')">img</a>
+        <a onclick="editorAdd(this, 'url')"><span style="border-bottom: 1px dotted #fff">url</span></a>
+        <a onclick="editorAdd(this, 'spoiler')">spoiler</a>
+        <a onclick="editorAdd(this, 'youtube')">youtube</a>
+    </div>
     <textarea class="full small editor" name="text" required placeholder="Thread text (Markdown is supported)">#{content}</textarea>
     #{tagsbar}
     <center>

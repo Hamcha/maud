@@ -3,10 +3,22 @@
     <form id="prev-form" method="POST" action="{{BasePath}}new">
         <input class="full small" type="text" name="nickname" placeholder="Nickname#Tripcode (optional)" autofocus />
         <input class="full" type="text" name="title" placeholder="Thread title" required />
-        <textarea class="full small" name="text" required placeholder="Thread text (BBCode / Markdown)"></textarea>
-		<div style="padding: 0; font-size: 1rem; margin: 7px; margin-top: -3px;"><a href="https://github.com/Hamcha/maud/wiki/Formatting-reference-sheet">BBCode/ Markdown guide</a></div>
         <input class="full small" type="text" name="tags" placeholder="Tags (separated by comma)" />
         <hr />
+
+        <!-- Editor buttons -->
+        <div id="editorButtons">
+            <a onclick="editorAdd(this, 'b')"><b>B</b></a>
+            <a onclick="editorAdd(this, 'i')"><i>i</i></a>
+            <a onclick="editorAdd(this, 'u')"><u>u</u></a>
+            <a onclick="editorAdd(this, 'strike')"><strike>strike</strike></a>
+            <a onclick="editorAdd(this, 'img')">img</a>
+            <a onclick="editorAdd(this, 'url')"><span style="border-bottom: 1px dotted #fff">url</span></a>
+            <a onclick="editorAdd(this, 'spoiler')">spoiler</a>
+            <a onclick="editorAdd(this, 'youtube')">youtube</a>
+        </div>
+
+        <textarea class="full small" name="text" required placeholder="Thread text (BBCode / Markdown)"></textarea>
         <center>
 			<div class="chars-count" data-maxlen="{{#Info}}{{MaxPostLength}}{{/Info}}"></div>
             <input type="submit" value="Create thread" />
@@ -14,3 +26,4 @@
         </center>
     </form>
 </section>
+<script src="/static/js/editor.js"></script>

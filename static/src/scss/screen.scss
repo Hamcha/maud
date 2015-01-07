@@ -267,6 +267,22 @@ textarea.editor { min-height: 150px; }
 input.short { max-width: 150px; }
 input.inline { display: inline-block; padding: 3px; margin-right: 5px; }
 
+#editorButtons {
+    &.small {
+        font-size: 0.9em;
+        margin: 0 6px;
+    }
+
+    margin: 0 7px;
+    a {
+        @extend a[href].button;
+        border-color: #666;
+        font-size: 1em;
+        min-width: 1em;
+        text-align: center;
+    }
+}
+
 /* Errors */
 
 .error {
