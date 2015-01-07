@@ -1,7 +1,8 @@
 editorAdd = (elem, tag) ->
-	txt = elem.parentElement.parentElement.text
-	txt.value += "[#{tag}][/#{tag}]"
-	txt.selectionStart = txt.selectionEnd = txt.value.length - 3 - tag.length
-	txt.focus()
+    txt = elem.parentElement.parentElement.text
+    cursor = txt.selectionStart
+    txt.value = txt.value[0..txt.selectionStart-1] + "[#{tag}][/#{tag}]" + txt.value[txt.selectionStart..]
+    txt.selectionStart = txt.selectionEnd = cursor + tag.length + 2
+    txt.focus()
 
 window.editorAdd = editorAdd
