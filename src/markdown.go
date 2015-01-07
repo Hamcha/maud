@@ -25,7 +25,7 @@ func initMarkdown() {
 	mdElements = map[*regexp.Regexp]func(*regexp.Regexp, string) string{
 		regexp.MustCompile("(?U)(^|\\\\\\\\|[^\\\\])\\*\\*(.*[^\\\\])\\*\\*"): mdConvertTag("b"),
 		regexp.MustCompile("(?U)(^|\\\\\\\\|[^\\\\])\\*(.*[^\\\\])\\*"):       mdConvertTag("i"),
-		regexp.MustCompile("(?U)(^|\\\\\\\\|[^\\\\])!\\[(.*)\\]\\((.*)\\)"):   mdConvertTagParam("iframe", "src"),
+		regexp.MustCompile("(?U)(^|\\\\\\\\|[^\\\\])!\\[(.*)\\]\\((.*)\\)"):   mdConvertTagParam("img", "src"),
 		regexp.MustCompile("(?U)(^|\\\\\\\\|[^\\\\])\\[(.*)\\]\\((.*)\\)"):    mdConvertTagParam("a", "href"),
 		regexp.MustCompile("(?U)(^|\\\\\\\\|[^\\\\])`(.*[^\\\\])`"):           mdConvertTag("code"),
 		regexp.MustCompile("^&gt;.*$"):                                        mdConvertQuote,
