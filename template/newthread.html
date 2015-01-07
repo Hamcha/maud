@@ -1,9 +1,10 @@
-<section><h2>Creating a new thread</h2></section>
+<section><h2 style="padding: 2px 5px;">Creating a new thread</h2></section>
 <section class="form">
     <form id="prev-form" method="POST" action="{{BasePath}}new">
         <input class="full small" type="text" name="nickname" placeholder="Nickname#Tripcode (optional)" autofocus />
         <input class="full" type="text" name="title" placeholder="Thread title" required />
-        <textarea class="full small" name="text" required placeholder="Thread text (Markdown is supported)"></textarea>
+        <textarea class="full small" name="text" required placeholder="Thread text (BBCode / Markdown)"></textarea>
+		<div style="padding: 0; font-size: 1rem; margin: 7px; margin-top: -3px;"><a href="https://github.com/Hamcha/maud/wiki/Formatting-reference-sheet">BBCode/ Markdown guide</a></div>
         <input class="full small" type="text" name="tags" placeholder="Tags (separated by comma)" />
         <hr />
         <center>
