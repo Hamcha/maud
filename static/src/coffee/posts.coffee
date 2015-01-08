@@ -39,6 +39,9 @@ editPost = (id) ->
       <span style="color: #ccc; display: inline-block; width: auto; font-size: 0.9em;">editing #{idname}</span>
     </div>
     <!-- Editor buttons -->
+    <div id="editorRight" class="small">
+        <a target="_blank" href="/wiki/formatting">?</a>
+    </div>
     <div id="editorButtons" class="small">
         <a onclick="editorAdd(this, 'b')"><b>B</b></a>
         <a onclick="editorAdd(this, 'i')"><i>i</i></a>

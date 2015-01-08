@@ -6,6 +6,8 @@ import (
 	"github.com/gorilla/mux"
 	"math/rand"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -409,6 +411,16 @@ func httpNewThread(rw http.ResponseWriter, req *http.Request) {
 	send(rw, req, "newthread", "New thread", nil)
 }
 
+func httpWiki(rw http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+	path := filepath.Base(vars["page"])
+	if _, err := os.Stat(maudRoot + "/wiki/" + path + ".html"); os.IsNotExist(err) {
+		sendError(rw, 404, nil)
+		return
+	}
+	wiki(rw, req, path)
+}
+
 func send(rw http.ResponseWriter, req *http.Request, name string, title string, context interface{}) {
 	if len(title) > 0 {
 		title = " ~ " + title
@@ -444,6 +456,35 @@ func send(rw http.ResponseWriter, req *http.Request, name string, title string, 
 				req.URL.String(),
 				ok,
 				isLightVersion(req),
+			}))
+}
+
+func wiki(rw http.ResponseWriter, req *http.Request, name string) {
+	basepath := "/"
+	ok, val := isAdmin(req)
+	if ok {
+		basepath = val.BasePath
+	}
+	footer := siteInfo.Footer[rand.Intn(len(siteInfo.Footer))]
+	if len(siteInfo.PostFooter) > 0 {
+		footer += siteInfo.PostFooter
+	}
+	fmt.Fprintln(rw,
+		mustache.RenderFileInLayout(
+			maudRoot+"/wiki/"+name+".html",
+			maudRoot+"/template/layout.html",
+			struct {
+				Info     SiteInfo
+				Title    string
+				Footer   string
+				BasePath string
+				UrlPath  string
+			}{
+				siteInfo,
+				siteInfo.Title + " ~ Wiki",
+				footer,
+				basepath,
+				req.URL.String(),
 			}))
 }
 
