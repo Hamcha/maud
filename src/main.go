@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 var siteInfo SiteInfo
@@ -42,6 +43,16 @@ func setupHandlers(router *mux.Router, isAdmin, isSubdir bool) {
 	SetHandler(POST, "/tagsearch", apiTagSearch, isAdmin, isSubdir)
 	SetHandler(POST, "/postpreview", apiPreview, isAdmin, isSubdir)
 	SetHandler(POST, "/taglist", apiTagList, isAdmin, isSubdir)
+}
+
+func dontListDirs(h http.Handler) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasSuffix(r.URL.Path, "/") {
+			http.Error(w, "Forbidden", 403)
+			return
+		}
+		h.ServeHTTP(w, r)
+	})
 }
 
 func main() {
@@ -101,7 +112,7 @@ func main() {
 
 	setupHandlers(router, false, false)
 	http.Handle("/", router)
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(maudRoot+"/static"))))
+	http.Handle("/static/", dontListDirs(http.StripPrefix("/static/", http.FileServer(http.Dir(maudRoot+"/static")))))
 
 	// Start serving pages
 	fmt.Printf("Listening on %s\r\nServer root: %s\r\n", *bind, maudRoot)
