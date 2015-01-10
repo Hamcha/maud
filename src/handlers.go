@@ -448,7 +448,7 @@ func httpWikiIndex(rw http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	send(rw, req, "wiki-index", "", struct {
+	send(rw, req, "wiki-index", "Wiki Index", struct {
 		Pages []WikiPage
 	}{
 		wikiPages,
@@ -503,6 +503,7 @@ func wiki(rw http.ResponseWriter, req *http.Request, name string) {
 	if len(siteInfo.PostFooter) > 0 {
 		footer += siteInfo.PostFooter
 	}
+	title := strings.ToUpper(name[0:1]) + strings.Replace(name[1:], "-", " ", -1)
 	fmt.Fprintln(rw,
 		mustache.RenderFileInLayout(
 			maudRoot+"/wiki/"+name+".html",
@@ -515,7 +516,7 @@ func wiki(rw http.ResponseWriter, req *http.Request, name string) {
 				UrlPath  string
 			}{
 				siteInfo,
-				siteInfo.Title + " ~ Wiki",
+				siteInfo.Title + " ~ Wiki: " + title,
 				footer,
 				basepath,
 				req.URL.String(),
