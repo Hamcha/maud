@@ -446,8 +446,6 @@ func httpWikiIndex(rw http.ResponseWriter, req *http.Request) {
 		if len(title) > 0 {
 			wikiPages = append(wikiPages, WikiPage{title, url, modTime})
 		}
-		//wikiPages[idx].PageTitle = title
-		//wikiPages[idx].PageUrl = url
 	}
 
 	send(rw, req, "wiki-index", "", struct {
