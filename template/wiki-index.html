@@ -1,0 +1,19 @@
+<nav>
+    <!-- TODO: search ? -->
+    <form style="display: inline-block" method="POST" action="{{BasePath}}wikisearch">
+      <input type="text" name="tags" id="tagsearch" placeholder="TODO: search sticky page" required title="Insert tags separated by commas" />
+      <!--<input type="submit" value="Search" />-->
+    </form>
+</nav>
+<hr />
+<article class="hidden2">
+    Sticky Pages 
+</article>
+{{#Data}}
+{{#Pages}}
+<article class="thread-item">
+    <h3 class="thread-name"><a href="{{BasePath}}wiki/{{PageUrl}}" class="nolink">{{PageTitle}}</a></h3>
+    Last updated: <span class="date">{{LastUpdate}}</span>
+</article>
+{{/Pages}}
+{{/Data}}

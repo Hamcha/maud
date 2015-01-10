@@ -4,6 +4,7 @@ import (
 	"../mustache"
 	"fmt"
 	"github.com/gorilla/mux"
+	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"os"
@@ -419,6 +420,41 @@ func httpWiki(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 	wiki(rw, req, path)
+}
+
+func httpWikiIndex(rw http.ResponseWriter, req *http.Request) {
+	fileList, err := ioutil.ReadDir(maudRoot + "/wiki/")
+	if err != nil {
+		sendError(rw, 500, err.Error())
+		return
+	}
+
+	type WikiPage struct {
+		PageTitle  string
+		PageUrl    string
+		LastUpdate int64
+	}
+	wikiPages := make([]WikiPage, 0)
+	for _, file := range fileList {
+		if file.IsDir() || !strings.HasSuffix(file.Name(), ".html") {
+			continue
+		}
+		url := strings.TrimSuffix(file.Name(), ".html")
+		// Prettify title
+		title := strings.ToUpper(url[0:1]) + strings.Replace(url[1:], "-", " ", -1)
+		modTime := file.ModTime().Unix()
+		if len(title) > 0 {
+			wikiPages = append(wikiPages, WikiPage{title, url, modTime})
+		}
+		//wikiPages[idx].PageTitle = title
+		//wikiPages[idx].PageUrl = url
+	}
+
+	send(rw, req, "wiki-index", "", struct {
+		Pages []WikiPage
+	}{
+		wikiPages,
+	})
 }
 
 func send(rw http.ResponseWriter, req *http.Request, name string, title string, context interface{}) {
