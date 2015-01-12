@@ -32,8 +32,8 @@ func setupHandlers(router *mux.Router, isAdmin, isSubdir bool) {
 	SetHandler(GET, "/threads/page/{page}", httpAllThreads, isAdmin, isSubdir)
 	SetHandler(GET, "/tags", httpAllTags, isAdmin, isSubdir)
 	SetHandler(GET, "/tags/page/{page}", httpAllTags, isAdmin, isSubdir)
-	SetHandler(GET, "/wiki", httpWikiIndex, isAdmin, isSubdir)
-	SetHandler(GET, "/wiki/{page}", httpWiki, isAdmin, isSubdir)
+	SetHandler(GET, "/stiki", httpStikiIndex, isAdmin, isSubdir)
+	SetHandler(GET, "/stiki/{page}", httpStiki, isAdmin, isSubdir)
 
 	SetHandler(POST, "/new", apiNewThread, isAdmin, isSubdir)
 	SetHandler(POST, "/thread/{thread}/reply", apiReply, isAdmin, isSubdir)
