@@ -40,7 +40,7 @@ editPost = (id) ->
 	</div>
 	<!-- Editor buttons -->
 	<div id="editorRight" class="small">
-		<a target="_blank" href="/wiki/formatting">?</a>
+		<a target="_blank" href="/stiki/formatting">?</a>
 	</div>
 	<div id="editorButtons" class="small">
 		<a onclick="editorAdd(this, 'b')"><b>B</b></a>

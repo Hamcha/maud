@@ -412,29 +412,29 @@ func httpNewThread(rw http.ResponseWriter, req *http.Request) {
 	send(rw, req, "newthread", "New thread", nil)
 }
 
-func httpWiki(rw http.ResponseWriter, req *http.Request) {
+func httpStiki(rw http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	path := filepath.Base(vars["page"])
-	if _, err := os.Stat(maudRoot + "/wiki/" + path + ".html"); os.IsNotExist(err) {
+	if _, err := os.Stat(maudRoot + "/stiki/" + path + ".html"); os.IsNotExist(err) {
 		sendError(rw, 404, nil)
 		return
 	}
-	wiki(rw, req, path)
+	stiki(rw, req, path)
 }
 
-func httpWikiIndex(rw http.ResponseWriter, req *http.Request) {
-	fileList, err := ioutil.ReadDir(maudRoot + "/wiki/")
+func httpStikiIndex(rw http.ResponseWriter, req *http.Request) {
+	fileList, err := ioutil.ReadDir(maudRoot + "/stiki/")
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
 	}
 
-	type WikiPage struct {
+	type StikiPage struct {
 		PageTitle  string
 		PageUrl    string
 		LastUpdate int64
 	}
-	wikiPages := make([]WikiPage, 0)
+	stikiPages := make([]StikiPage, 0)
 	for _, file := range fileList {
 		if file.IsDir() || !strings.HasSuffix(file.Name(), ".html") {
 			continue
@@ -444,14 +444,14 @@ func httpWikiIndex(rw http.ResponseWriter, req *http.Request) {
 		title := strings.ToUpper(url[0:1]) + strings.Replace(url[1:], "-", " ", -1)
 		modTime := file.ModTime().Unix()
 		if len(title) > 0 {
-			wikiPages = append(wikiPages, WikiPage{title, url, modTime})
+			stikiPages = append(stikiPages, StikiPage{title, url, modTime})
 		}
 	}
 
-	send(rw, req, "wiki-index", "Wiki Index", struct {
-		Pages []WikiPage
+	send(rw, req, "stiki-index", "Stiki Index", struct {
+		Pages []StikiPage
 	}{
-		wikiPages,
+		stikiPages,
 	})
 }
 
@@ -493,7 +493,7 @@ func send(rw http.ResponseWriter, req *http.Request, name string, title string, 
 			}))
 }
 
-func wiki(rw http.ResponseWriter, req *http.Request, name string) {
+func stiki(rw http.ResponseWriter, req *http.Request, name string) {
 	basepath := "/"
 	ok, val := isAdmin(req)
 	if ok {
@@ -506,7 +506,7 @@ func wiki(rw http.ResponseWriter, req *http.Request, name string) {
 	title := strings.ToUpper(name[0:1]) + strings.Replace(name[1:], "-", " ", -1)
 	fmt.Fprintln(rw,
 		mustache.RenderFileInLayout(
-			maudRoot+"/wiki/"+name+".html",
+			maudRoot+"/stiki/"+name+".html",
 			maudRoot+"/template/layout.html",
 			struct {
 				Info     SiteInfo
@@ -516,7 +516,7 @@ func wiki(rw http.ResponseWriter, req *http.Request, name string) {
 				UrlPath  string
 			}{
 				siteInfo,
-				siteInfo.Title + " ~ Wiki: " + title,
+				siteInfo.Title + " ~ Stiki: " + title,
 				footer,
 				basepath,
 				req.URL.String(),
