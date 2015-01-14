@@ -17,6 +17,9 @@ func initLightify() {
 	iframeRgx = regexp.MustCompile(`<iframe .*src=("[^"]+"|'[^']+'|[^'"][^\s]+).*>`)
 }
 
+// Lightify takes a string containing HTML and converts embedded images and iframes
+// to hyperlink to those resources. Images from Imgur or Derpibooru get converted
+// into thumbnails linking to the full size resource.
 func Lightify(content string) string {
 	for _, match := range imgRgx.FindAllStringSubmatch(content, -1) {
 		url := match[1]
@@ -40,7 +43,6 @@ func wrapImg(url, content string) string {
 	return `<a target="_blank" href=` + url + ">" + content + "</a>"
 }
 
-// convert an Imgur image URL to its thumbnail URL
 func imgurThumb(origUrl string) string {
 	/* origUrl must be like 'https://i.imgur.com/{id}.jpg', else the returned
 	 * Url won't make sense. Getting a medium thumbnail just means
@@ -55,7 +57,7 @@ func derpibooruThumb(origUrl string) string {
 	splitted := strings.Split(origUrl, "/")
 	/* Derpibooru's URLs are slightly more complex than Imgur ones.
 	 * 5th element in the url is either 'view', which means a full size image,
-	 * or something else, which means a thumbnail. In each case, we want
+	 * or something else, which means a thumbnail. In any case, we want
 	 * the url to become https://img0.derpicdn.net/img/xxxx/yy/zz/{ID}/thumb.jpg,
 	 * so we save xxxx, yy, zz and ID.
 	 */
