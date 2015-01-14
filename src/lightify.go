@@ -9,7 +9,7 @@ var (
 	imgRgx    *regexp.Regexp
 	derpiRgx  *regexp.Regexp
 	iframeRgx *regexp.Regexp
-) 
+)
 
 func initLightify() {
 	imgRgx = regexp.MustCompile(`(?:<a [^>]+>)?<img .*src=("[^"]+"|'[^']+'|[^'"][^\s]+).*>(?:</a>)?`)
@@ -26,11 +26,11 @@ func Lightify(content string) string {
 		spl := strings.Split(url, "/")
 		switch {
 		case spl[2] == "i.imgur.com":
-			content = strings.Replace(content, match[0], wrapImg(url, "<img src=\"" + imgurThumb(url) + "\" alt=" + url + "/>"), 1)
+			content = strings.Replace(content, match[0], wrapImg(url, "<img src=\""+imgurThumb(url)+"\" alt="+url+"/>"), 1)
 		case derpiRgx.MatchString(spl[2]):
-			content = strings.Replace(content, match[0], wrapImg(url, "<img src=\"" + derpibooruThumb(url) + "\" alt=" + url + "/>"), 1)
+			content = strings.Replace(content, match[0], wrapImg(url, "<img src=\""+derpibooruThumb(url)+"\" alt="+url+"/>"), 1)
 		default:
-			content = strings.Replace(content, match[0], "<a class='toggleImage' data-url=" + url + ">[Click to view image]</a>", 1)
+			content = strings.Replace(content, match[0], "<a class='toggleImage' data-url="+url+">[Click to view image]</a>", 1)
 		}
 	}
 	content = iframeRgx.ReplaceAllString(content, "<a target=\"_blank\" href=$1>[Click to open embedded content]</a>")
@@ -67,11 +67,11 @@ func derpibooruThumb(origUrl string) string {
 	if idx < 0 {
 		ext = origUrl[strings.LastIndex(origUrl, ".")+1:]
 	} else {
-		ext = origUrl[strings.LastIndex(origUrl, ".")+1:idx]
+		ext = origUrl[strings.LastIndex(origUrl, ".")+1 : idx]
 	}
 	i := 4
 	var id string
-	if splitted[4] == "view" { 
+	if splitted[4] == "view" {
 		i++
 		idx = strings.Index(splitted[8], "_")
 		if idx < 0 {
