@@ -91,6 +91,7 @@ func main() {
 	// Initialize parsers
 	initMarkdown()
 	initbbcode()
+	initLightify()
 
 	// Initialize database
 	DBInit(*mongo, *dbname)
