@@ -1,0 +1,18 @@
+#maud {
+	margin: auto;
+	width: 500px;
+	position: relative;
+	& img {
+		position: absolute;
+		top: 0px;
+		left: 0px;
+	}
+}
+#liris { z-index: 0; }
+#riris { z-index: 0; }
+#reye { z-index: 1; }
+#leye { z-index: 1; }
+#bg { z-index: 2; }
+#base { z-index: 3; }
+#rlid { z-index: 4; }
+#llid { z-index: 4; }

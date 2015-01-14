@@ -131,7 +131,7 @@ func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 	thread, post, err := threadPostOrErr(rw, vars["thread"], vars["post"])
 	// if post has no tripcode associated, refuse to edit
 	if !isAdmin && len(post.Author.Tripcode) < 1 {
-		http.Error(rw, "Forbidden", 403)
+		sendError(rw, 403, "Forbidden")
 		return
 	}
 	// check tripcode
@@ -170,7 +170,7 @@ func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 
 	err = DBEditPost(post.Id, newContent)
 	if err != nil {
-		http.Error(rw, err.Error(), 500)
+		sendError(rw, 500, err.Error())
 		return
 	}
 
@@ -205,7 +205,7 @@ func apiDeletePost(rw http.ResponseWriter, req *http.Request) {
 	}
 	// if post has no tripcode associated, refuse to delete
 	if !isAdmin && len(post.Author.Tripcode) < 1 {
-		http.Error(rw, "Forbidden", 403)
+		sendError(rw, 403, "Forbidden")
 		return
 	}
 	// check tripcode
@@ -220,7 +220,7 @@ func apiDeletePost(rw http.ResponseWriter, req *http.Request) {
 		post.ContentType = "admin-deleted"
 	}
 	if err := database.C("posts").UpdateId(post.Id, post); err != nil {
-		http.Error(rw, err.Error(), 500)
+		sendError(rw, 500, err.Error())
 		return
 	}
 
@@ -261,7 +261,7 @@ func apiGetRaw(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 	if post.ContentType == "deleted" || post.ContentType == "admin-deleted" {
-		http.Error(rw, "Forbidden", 403)
+		sendError(rw, 403, "Forbidden")
 		return
 	}
 	fmt.Fprintln(rw, post.Content)

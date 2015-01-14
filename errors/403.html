@@ -1,0 +1,74 @@
+<header>
+    <a href="/">
+        <p style='line-height: 40pt; vertical-align: middle'>Forbidden<br>
+            <span style='font-size: 40%'>Keeping an eye on you...</span>
+        </p>
+    </a>
+</header>
+<hr />
+<div id='maud'>
+    <img id="base" src="/static/images/maudlook/eyeless-maud.png"/>
+    <img id="rlid" src="/static/images/maudlook/right-eyelid.png"/>
+    <img id="llid" src="/static/images/maudlook/left-eyelid.png"/>
+    <img id="reye" src="/static/images/maudlook/right-eye.png"/>
+    <img id="leye" src="/static/images/maudlook/left-eye.png"/>
+    <img id="riris" src="/static/images/maudlook/right-iris.png"/>
+    <img id="liris" src="/static/images/maudlook/left-iris.png"/>
+    <img id="bg" src="/static/images/maudlook/bg.png"/>
+</div>
+<script>
+    // load style
+    var link = document.createElement('link')
+    link.href = "/static/css/maudlook.css";
+    link.rel = "stylesheet";
+    link.type = "text/css";
+    document.getElementsByTagName('head')[0].appendChild(link);
+
+    var lEye = document.getElementById('leye');
+    var rEye = document.getElementById('reye');
+    var maud = document.getElementById('maud');
+    
+    // eyes' initial position
+    rEye.style.left = "64px";
+    rEye.style.top = "230px";
+    lEye.style.left = "189px";
+    lEye.style.top = "225px";
+
+    function moveEye(eye, which) {
+        var bounds = {};
+        var orig = { x: parseInt(eye.style.left, 10), y: parseInt(eye.style.top, 10) };
+        switch (which) {
+        case 'l':
+            bounds = {
+                right: 80,
+                left: -30,
+                top: -30,
+                bottom: 60,
+                center: { x: 268, y: 290 }
+            };
+            break;
+        case 'r':
+            bounds = {
+                right: 10,
+                left: -40,
+                top: -30,
+                bottom: 50,
+                center: { x: 95, y: 290 }
+            };
+        }
+        function clamp(n, min, max) {
+            return Math.min(Math.max(n, min), max);
+        }
+        return function (event) {
+            var x = event.clientX;
+            var y = event.clientY; 
+            var xOffset = x - (maud.getBoundingClientRect().left + bounds.center.x);
+            var yOffset = y - (maud.getBoundingClientRect().top + bounds.center.y);
+            //if(eye===rEye) console.log("mousex: "+x+",mousey: "+y+",orig={x:"+orig.x+",y:"+orig.y+"}");
+            eye.style.left = clamp(orig.x + Math.floor(xOffset / 6), orig.x + bounds.left, orig.x + bounds.right) + "px";
+            eye.style.top = clamp(orig.y + Math.floor(yOffset / 6), orig.y + bounds.top, orig.y + bounds.bottom) + "px";
+        }
+    }
+    window.addEventListener('mousemove', moveEye(lEye, 'l'), true);
+    window.addEventListener('mousemove', moveEye(rEye, 'r'), true);
+</script>

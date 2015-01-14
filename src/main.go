@@ -48,7 +48,7 @@ func setupHandlers(router *mux.Router, isAdmin, isSubdir bool) {
 func dontListDirs(h http.Handler) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if strings.HasSuffix(r.URL.Path, "/") {
-			http.Error(w, "Forbidden", 403)
+			sendError(w, 403, "Forbidden")
 			return
 		}
 		h.ServeHTTP(w, r)
