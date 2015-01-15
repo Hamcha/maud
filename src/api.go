@@ -137,7 +137,7 @@ func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 	// check tripcode
 	trip := req.PostFormValue("tripcode")
 	if !isAdmin && tripcode(trip) != post.Author.Tripcode {
-		http.Error(rw, "Invalid tripcode", 401)
+		sendError(rw, 401, "Invalid tripcode")
 		return
 	}
 	// update post content and date (strip multiple whitespaces at the end of the text)
@@ -211,7 +211,7 @@ func apiDeletePost(rw http.ResponseWriter, req *http.Request) {
 	// check tripcode
 	trip := req.PostFormValue("tripcode")
 	if !isAdmin && tripcode(trip) != post.Author.Tripcode {
-		http.Error(rw, "Invalid tripcode", 401)
+		sendError(rw, 401, "Invalid tripcode")
 		return
 	}
 	// set ContentType to 'deleted'
