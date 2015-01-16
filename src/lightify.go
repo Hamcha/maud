@@ -25,9 +25,9 @@ func Lightify(content string) string {
 		url := match[1]
 		spl := strings.Split(url, "/")
 		switch {
-		case spl[2] == "i.imgur.com":
+		case len(spl) > 2 && spl[2] == "i.imgur.com":
 			content = strings.Replace(content, match[0], wrapImg(url, "<img src=\""+imgurThumb(url)+"\" alt="+url+"/>"), 1)
-		case derpiRgx.MatchString(spl[2]):
+		case len(spl) > 2 && derpiRgx.MatchString(spl[2]):
 			content = strings.Replace(content, match[0], wrapImg(url, "<img src=\""+derpibooruThumb(url)+"\" alt="+url+"/>"), 1)
 		default:
 			content = strings.Replace(content, match[0], "<a class='toggleImage' data-url="+url+">[Click to view image]</a>", 1)
