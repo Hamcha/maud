@@ -34,7 +34,6 @@ type Database interface {
 	GetPosts(*Thread, int, int) ([]Posts, error)
 	PostCount(*Thread) (int, error)
 	GetPopularTags(int, int, []string) ([]Tag, error)
-	NextId(string) (int64, error)
 	IncTag(string, interface{}) error          // Move to internal only..?
 	DecTag(string) error                       // Move to internal only.. ?
 	EditPost(interface{}, string) error        // Shouldn't require bson id

@@ -93,15 +93,6 @@ func removeDuplicates(in []string) []string {
 	return out
 }
 
-func generateURL(name string) string {
-	buf := make([]byte, 8)
-	num, _ := DBNextId(name)
-	binary.PutVarint(buf, num+1)
-	btr := bytes.TrimRight(buf, "\000")
-	str := base64.URLEncoding.EncodeToString(btr)
-	return strings.TrimRight(str, "=")
-}
-
 func shortify(content string) (string, bool) {
 	if len(content) < 300 {
 		return content, false

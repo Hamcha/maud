@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func Provide() Formatter {
+func Provide() modules.Formatter {
 	bbcode := BBCodeFormatter{}
 	bbcode.Init()
 	return bbcode
@@ -85,7 +85,7 @@ func (b BBCodeFormatter) Format(code string) string {
 			for idx := top; idx >= 0; idx -= 1 {
 				if stack[idx].Name == tag {
 					content := code[stack[top].End:start]
-					parsed := bbElements[tag](stack[top].Parameter, content)
+					parsed := b.bbElements[tag](stack[top].Parameter, content)
 					code = code[0:stack[top].Start] + parsed + code[offset:]
 					// Pop stack
 					stack = stack[:idx]
@@ -102,7 +102,7 @@ func (b BBCodeFormatter) Format(code string) string {
 				parameter = parts[1]
 			}
 			// Is it a registered bbcode?
-			if _, ok := bbElements[tag]; ok {
+			if _, ok := b.bbElements[tag]; ok {
 				stack = append(stack, BBCode{
 					Name:      tag,
 					Parameter: parameter,

@@ -19,7 +19,7 @@ import (
 	"strings"
 )
 
-func Provide() Formatter {
+func Provide() modules.Formatter {
 	md := MarkdownFormatter{}
 	md.Init()
 	return md
@@ -56,12 +56,12 @@ func (m MarkdownFormatter) Format(content string) string {
 		if len(strings.TrimSpace(lines[idx])) == 0 {
 			continue
 		}
-		for regex, fn := range mdElements {
+		for regex, fn := range m.mdElements {
 			for regex.MatchString(lines[idx]) {
 				lines[idx] = fn(regex, lines[idx])
 			}
 		}
-		lines[idx] = trimEscape.ReplaceAllString(lines[idx], "$1")
+		lines[idx] = m.trimEscape.ReplaceAllString(lines[idx], "$1")
 	}
 
 	return strings.Join(lines, "<br />\n")

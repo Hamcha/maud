@@ -20,7 +20,7 @@ func Init(servers, dbname string) {
 	if err != nil {
 		panic(err)
 	}
-	db.database = session.DB(dbname)
+	db.database = db.session.DB(dbname)
 }
 
 func (db Database) Close() {
@@ -34,7 +34,7 @@ func (db Database) NewThread(user User, title, content string, tags []string) (s
 
 	thread := Thread{
 		Id:         tid,
-		ShortUrl:   generateURL("thread"),
+		ShortUrl:   generateURL(db, "thread"),
 		Title:      title,
 		Author:     user,
 		Tags:       tags,
@@ -149,26 +149,26 @@ func (db Database) GetThreadList(tag string, limit, offset int, filter []string)
 // GetThread returns the thread identified by the shorturl `surl`.
 func (db Database) GetThread(surl string) (Thread, error) {
 	var thread Thread
-	err := database.C("threads").Find(bson.M{"shorturl": surl}).One(&thread)
+	err := db.database.C("threads").Find(bson.M{"shorturl": surl}).One(&thread)
 	return thread, err
 }
 
 func (db Database) GetThreadById(id bson.ObjectId) (Thread, error) {
 	var thread Thread
-	err := database.C("threads").FindId(id).One(&thread)
+	err := db.database.C("threads").FindId(id).One(&thread)
 	return thread, err
 }
 
 func (db Database) GetPost(id bson.ObjectId) (Post, error) {
 	var post Post
-	err := database.C("posts").FindId(id).One(&post)
+	err := db.database.C("posts").FindId(id).One(&post)
 	return post, err
 }
 
 // GetPosts fetches the posts of a thread. If `limit` is > 0, fetch
 // up to `limit` posts. If `offset` > 0, start from `offset`-th post.
 func (db Database) GetPosts(thread *Thread, limit, offset int) ([]Post, error) {
-	query := database.C("posts").Find(bson.M{"threadid": thread.Id}).Sort("date")
+	query := db.database.C("posts").Find(bson.M{"threadid": thread.Id}).Sort("date")
 	if offset > 0 {
 		query = query.Skip(offset)
 	}
@@ -183,7 +183,7 @@ func (db Database) GetPosts(thread *Thread, limit, offset int) ([]Post, error) {
 }
 
 func (db Database) PostCount(thread *Thread) (int, error) {
-	return database.C("posts").Find(bson.M{"threadid": thread.Id}).Count()
+	return db.database.C("posts").Find(bson.M{"threadid": thread.Id}).Count()
 }
 
 type ByThreads []Tag
@@ -207,7 +207,7 @@ func (db Database) GetPopularTags(limit, offset int, filter []string) ([]Tag, er
 	} else {
 		cond = nil
 	}
-	query := database.C("tags").Find(cond).Sort("-lastupdate")
+	query := db.database.C("tags").Find(cond).Sort("-lastupdate")
 	if offset > 0 {
 		query = query.Skip(offset)
 	}
@@ -226,7 +226,7 @@ func (db Database) NextId(name string) (int64, error) {
 		ReturnNew: true,
 	}
 	var doc Counter
-	_, err := database.C("counters").Find(bson.M{"name": name}).Apply(inc, &doc)
+	_, err := db.database.C("counters").Find(bson.M{"name": name}).Apply(inc, &doc)
 	return doc.Seq, err
 }
 
@@ -245,7 +245,7 @@ func (db Database) IncTag(name string, lastThread bson.ObjectId) error {
 		ReturnNew: true,
 	}
 	var doc Tag
-	_, err := database.C("tags").Find(bson.M{"name": name}).Apply(inc, &doc)
+	_, err := db.database.C("tags").Find(bson.M{"name": name}).Apply(inc, &doc)
 	return err
 }
 
@@ -259,10 +259,10 @@ func (db Database) DecTag(name string) error {
 		ReturnNew: true,
 	}
 	var doc Tag
-	_, err := database.C("tags").Find(bson.M{"name": name}).Apply(inc, &doc)
+	_, err := db.database.C("tags").Find(bson.M{"name": name}).Apply(inc, &doc)
 	// remove tag if not referred by any thread.
 	if doc.Posts < 1 {
-		err = database.C("tags").Remove(bson.M{"name": name})
+		err = db.database.C("tags").Remove(bson.M{"name": name})
 	}
 	return err
 }
@@ -270,7 +270,7 @@ func (db Database) DecTag(name string) error {
 // EditPost updates the post with id `id` by changing its content to
 // newContent and its lastmodified date to the current date.
 func (db Database) EditPost(id bson.ObjectId, newContent string) error {
-	err := database.C("posts").UpdateId(id, bson.M{
+	err := db.database.C("posts").UpdateId(id, bson.M{
 		"$set": bson.M{
 			"lastmodified": time.Now().UTC().Unix(),
 			"content":      newContent,
@@ -282,7 +282,7 @@ func (db Database) EditPost(id bson.ObjectId, newContent string) error {
 // DBSetThreadTags changes the tags of the thread with id `id` to `newTags`
 // and returns an error, or nil if no error occurred
 func (db Database) SetThreadTags(id bson.ObjectId, newTags []string) error {
-	err := database.C("threads").UpdateId(id, bson.M{
+	err := db.database.C("threads").UpdateId(id, bson.M{
 		"$set": bson.M{"tags": newTags},
 	})
 	return err
@@ -292,14 +292,14 @@ func (db Database) SetThreadTags(id bson.ObjectId, newTags []string) error {
 // If word given is "", the behaviour is the same as DBGetPopularTags.
 func (db Database) GetMatchingTags(word string, limit, offset int, filter []string) ([]Tag, error) {
 	if len(word) < 1 {
-		return DBGetPopularTags(limit, offset, filter)
+		return db.GetPopularTags(limit, offset, filter)
 	}
 	matching := bson.M{"name": bson.RegEx{word, "i"}}
 	if filter != nil {
 		cond := bson.M{"tags": bson.M{"$nin": filter}}
 		matching = bson.M{"$and": []bson.M{matching, cond}}
 	}
-	query := database.C("tags").Find(matching).Sort("-lrdate")
+	query := db.database.C("tags").Find(matching).Sort("-lrdate")
 	if offset > 0 {
 		query = query.Skip(offset)
 	}

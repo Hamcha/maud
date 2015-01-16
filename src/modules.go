@@ -9,10 +9,10 @@ import (
 	"./modules/formatters/markdown"
 )
 
-var formatters []Formatter
+var formatters []modules.Formatter
 
 func InitFormatters() {
-	formatters = make([]Formatter, 0)
+	formatters = make([]modules.Formatter, 0)
 	formatters = append(formatters, bbcode.Provide())
 	formatters = append(formatters, markdown.Provide())
 }
