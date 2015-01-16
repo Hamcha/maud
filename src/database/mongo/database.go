@@ -13,7 +13,7 @@ type Database struct {
 	database *mgo.Database
 }
 
-func Init(servers, dbname string) {
+func Init(servers, dbname string) Database {
 	var db Database
 	var err error
 	db.session, err = mgo.Dial(servers)
@@ -21,6 +21,7 @@ func Init(servers, dbname string) {
 		panic(err)
 	}
 	db.database = db.session.DB(dbname)
+	return db
 }
 
 func (db Database) Close() {
@@ -274,6 +275,22 @@ func (db Database) EditPost(id bson.ObjectId, newContent string) error {
 		"$set": bson.M{
 			"lastmodified": time.Now().UTC().Unix(),
 			"content":      newContent,
+		},
+	})
+	return err
+}
+
+// DeletePost updates the post with id `id` by changing its content to
+// "deleted" or "admin-deleted"
+func (db Database) DeletePost(id bson.ObjectId, admin bool) error {
+	ctype := "deleted"
+	if admin {
+		ctype = "admin-deleted"
+	}
+	err := db.database.C("posts").UpdateId(id, bson.M{
+		"$set": bson.M{
+			"lastmodified": time.Now().UTC().Unix(),
+			"content-type": ctype,
 		},
 	})
 	return err

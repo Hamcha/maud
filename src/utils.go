@@ -1,10 +1,8 @@
 package main
 
 import (
-	"bytes"
 	"crypto/sha256"
 	"encoding/base64"
-	"encoding/binary"
 	"errors"
 	"net/http"
 	"regexp"
@@ -34,10 +32,11 @@ func parseContent(content, ctype string) string {
 	switch ctype {
 	/* New and hot BBcode + Markdown */
 	case "bbcode":
-		safe := PostPolicy().Sanitize(content)
-		bbc := bbcode(safe)
-		html := ParseMarkdown(bbc)
-		return html
+		code := PostPolicy().Sanitize(content)
+		for _, f := range formatters {
+			code = f.Format(code)
+		}
+		return code
 	/* Deleted posts */
 	case "deleted":
 		return "<em>Message deleted by the user</em>"
@@ -137,14 +136,14 @@ func shortify(content string) (string, bool) {
 }
 
 func threadPostOrErr(rw http.ResponseWriter, threadId, postIdStr string) (Thread, Post, error) {
-	thread, err := DBGetThread(threadId)
+	thread, err := database.GetThread(threadId)
 	// retreive post
 	postId, err := strconv.Atoi(postIdStr)
 	if err != nil {
 		http.Error(rw, "Invalid post ID", 400)
 		return thread, Post{}, err
 	}
-	posts, err := DBGetPosts(&thread, 1, postId)
+	posts, err := database.GetPosts(&thread, 1, postId)
 	if err != nil {
 		http.Error(rw, err.Error(), 500)
 		return thread, posts[0], err
@@ -178,4 +177,13 @@ func lightify(content string) string {
 	iframe := regexp.MustCompile("<iframe .*src=(\"[^\"]+\"|'[^']+'|[^'\"][^\\s]+).*>")
 	content = iframe.ReplaceAllString(content, "<a target=\"_blank\" href=$1>[Click to open embedded content]</a>")
 	return content
+}
+
+func index(str string, offset int, del uint8) int {
+	for i := offset; i < len(str); i++ {
+		if str[i] == del {
+			return i
+		}
+	}
+	return -1
 }

@@ -19,6 +19,13 @@ func InitFormatters() {
 
 var database Database
 
+type User mongo.User
+type Thread mongo.Thread
+type ThreadInfo mongo.ThreadInfo
+type Post mongo.Post
+type Tag mongo.Tag
+type TagData mongo.TagData
+
 func InitDatabase(servers, dbname string) {
 	database := mongo.Init(servers, dbname)
 }

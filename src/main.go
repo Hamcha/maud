@@ -93,10 +93,6 @@ func main() {
 	defer database.Close()
 	InitFormatters()
 
-	// Initialize database
-	DBInit(*mongo, *dbname)
-	defer DBClose()
-
 	// Setup request handlers
 	router := mux.NewRouter()
 

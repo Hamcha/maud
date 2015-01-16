@@ -31,7 +31,7 @@ func apiNewThread(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	threadId, err := DBNewThread(user, postTitle, content, tags)
+	threadId, err := database.NewThread(user, postTitle, content, tags)
 	if err != nil {
 		fmt.Println(err.Error())
 		sendError(rw, 500, err.Error())
@@ -51,13 +51,13 @@ func apiNewThread(rw http.ResponseWriter, req *http.Request) {
 func apiReply(rw http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	threadUrl := vars["thread"]
-	thread, err := DBGetThread(threadUrl)
+	thread, err := database.GetThread(threadUrl)
 	if err != nil {
 		fmt.Println(err.Error())
 		sendError(rw, 500, err.Error())
 		return
 	}
-	count, err := DBPostCount(&thread)
+	count, err := database.PostCount(&thread)
 	if err != nil {
 		fmt.Println(err.Error())
 		sendError(rw, 500, err.Error())
@@ -83,7 +83,7 @@ func apiReply(rw http.ResponseWriter, req *http.Request) {
 		http.Error(rw, "Post is too long.", 400)
 		return
 	}
-	_, err = DBReplyThread(&thread, user, content)
+	_, err = database.ReplyThread(&thread, user, content)
 	if err != nil {
 		fmt.Println(err.Error())
 		sendError(rw, 500, err.Error())
@@ -153,22 +153,22 @@ func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 		for _, tag := range thread.Tags {
 			oldtags[tag] = true
 		}
-		err = DBSetThreadTags(thread.Id, tags)
+		err = database.SetThreadTags(thread.Id, tags)
 		for _, tag := range tags {
 			if oldtags[tag] {
 				delete(oldtags, tag)
 				continue // no need to inc/dec tag
 			}
 			// increment new tag
-			DBIncTag(tag, thread.Id)
+			database.IncTag(tag, thread.Id)
 		}
 		// decrement any tag which was removed
 		for tag := range oldtags {
-			DBDecTag(tag)
+			database.DecTag(tag)
 		}
 	}
 
-	err = DBEditPost(post.Id, newContent)
+	err = database.EditPost(post.Id, newContent)
 	if err != nil {
 		http.Error(rw, err.Error(), 500)
 		return
@@ -214,12 +214,7 @@ func apiDeletePost(rw http.ResponseWriter, req *http.Request) {
 		http.Error(rw, "Invalid tripcode", 401)
 		return
 	}
-	// set ContentType to 'deleted'
-	post.ContentType = "deleted"
-	if isAdmin {
-		post.ContentType = "admin-deleted"
-	}
-	if err := database.C("posts").UpdateId(post.Id, post); err != nil {
+	if err = database.DeletePost(postId, isAdmin); err != nil {
 		http.Error(rw, err.Error(), 500)
 		return
 	}
@@ -271,7 +266,7 @@ func apiGetRaw(rw http.ResponseWriter, req *http.Request) {
 // POST params: tag
 func apiTagList(rw http.ResponseWriter, req *http.Request) {
 	tag := req.PostFormValue("tag")
-	tags, err := DBGetMatchingTags(tag, 0, 0, filterFromCookie(req))
+	tags, err := database.GetMatchingTags(tag, 0, 0, filterFromCookie(req))
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
