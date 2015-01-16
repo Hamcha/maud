@@ -1,28 +1,37 @@
-package main
+package bbcode
 
 import (
+	"../.."
 	"net/url"
 	"strings"
 )
 
-var bbElements map[string]func(string, string) string
+func Provide() Formatter {
+	bbcode := BBCodeFormatter{}
+	bbcode.Init()
+	return bbcode
+}
 
-func initbbcode() {
-	bbElements = make(map[string]func(string, string) string)
+type BBCodeFormatter struct {
+	bbElements map[string]func(string, string) string
+}
+
+func (b BBCodeFormatter) Init() {
+	b.bbElements = make(map[string]func(string, string) string)
 	// Standard BBcode -> HTML tags
-	bbElements["b"] = bbToHTML("b")
-	bbElements["i"] = bbToHTML("i")
-	bbElements["u"] = bbToHTML("u")
-	bbElements["strike"] = bbToHTML("s")
+	b.bbElements["b"] = bbToHTML("b")
+	b.bbElements["i"] = bbToHTML("i")
+	b.bbElements["u"] = bbToHTML("u")
+	b.bbElements["strike"] = bbToHTML("s")
 	// Other BBcode tags
-	bbElements["img"] = func(_, con string) string {
+	b.bbElements["img"] = func(_, con string) string {
 		idx := strings.IndexRune(con, '?')
 		if idx > 0 {
 			con = con[0:idx] + url.QueryEscape(con[idx:])
 		}
 		return "<a href=\"" + con + "\"><img src=\"" + con + "\" /></a>"
 	}
-	bbElements["url"] = func(par, con string) string {
+	b.bbElements["url"] = func(par, con string) string {
 		if len(par) < 1 {
 			par = con
 		}
@@ -35,10 +44,10 @@ func initbbcode() {
 		}
 		return "<a href=\"" + par + "\">" + con + "</a>"
 	}
-	bbElements["spoiler"] = func(_, con string) string {
+	b.bbElements["spoiler"] = func(_, con string) string {
 		return "<span class=\"spoiler\">" + con + "</span>"
 	}
-	bbElements["youtube"] = func(_, con string) string {
+	b.bbElements["youtube"] = func(_, con string) string {
 		idx := strings.Index(con, "?v=")
 		if idx > 0 {
 			con = con[idx+3:]
@@ -47,22 +56,7 @@ func initbbcode() {
 	}
 }
 
-func bbToHTML(tag string) func(string, string) string {
-	return func(_, con string) string {
-		return "<" + tag + ">" + con + "</" + tag + ">"
-	}
-}
-
-func index(str string, offset int, del uint8) int {
-	for i := offset; i < len(str); i++ {
-		if str[i] == del {
-			return i
-		}
-	}
-	return -1
-}
-
-func bbcode(code string) string {
+func (b BBCodeFormatter) Format(code string) string {
 	offset := 0
 	type BBCode struct {
 		Name      string
@@ -121,4 +115,19 @@ func bbcode(code string) string {
 	}
 
 	return code
+}
+
+func bbToHTML(tag string) func(string, string) string {
+	return func(_, con string) string {
+		return "<" + tag + ">" + con + "</" + tag + ">"
+	}
+}
+
+func index(str string, offset int, del uint8) int {
+	for i := offset; i < len(str); i++ {
+		if str[i] == del {
+			return i
+		}
+	}
+	return -1
 }

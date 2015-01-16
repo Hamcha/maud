@@ -11,18 +11,27 @@
 // Currently, differently from standard Markdown, a newline gets converted in <br/>
 // regardless of the trailing spaces.
 // Special MD characters can be escaped via '\'.
-package main
+package markdown
 
 import (
+	"../.."
 	"regexp"
 	"strings"
 )
 
-var mdElements map[*regexp.Regexp]func(*regexp.Regexp, string) string
-var trimEscape *regexp.Regexp
+func Provide() Formatter {
+	md := MarkdownFormatter{}
+	md.Init()
+	return md
+}
 
-func initMarkdown() {
-	mdElements = map[*regexp.Regexp]func(*regexp.Regexp, string) string{
+type MarkdownFormatter struct {
+	mdElements map[*regexp.Regexp]func(*regexp.Regexp, string) string
+	trimEscape *regexp.Regexp
+}
+
+func (m MarkdownFormatter) Init() {
+	m.mdElements = map[*regexp.Regexp]func(*regexp.Regexp, string) string{
 		regexp.MustCompile("(?U)(^|\\\\\\\\|[^\\\\])\\*\\*(.*[^\\\\])\\*\\*"): mdConvertTag("b"),
 		regexp.MustCompile("(?U)(^|\\\\\\\\|[^\\\\])\\*(.*[^\\\\])\\*"):       mdConvertTag("i"),
 		regexp.MustCompile("(?U)(^|\\\\\\\\|[^\\\\])!\\[(.*)\\]\\((.*)\\)"):   mdConvertTagParam("img", "src"),
@@ -30,7 +39,32 @@ func initMarkdown() {
 		regexp.MustCompile("(?U)(^|\\\\\\\\|[^\\\\])`(.*[^\\\\])`"):           mdConvertTag("code"),
 		regexp.MustCompile("^&gt;.*$"):                                        mdConvertQuote,
 	}
-	trimEscape = regexp.MustCompile("\\\\([*\\[!`\\\\])")
+	m.trimEscape = regexp.MustCompile("\\\\([*\\[!`\\\\])")
+}
+
+// Allowed markdown snippets:
+//   *italic*
+//   **bold**
+//   [alt](url)
+//   ![alt](url)  -- embeds resource
+//   >quote
+//   `inline code`
+func (m MarkdownFormatter) Format(content string) string {
+	lines := strings.Split(content, "\n")
+
+	for idx := range lines {
+		if len(strings.TrimSpace(lines[idx])) == 0 {
+			continue
+		}
+		for regex, fn := range mdElements {
+			for regex.MatchString(lines[idx]) {
+				lines[idx] = fn(regex, lines[idx])
+			}
+		}
+		lines[idx] = trimEscape.ReplaceAllString(lines[idx], "$1")
+	}
+
+	return strings.Join(lines, "<br />\n")
 }
 
 func mdConvertTag(tag string) func(*regexp.Regexp, string) string {
@@ -47,29 +81,4 @@ func mdConvertTagParam(tag, param string) func(*regexp.Regexp, string) string {
 
 func mdConvertQuote(regex *regexp.Regexp, str string) string {
 	return "<span class=\"purpletext\">&gt; " + strings.TrimSpace(str[4:]) + "</span>"
-}
-
-// Allowed markdown snippets:
-//   *italic*
-//   **bold**
-//   [alt](url)
-//   ![alt](url)  -- embeds resource
-//   >quote
-//   `inline code`
-func ParseMarkdown(content string) string {
-	lines := strings.Split(content, "\n")
-
-	for idx := range lines {
-		if len(strings.TrimSpace(lines[idx])) == 0 {
-			continue
-		}
-		for regex, fn := range mdElements {
-			for regex.MatchString(lines[idx]) {
-				lines[idx] = fn(regex, lines[idx])
-			}
-		}
-		lines[idx] = trimEscape.ReplaceAllString(lines[idx], "$1")
-	}
-
-	return strings.Join(lines, "<br />\n")
 }

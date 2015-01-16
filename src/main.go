@@ -88,9 +88,10 @@ func main() {
 		panic(err)
 	}
 
-	// Initialize parsers
-	initMarkdown()
-	initbbcode()
+	// Initialize formatters, database and other modules
+	InitDatabase(*mongo, *dbname)
+	defer database.Close()
+	InitFormatters()
 
 	// Initialize database
 	DBInit(*mongo, *dbname)
