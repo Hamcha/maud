@@ -217,7 +217,7 @@ h2 { font-size: 1.3em; margin: 0; padding: 0; }
 .type blockquote { margin: 0; padding: 0; }
 .type blockquote p, .purpletext { color: #cae; }
 
-span.spoiler {
+span.spoiler, span.spoiler a[href], span.spoiler a[href]:visited {
     background-color: #555; color: #555;
     &:hover { color: inherit; background-color: inherit; }
 }
