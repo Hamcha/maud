@@ -107,9 +107,9 @@ func DBReplyThread(thread *Thread, user User, content string) (int, error) {
 func DBGetThreadList(tag string, limit, offset int, filter []string) ([]Thread, error) {
 	var filterByTag bson.M
 	if tag != "" {
-		if idx := strings.IndexRune(tag, '#'); idx > 0 {
+		if idx := strings.IndexRune(tag, ','); idx > 0 {
 			// tag1,tag2,... means 'union'
-			tags := strings.Split(tag, "#")
+			tags := strings.Split(tag, ",")
 			tagsRgx := make([]bson.RegEx, len(tags))
 			for i, _ := range tags {
 				tagsRgx[i] = bson.RegEx{strings.TrimSpace(tags[i]), "i"}
