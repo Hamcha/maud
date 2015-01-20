@@ -26,6 +26,10 @@ func initbbcode() {
 		if len(par) < 1 {
 			par = con
 		}
+		// if content is already a hyperlink, just return it
+		if strings.HasPrefix(par, "<a ") {
+			return par
+		}
 		if !strings.HasPrefix(par, "http://") && !strings.HasPrefix(par, "https://") {
 			par = "http://" + par
 		}
@@ -106,6 +110,8 @@ func bbcode(code string) string {
 				parts := strings.SplitN(tag, "=", 2)
 				tag = strings.ToLower(parts[0])
 				parameter = parts[1]
+			} else {
+				tag = strings.ToLower(tag)
 			}
 			// Is it a registered bbcode?
 			if _, ok := bbElements[tag]; ok {
