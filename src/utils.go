@@ -179,3 +179,11 @@ func filterFromCookie(req *http.Request) []string {
 func isLightVersion(req *http.Request) bool {
 	return len(siteInfo.LightVersionDomain) > 0 && req.Host == siteInfo.LightVersionDomain
 }
+
+func sanitizeURL(tags string) string {
+	// replace all characters which are dangerous in an URL
+	sane := strings.Replace(tags, "/", "&sol;", -1)
+	sane = strings.Replace(sane, "#", "&num;", -1)
+	sane = strings.Replace(sane, "?", "&quest;", -1)
+	return sane
+}
