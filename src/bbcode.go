@@ -18,7 +18,7 @@ func initbbcode() {
 	bbElements["img"] = func(_, con string) string {
 		idx := strings.IndexRune(con, '?')
 		if idx > 0 {
-			con = con[0:idx] + url.QueryEscape(con[idx:])
+			con = con[0:idx] + queryescape(con[idx:])
 		}
 		return "<a href=\"" + con + "\"><img src=\"" + con + "\" /></a>"
 	}
@@ -35,7 +35,7 @@ func initbbcode() {
 		}
 		idx := strings.IndexRune(con, '?')
 		if idx > 0 {
-			par = par[0:idx] + url.QueryEscape(par[idx:])
+			par = par[0:idx] + queryescape(par[idx:])
 		}
 		return "<a href=\"" + par + "\">" + con + "</a>"
 	}
@@ -127,4 +127,20 @@ func bbcode(code string) string {
 	}
 
 	return code
+}
+
+func queryescape(query string) string {
+	offset := 0
+	for {
+		start := index(query, offset, '=')
+		if start < 0 {
+			return query
+		}
+		end := index(query, start+1, '&')
+		if end < 0 {
+			return query[:start+1] + url.QueryEscape(query[start+1:])
+		}
+		query = query[:start+1] + url.QueryEscape(query[start+1:end]) + query[end:]
+		offset = end + 1
+	}
 }
