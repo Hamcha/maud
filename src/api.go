@@ -215,7 +215,7 @@ func apiDeletePost(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if err = db.DeletePost(postId, isAdmin); err != nil {
+	if err = db.DeletePost(post.Id, isAdmin); err != nil {
 		http.Error(rw, err.Error(), 500)
 		return
 	}
