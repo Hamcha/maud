@@ -33,10 +33,6 @@ func initbbcode() {
 		if !strings.HasPrefix(par, "http://") && !strings.HasPrefix(par, "https://") {
 			par = "http://" + par
 		}
-		idx := strings.IndexRune(con, '?')
-		if idx > 0 {
-			par = par[0:idx] + url.QueryEscape(par[idx:])
-		}
 		return "<a href=\"" + par + "\">" + con + "</a>"
 	}
 	bbElements["spoiler"] = func(_, con string) string {

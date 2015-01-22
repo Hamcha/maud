@@ -249,7 +249,7 @@ func apiTagSearch(rw http.ResponseWriter, req *http.Request) {
 		basepath = val.BasePath
 	}
 
-	http.Redirect(rw, req, basepath+"tag/"+sanitizeURL(tags), http.StatusMovedPermanently)
+	http.Redirect(rw, req, basepath+"tag/"+strings.ToLower(tags), http.StatusMovedPermanently)
 }
 
 // apiGetRaw: retreive the raw content of a post.
