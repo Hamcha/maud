@@ -36,7 +36,7 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 		}
 
 		tagdata[i] = TagData{
-			Name:       tags[i].Name,
+			Name:       sanitizeURL(tags[i].Name),
 			LastUpdate: tags[i].LastUpdate,
 			LastThread: ThreadInfo{
 				Thread:      thread,
@@ -190,7 +190,7 @@ func httpAllTags(rw http.ResponseWriter, req *http.Request) {
 		}
 
 		tagdata[i] = TagData{
-			Name:       tags[i].Name,
+			Name:       sanitizeURL(tags[i].Name),
 			LastUpdate: tags[i].LastUpdate,
 			LastThread: ThreadInfo{
 				Thread:      thread,
@@ -252,6 +252,11 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	// Escape tags
+	for t := range thread.Tags {
+		thread.Tags[t] = sanitizeURL(thread.Tags[t])
+	}
+
 	// Parse posts
 	type PostInfo struct {
 		PostId    int
@@ -268,7 +273,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 	for index := range posts {
 		posts[index].Content = parseContent(posts[index].Content, posts[index].ContentType)
 		if isLightVersion(req) {
-			posts[index].Content = lightify(posts[index].Content)
+			posts[index].Content = Lightify(posts[index].Content)
 		}
 		postsInfo[index].Data = posts[index]
 		postsInfo[index].IsDeleted = posts[index].ContentType == "deleted" || posts[index].ContentType == "admin-deleted"
@@ -355,7 +360,7 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 
 		content := parseContent(post.Content, post.ContentType)
 		if isLightVersion(req) {
-			content = lightify(content)
+			content = Lightify(content)
 		}
 		short, isbroken := shortify(content)
 
@@ -389,7 +394,7 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 			lp.Date = reply.Date
 			content = parseContent(reply.Content, reply.ContentType)
 			if isLightVersion(req) {
-				content = lightify(content)
+				content = Lightify(content)
 			}
 			lp.ShortContent, lp.HasBroken = shortify(content)
 			lp.Number = count - 1

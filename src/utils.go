@@ -5,7 +5,6 @@ import (
 	"encoding/base64"
 	"errors"
 	"net/http"
-	"regexp"
 	"strconv"
 	"strings"
 	"unicode/utf8"
@@ -171,12 +170,12 @@ func isLightVersion(req *http.Request) bool {
 	return len(siteInfo.LightVersionDomain) > 0 && req.Host == siteInfo.LightVersionDomain
 }
 
-func lightify(content string) string {
-	img := regexp.MustCompile("(?:<a [^>]+>)?<img .*src=(\"[^\"]+\"|'[^']+'|[^'\"][^\\s]+).*>(?:</a>)?")
-	content = img.ReplaceAllString(content, "<a class='toggleImage' data-url=$1>[Click to view image]</a>")
-	iframe := regexp.MustCompile("<iframe .*src=(\"[^\"]+\"|'[^']+'|[^'\"][^\\s]+).*>")
-	content = iframe.ReplaceAllString(content, "<a target=\"_blank\" href=$1>[Click to open embedded content]</a>")
-	return content
+func sanitizeURL(tags string) string {
+	// replace all characters which are dangerous in an URL
+	sane := strings.Replace(tags, "/", "&sol;", -1)
+	sane = strings.Replace(sane, "#", "&num;", -1)
+	sane = strings.Replace(sane, "?", "&quest;", -1)
+	return sane
 }
 
 func index(str string, offset int, del uint8) int {

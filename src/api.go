@@ -131,13 +131,13 @@ func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 	thread, post, err := threadPostOrErr(rw, vars["thread"], vars["post"])
 	// if post has no tripcode associated, refuse to edit
 	if !isAdmin && len(post.Author.Tripcode) < 1 {
-		http.Error(rw, "Forbidden", 403)
+		sendError(rw, 403, "Forbidden")
 		return
 	}
 	// check tripcode
 	trip := req.PostFormValue("tripcode")
 	if !isAdmin && tripcode(trip) != post.Author.Tripcode {
-		http.Error(rw, "Invalid tripcode", 401)
+		sendError(rw, 401, "Invalid tripcode")
 		return
 	}
 	// update post content and date (strip multiple whitespaces at the end of the text)
@@ -170,7 +170,7 @@ func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 
 	err = database.EditPost(post.Id, newContent)
 	if err != nil {
-		http.Error(rw, err.Error(), 500)
+		sendError(rw, 500, err.Error())
 		return
 	}
 
@@ -205,14 +205,20 @@ func apiDeletePost(rw http.ResponseWriter, req *http.Request) {
 	}
 	// if post has no tripcode associated, refuse to delete
 	if !isAdmin && len(post.Author.Tripcode) < 1 {
-		http.Error(rw, "Forbidden", 403)
+		sendError(rw, 403, "Forbidden")
 		return
 	}
 	// check tripcode
 	trip := req.PostFormValue("tripcode")
 	if !isAdmin && tripcode(trip) != post.Author.Tripcode {
-		http.Error(rw, "Invalid tripcode", 401)
+		sendError(rw, 401, "Invalid tripcode")
 		return
+	}
+
+	// set ContentType to 'deleted'
+	post.ContentType = "deleted"
+	if isAdmin {
+		post.ContentType = "admin-deleted"
 	}
 	if err = database.DeletePost(postId, isAdmin); err != nil {
 		http.Error(rw, err.Error(), 500)
@@ -244,7 +250,7 @@ func apiTagSearch(rw http.ResponseWriter, req *http.Request) {
 		basepath = val.BasePath
 	}
 
-	http.Redirect(rw, req, basepath+"tag/"+strings.ToLower(tags), http.StatusMovedPermanently)
+	http.Redirect(rw, req, basepath+"tag/"+sanitizeURL(tags), http.StatusMovedPermanently)
 }
 
 // apiGetRaw: retreive the raw content of a post.
@@ -256,7 +262,7 @@ func apiGetRaw(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 	if post.ContentType == "deleted" || post.ContentType == "admin-deleted" {
-		http.Error(rw, "Forbidden", 403)
+		sendError(rw, 403, "Forbidden")
 		return
 	}
 	fmt.Fprintln(rw, post.Content)

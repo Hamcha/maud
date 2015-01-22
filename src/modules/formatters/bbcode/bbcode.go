@@ -27,7 +27,7 @@ func (b BBCodeFormatter) Init() {
 	b.bbElements["img"] = func(_, con string) string {
 		idx := strings.IndexRune(con, '?')
 		if idx > 0 {
-			con = con[0:idx] + url.QueryEscape(con[idx:])
+			con = con[0:idx] + queryescape(con[idx:])
 		}
 		return "<a href=\"" + con + "\"><img src=\"" + con + "\" /></a>"
 	}
@@ -35,12 +35,16 @@ func (b BBCodeFormatter) Init() {
 		if len(par) < 1 {
 			par = con
 		}
+		// if content is already a hyperlink, just return it
+		if strings.HasPrefix(par, "<a ") {
+			return par
+		}
 		if !strings.HasPrefix(par, "http://") && !strings.HasPrefix(par, "https://") {
 			par = "http://" + par
 		}
 		idx := strings.IndexRune(con, '?')
 		if idx > 0 {
-			par = par[0:idx] + url.QueryEscape(par[idx:])
+			par = par[0:idx] + queryescape(par[idx:])
 		}
 		return "<a href=\"" + par + "\">" + con + "</a>"
 	}
@@ -100,6 +104,8 @@ func (b BBCodeFormatter) Format(code string) string {
 				parts := strings.SplitN(tag, "=", 2)
 				tag = strings.ToLower(parts[0])
 				parameter = parts[1]
+			} else {
+				tag = strings.ToLower(tag)
 			}
 			// Is it a registered bbcode?
 			if _, ok := b.bbElements[tag]; ok {
@@ -130,4 +136,20 @@ func index(str string, offset int, del uint8) int {
 		}
 	}
 	return -1
+}
+
+func queryescape(query string) string {
+	offset := 0
+	for {
+		start := index(query, offset, '=')
+		if start < 0 {
+			return query
+		}
+		end := index(query, start+1, '&')
+		if end < 0 {
+			return query[:start+1] + url.QueryEscape(query[start+1:])
+		}
+		query = query[:start+1] + url.QueryEscape(query[start+1:end]) + query[end:]
+		offset = end + 1
+	}
 }

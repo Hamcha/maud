@@ -3,6 +3,7 @@ package mongo
 import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"html"
 	"sort"
 	"strings"
 	"time"
@@ -110,6 +111,7 @@ func (db Database) ReplyThread(thread *Thread, user User, content string) (int, 
 // the `tag` string.
 func (db Database) GetThreadList(tag string, limit, offset int, filter []string) ([]Thread, error) {
 	var filterByTag bson.M
+	tag = html.UnescapeString(tag)
 	if tag != "" {
 		if idx := strings.IndexRune(tag, ','); idx > 0 {
 			// tag1,tag2,... means 'union'
