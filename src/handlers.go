@@ -36,7 +36,7 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 		}
 
 		tagdata[i] = TagData{
-			Name:       tags[i].Name,
+			Name:       sanitizeURL(tags[i].Name),
 			LastUpdate: tags[i].LastUpdate,
 			LastThread: ThreadInfo{
 				Thread:      thread,
@@ -190,7 +190,7 @@ func httpAllTags(rw http.ResponseWriter, req *http.Request) {
 		}
 
 		tagdata[i] = TagData{
-			Name:       tags[i].Name,
+			Name:       sanitizeURL(tags[i].Name),
 			LastUpdate: tags[i].LastUpdate,
 			LastThread: ThreadInfo{
 				Thread:      thread,
@@ -250,6 +250,11 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
+	}
+
+	// Escape tags
+	for t := range thread.Tags {
+		thread.Tags[t] = sanitizeURL(thread.Tags[t])
 	}
 
 	// Parse posts
