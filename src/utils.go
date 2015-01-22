@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"crypto/sha256"
 	"encoding/base64"
+	"encoding/binary"
 	"errors"
 	"net/http"
 	"strconv"
@@ -135,14 +137,14 @@ func shortify(content string) (string, bool) {
 }
 
 func threadPostOrErr(rw http.ResponseWriter, threadId, postIdStr string) (Thread, Post, error) {
-	thread, err := database.GetThread(threadId)
+	thread, err := db.GetThread(threadId)
 	// retreive post
 	postId, err := strconv.Atoi(postIdStr)
 	if err != nil {
 		http.Error(rw, "Invalid post ID", 400)
 		return thread, Post{}, err
 	}
-	posts, err := database.GetPosts(&thread, 1, postId)
+	posts, err := db.GetPosts(&thread, 1, postId)
 	if err != nil {
 		http.Error(rw, err.Error(), 500)
 		return thread, posts[0], err
@@ -185,4 +187,13 @@ func index(str string, offset int, del uint8) int {
 		}
 	}
 	return -1
+}
+
+func generateURL(db Database, name string) string {
+	buf := make([]byte, 8)
+	num, _ := db.NextId(name)
+	binary.PutVarint(buf, num+1)
+	btr := bytes.TrimRight(buf, "\000")
+	str := base64.URLEncoding.EncodeToString(btr)
+	return strings.TrimRight(str, "=")
 }

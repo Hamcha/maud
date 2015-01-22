@@ -14,6 +14,7 @@ import (
 
 var siteInfo SiteInfo
 var adminConf AdminConfig
+var db Database
 
 // absolute path to Maud root directory
 var maudRoot string
@@ -89,8 +90,8 @@ func main() {
 	}
 
 	// Initialize formatters, database and other modules
-	InitDatabase(*mongo, *dbname)
-	defer database.Close()
+	db = InitDatabase(*mongo, *dbname)
+	defer db.Close()
 	InitFormatters()
 
 	initLightify()

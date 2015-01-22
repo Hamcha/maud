@@ -1,4 +1,4 @@
-package mongo
+package main
 
 import (
 	"gopkg.in/mgo.v2"
@@ -14,7 +14,7 @@ type Database struct {
 	database *mgo.Database
 }
 
-func Init(servers, dbname string) Database {
+func InitDatabase(servers, dbname string) Database {
 	var db Database
 	var err error
 	db.session, err = mgo.Dial(servers)

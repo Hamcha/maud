@@ -15,7 +15,7 @@ import (
 
 func httpHome(rw http.ResponseWriter, req *http.Request) {
 	filter := filterFromCookie(req)
-	tags, err := database.GetPopularTags(10, 0, filter)
+	tags, err := db.GetPopularTags(10, 0, filter)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -24,12 +24,12 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 	tagdata := make([]TagData, len(tags))
 
 	for i := range tags {
-		thread, err := database.GetThreadById(tags[i].LastThread)
+		thread, err := db.GetThreadById(tags[i].LastThread)
 		if err != nil {
 			sendError(rw, 500, err.Error())
 			return
 		}
-		count, err := database.PostCount(&thread)
+		count, err := db.PostCount(&thread)
 		if err != nil {
 			sendError(rw, 500, err.Error())
 			return
@@ -49,7 +49,7 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	threads, err := database.GetThreadList("", 5, 0, filter)
+	threads, err := db.GetThreadList("", 5, 0, filter)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -57,13 +57,13 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 
 	tinfos := make([]ThreadInfo, len(threads))
 	for i, _ := range threads {
-		count, err := database.PostCount(&threads[i])
+		count, err := db.PostCount(&threads[i])
 		if err != nil {
 			sendError(rw, 500, err.Error())
 			return
 		}
 
-		lastPost, err := database.GetPost(threads[i].LastReply)
+		lastPost, err := db.GetPost(threads[i].LastReply)
 		if err != nil {
 			sendError(rw, 500, err.Error())
 			return
@@ -107,7 +107,7 @@ func httpAllThreads(rw http.ResponseWriter, req *http.Request) {
 		pageOffset = 0
 	}
 
-	threads, err := database.GetThreadList("", siteInfo.ThreadsPerPage, pageOffset, filterFromCookie(req))
+	threads, err := db.GetThreadList("", siteInfo.ThreadsPerPage, pageOffset, filterFromCookie(req))
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -115,13 +115,13 @@ func httpAllThreads(rw http.ResponseWriter, req *http.Request) {
 
 	tinfos := make([]ThreadInfo, len(threads))
 	for i, _ := range threads {
-		count, err := database.PostCount(&threads[i])
+		count, err := db.PostCount(&threads[i])
 		if err != nil {
 			sendError(rw, 500, err.Error())
 			return
 		}
 
-		lastPost, err := database.GetPost(threads[i].LastReply)
+		lastPost, err := db.GetPost(threads[i].LastReply)
 		if err != nil {
 			sendError(rw, 500, err.Error())
 			return
@@ -170,7 +170,7 @@ func httpAllTags(rw http.ResponseWriter, req *http.Request) {
 		pageOffset = 0
 	}
 
-	tags, err := database.GetPopularTags(siteInfo.TagsPerPage, pageOffset, filterFromCookie(req))
+	tags, err := db.GetPopularTags(siteInfo.TagsPerPage, pageOffset, filterFromCookie(req))
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -178,12 +178,12 @@ func httpAllTags(rw http.ResponseWriter, req *http.Request) {
 	tagdata := make([]TagData, len(tags))
 
 	for i := range tags {
-		thread, err := database.GetThreadById(tags[i].LastThread)
+		thread, err := db.GetThreadById(tags[i].LastThread)
 		if err != nil {
 			sendError(rw, 500, err.Error())
 			return
 		}
-		count, err := database.PostCount(&thread)
+		count, err := db.PostCount(&thread)
 		if err != nil {
 			sendError(rw, 500, err.Error())
 			return
@@ -217,7 +217,7 @@ func httpAllTags(rw http.ResponseWriter, req *http.Request) {
 func httpThread(rw http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	threadUrl := vars["thread"]
-	thread, err := database.GetThread(threadUrl)
+	thread, err := db.GetThread(threadUrl)
 	isAdmin, _ := isAdmin(req)
 
 	if err != nil {
@@ -246,7 +246,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		pageOffset = 0
 	}
 
-	postCount, err := database.PostCount(&thread)
+	postCount, err := db.PostCount(&thread)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -264,7 +264,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		IsDeleted bool
 		Editable  bool
 	}
-	posts, err := database.GetPosts(&thread, siteInfo.PostsPerPage, pageOffset)
+	posts, err := db.GetPosts(&thread, siteInfo.PostsPerPage, pageOffset)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -323,7 +323,7 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 		pageOffset = 0
 	}
 
-	threads, err := database.GetThreadList(tagName, siteInfo.TagResultsPerPage, pageOffset, filterFromCookie(req))
+	threads, err := db.GetThreadList(tagName, siteInfo.TagResultsPerPage, pageOffset, filterFromCookie(req))
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -352,7 +352,7 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 
 	threadlist := make([]ThreadData, len(threads))
 	for i, v := range threads {
-		post, err := database.GetPost(v.ThreadPost)
+		post, err := db.GetPost(v.ThreadPost)
 		if err != nil {
 			sendError(rw, 500, err.Error())
 			return
@@ -378,12 +378,12 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 		}
 
 		if threadlist[i].HasLR {
-			reply, err := database.GetPost(v.LastReply)
+			reply, err := db.GetPost(v.LastReply)
 			if err != nil {
 				sendError(rw, 500, err.Error())
 				return
 			}
-			count, err := database.PostCount(&v)
+			count, err := db.PostCount(&v)
 			if err != nil {
 				sendError(rw, 500, err.Error())
 				return
