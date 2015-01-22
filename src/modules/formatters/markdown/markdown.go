@@ -20,7 +20,7 @@ import (
 )
 
 func Provide() modules.Formatter {
-	md := MarkdownFormatter{}
+	md := new(MarkdownFormatter)
 	md.Init()
 	return md
 }
@@ -30,7 +30,7 @@ type MarkdownFormatter struct {
 	trimEscape *regexp.Regexp
 }
 
-func (m MarkdownFormatter) Init() {
+func (m *MarkdownFormatter) Init() {
 	m.mdElements = map[*regexp.Regexp]func(*regexp.Regexp, string) string{
 		regexp.MustCompile("(?U)(^|\\\\\\\\|[^\\\\])\\*\\*(.*[^\\\\])\\*\\*"): mdConvertTag("b"),
 		regexp.MustCompile("(?U)(^|\\\\\\\\|[^\\\\])\\*(.*[^\\\\])\\*"):       mdConvertTag("i"),
@@ -49,7 +49,7 @@ func (m MarkdownFormatter) Init() {
 //   ![alt](url)  -- embeds resource
 //   >quote
 //   `inline code`
-func (m MarkdownFormatter) Format(content string) string {
+func (m *MarkdownFormatter) Format(content string) string {
 	lines := strings.Split(content, "\n")
 
 	for idx := range lines {
