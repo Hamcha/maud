@@ -51,6 +51,7 @@ editPost = (id) ->
 		<a onclick="editorAdd(this, 'url')"><span style="border-bottom: 1px dotted #fff">url</span></a>
 		<a onclick="editorAdd(this, 'spoiler')">spoiler</a>
 		<a onclick="editorAdd(this, 'youtube')">youtube</a>
+		<a onclick="editorAdd(this, 'html')">html</a>
 	</div>
 	<textarea class="full small editor" name="text" required placeholder="Thread text (Markdown is supported)">#{content}</textarea>
 	#{tagsbar}
