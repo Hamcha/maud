@@ -58,6 +58,9 @@ func (b *BBCodeFormatter) Init() {
 		}
 		return "<iframe width=\"560\" height=\"315\" src=\"//www.youtube.com/embed/" + url.QueryEscape(con) + "\" frameborder=\"0\" allowfullscreen></iframe>"
 	}
+	b.bbElements["html"] = func(_, con string) string {
+		return strings.Replace(con, "\n", "", -1)
+	}
 }
 
 func (b *BBCodeFormatter) Format(code string) string {
