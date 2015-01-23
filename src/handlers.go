@@ -272,8 +272,10 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 	postsInfo := make([]PostInfo, len(posts))
 	for index := range posts {
 		posts[index].Content = parseContent(posts[index].Content, posts[index].ContentType)
-		if isLightVersion(req) {
-			posts[index].Content = Lightify(posts[index].Content)
+		for _, m := range mutators {
+			if m.Condition(req) {
+				posts[index].Content = m.Mutator(posts[index].Content)
+			}
 		}
 		postsInfo[index].Data = posts[index]
 		postsInfo[index].IsDeleted = posts[index].ContentType == "deleted" || posts[index].ContentType == "admin-deleted"
@@ -359,8 +361,10 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 		}
 
 		content := parseContent(post.Content, post.ContentType)
-		if isLightVersion(req) {
-			content = Lightify(content)
+		for _, m := range mutators {
+			if m.Condition(req) {
+				content = m.Mutator(content)
+			}
 		}
 		short, isbroken := shortify(content)
 
@@ -393,8 +397,10 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 			lp.Author = reply.Author
 			lp.Date = reply.Date
 			content = parseContent(reply.Content, reply.ContentType)
-			if isLightVersion(req) {
-				content = Lightify(content)
+			for _, m := range mutators {
+				if m.Condition(req) {
+					content = m.Mutator(content)
+				}
 			}
 			lp.ShortContent, lp.HasBroken = shortify(content)
 			lp.Number = count - 1

@@ -1,39 +1,59 @@
-package main
+package lightify
 
 import (
 	"regexp"
 	"strings"
 )
 
-var (
+func Provide() *LightifyFormatter {
+	lightify := new(LightifyFormatter)
+	lightify.Init()
+	return lightify
+}
+
+type LightifyFormatter struct {
 	imgRgx    *regexp.Regexp
 	derpiRgx  *regexp.Regexp
 	iframeRgx *regexp.Regexp
-)
+}
 
-func initLightify() {
-	imgRgx = regexp.MustCompile(`(?:<a [^>]+>)?<img .*src=("[^"]+"|'[^']+'|[^'"][^\s]+).*>(?:</a>)?`)
-	derpiRgx = regexp.MustCompile(`img[0-9]\.derpicdn\.net`)
-	iframeRgx = regexp.MustCompile(`<iframe .*src=("[^"]+"|'[^']+'|[^'"][^\s]+).*>`)
+func (f *LightifyFormatter) Init() {
+	f.imgRgx = regexp.MustCompile(`(?:<a [^>]+>)?<img .*src=("[^"]+"|'[^']+'|[^'"][^\s]+).*>(?:</a>)?`)
+	f.derpiRgx = regexp.MustCompile(`img[0-9]\.derpicdn\.net`)
+	f.iframeRgx = regexp.MustCompile(`<iframe .*src=("[^"]+"|'[^']+'|[^'"][^\s]+).*>`)
 }
 
 // Lightify takes a string containing HTML and converts embedded images and iframes
 // to hyperlink to those resources. Images from Imgur or Derpibooru get converted
 // into thumbnails linking to the full size resource.
-func Lightify(content string) string {
-	for _, match := range imgRgx.FindAllStringSubmatch(content, -1) {
+func (f *LightifyFormatter) Format(content string) string {
+	for _, match := range f.imgRgx.FindAllStringSubmatch(content, -1) {
 		url := match[1]
 		spl := strings.Split(url, "/")
 		switch {
 		case len(spl) > 2 && spl[2] == "i.imgur.com":
 			content = strings.Replace(content, match[0], wrapImg(url, "<img src=\""+imgurThumb(url)+"\" alt="+url+"/>"), 1)
-		case len(spl) > 2 && derpiRgx.MatchString(spl[2]):
+		case len(spl) > 2 && f.derpiRgx.MatchString(spl[2]):
 			content = strings.Replace(content, match[0], wrapImg(url, "<img src=\""+derpibooruThumb(url)+"\" alt="+url+"/>"), 1)
+		}
+	}
+	return content
+}
+
+func (f *LightifyFormatter) ReplaceTags(content string) string {
+	for _, match := range f.imgRgx.FindAllStringSubmatch(content, -1) {
+		url := match[1]
+		spl := strings.Split(url, "/")
+		switch {
+		case len(spl) > 2 && spl[2] == "i.imgur.com":
+			continue
+		case len(spl) > 2 && f.derpiRgx.MatchString(spl[2]):
+			continue
 		default:
 			content = strings.Replace(content, match[0], "<a class='toggleImage' data-url="+url+">[Click to view image]</a>", 1)
 		}
 	}
-	content = iframeRgx.ReplaceAllString(content, "<a target=\"_blank\" href=$1>[Click to open embedded content]</a>")
+	content = f.iframeRgx.ReplaceAllString(content, "<a target=\"_blank\" href=$1>[Click to open embedded content]</a>")
 	return content
 }
 

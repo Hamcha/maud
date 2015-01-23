@@ -94,7 +94,6 @@ func main() {
 	defer db.Close()
 	InitFormatters()
 
-	initLightify()
 	// Setup request handlers
 	router := mux.NewRouter()
 
