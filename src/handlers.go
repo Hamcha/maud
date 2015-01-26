@@ -427,7 +427,7 @@ func httpStiki(rw http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	path := filepath.Base(vars["page"])
 	_, err := os.Stat(maudRoot + "/stiki/" + path + ".html")
-	if err == os.IsNotExist(err) {
+	if os.IsNotExist(err) {
 		sendError(rw, 404, nil)
 		return
 	} else if err != nil {
