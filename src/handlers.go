@@ -426,8 +426,12 @@ func httpNewThread(rw http.ResponseWriter, req *http.Request) {
 func httpStiki(rw http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	path := filepath.Base(vars["page"])
-	if _, err := os.Stat(maudRoot + "/stiki/" + path + ".html"); os.IsNotExist(err) {
+	_, err := os.Stat(maudRoot + "/stiki/" + path + ".html")
+	if err == os.IsNotExist(err) {
 		sendError(rw, 404, nil)
+		return
+	} else if err != nil {
+		sendError(rw, 500, err.Error())
 		return
 	}
 	stiki(rw, req, path)

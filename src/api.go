@@ -146,7 +146,7 @@ func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 		http.Error(rw, "Post is too long.", 400)
 		return
 	}
-	// update tags
+	// update tags if post is OP and 'tags' was passed
 	tags := parseTags(req.PostFormValue("tags"))
 	if post.Id == thread.ThreadPost && len(tags) > 0 {
 		oldtags := make(map[string]bool, len(thread.Tags))
