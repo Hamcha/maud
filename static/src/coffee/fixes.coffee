@@ -86,3 +86,15 @@ imgsetup = (btn) ->
 		url = btn.dataset.url
 		btn.outerHTML = "<a href=\"#{url}\"><img src=\"#{url}\" /></a>"
 imgsetup imgbtn for imgbtn in lightimagebtn
+
+# Tag search / Fulltext search buttons
+toggle = document.getElementById "tagsearchbtn"
+toggle.onclick = () ->
+	toggle.outerHTML = """
+    <form style="display: inline-block" method="POST" action="#{basepath}tagsearch">
+      <input type="text" name="tags" id="tagsearch" placeholder="Filter by tag" required title="Insert tags separated by commas (without hashtag)" />
+      <input type="submit" value="Search" />
+	  </form>
+	"""
+	box = document.getElementById "tagsearch"
+	box.focus()
