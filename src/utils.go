@@ -66,7 +66,7 @@ func parseTags(tags string) []string {
 func removeEmpty(in []string) []string {
 	out := make([]string, 0)
 	for _, i := range in {
-		if len(i) > 0 {
+		if len(strings.TrimSpace(i)) > 0 {
 			out = append(out, i)
 		}
 	}

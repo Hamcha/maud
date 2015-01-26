@@ -1,5 +1,7 @@
 <nav>
     <a href="#reply" class="button">Reply</a>
+	<a class="button" id="tagsearchbtn">Tag search</a>
+	<a href="{{BasePath}}stiki" class="button">Stiki</a>
 </nav>
 <hr />
 {{#Data}}
@@ -84,6 +86,7 @@
             <a onclick="editorAdd(this, 'spoiler')">spoiler</a>
             <a onclick="editorAdd(this, 'youtube')">youtube</a>
             <a onclick="editorAdd(this, 'html')">html</a>
+            <a onclick="quoteText(this)">&gt;</a>
         </div>
         <textarea class="full verysmall" name="text" required placeholder="Thread text (Markdown is supported)"></textarea>
         <input type="hidden" name="preview" id="preview" />
