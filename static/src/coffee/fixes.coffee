@@ -98,3 +98,18 @@ toggle?.onclick = () ->
 	"""
 	box = document.getElementById "tagsearch"
 	box.focus()
+
+# if 'crSetLatestPost' cookie is set, save hidden tripcode and delete the cookie
+saveHiddenTripcode = (thread, post, htrip) ->
+	storage = window.localStorage
+	return unless storage?
+	# save hidden tripcode in storage
+	storage.setItem "crLatestPost", JSON.stringify { thread: thread, post: post, htrip: htrip }
+	return
+
+lpCookie = Cookies.get('crSetLatestPost')
+if lpCookie?
+	[thread, post, htrip] = lpCookie.split('/')
+	if thread? and post? and htrip?
+		saveHiddenTripcode thread, post, htrip
+	Cookies.expire('crSetLatestPost', { path: '/thread/' })

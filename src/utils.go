@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/binary"
 	"errors"
+	"math/rand"
 	"net/http"
 	"strconv"
 	"strings"
@@ -198,6 +199,11 @@ func generateURL(db Database, name string) string {
 	return strings.TrimRight(str, "=")
 }
 
-func isHiddenTripcode(tripcode string) bool {
-	return len(tripcode) > 0 && tripcode[0] == '!'
+func randomString(length int) string {
+	letters := []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_")
+	b := make([]rune, length)
+	for i := range b {
+		b[i] = letters[rand.Intn(len(letters))]
+	}
+	return string(b)
 }

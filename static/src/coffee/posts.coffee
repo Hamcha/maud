@@ -146,23 +146,10 @@ createPreview = (content) ->
 
 replyPreSubmit = (elem, threadUrl, curPostCount) ->
 	nick = document.querySelector("##{elem.id} input[name='nickname']").value
-	if nick.indexOf('#') > 0
-		if nick.indexOf('#') == nick.length - 1
-			alert "Tripcode must have at least 1 character."
-			return false
-	else
-		saveHiddenTripcode elem, threadUrl, curPostCount
-	
-# hidden tripcode: allow editing posts as anon
-saveHiddenTripcode = (elem, threadUrl, curPostCount) ->
-	console.log "called with #{elem},#{threadUrl},#{curPostCount}"
-	storage = window.localStorage
-	return unless storage?
-	hiddenTripcode = Math.random().toString(16).slice(2)
-	document.querySelector("##{elem.id} input[name='htrip']").value = hiddenTripcode
-	# save hidden tripcode in storage
-	storage.setItem "crLatestPost", JSON.stringify { thread: threadUrl, post: curPostCount, htrip: hiddenTripcode }
-	return
+	if nick.indexOf('#') > 0 and nick.indexOf('#') == nick.length - 1
+		alert "Tripcode must have at least 1 character."
+		return false
+	return true
 
 window.editPost = editPost
 window.deletePost = deletePost

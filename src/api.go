@@ -22,12 +22,12 @@ func apiNewThread(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	nickname, tcode := parseNickname(postNickname)
-	hidden := false
-	if len(tcode) < 1 && len(req.PostFormValue("htrip")) > 0 {
-		tcode = tripcode(req.PostFormValue("htrip"))
-		hidden = true
+	var hTrip string
+	if len(tcode) < 1 {
+		hTrip = randomString(8)
+		tcode = tripcode(hTrip)
 	}
-	user := User{nickname, tcode, hidden}
+	user := User{nickname, tcode, len(hTrip) > 0}
 	content := postContent
 	tags := parseTags(postTags)
 
@@ -48,13 +48,24 @@ func apiNewThread(rw http.ResponseWriter, req *http.Request) {
 		basepath = val.BasePath
 	}
 
+	if len(hTrip) > 0 {
+		http.SetCookie(rw, &http.Cookie{
+			Name:     "crSetLatestPost",
+			Value:    threadId + "/0/" + hTrip,
+			Path:     "/thread/",
+			MaxAge:   600,
+			HttpOnly: false,
+		})
+	}
 	http.Redirect(rw, req, basepath+"thread/"+threadId, http.StatusMovedPermanently)
 }
 
 // apiReply: appends a post to a thread. If POST parameter 'nickname' is given
-// and has a tripcode, use that as "visible tripcode", else if 'htrip' param
-// is given, use that as hidden tripcode (to allow further editing of the post)
-// POST params: text, [nickname, htrip]
+// and has a tripcode, use that as "visible tripcode", else generate a 'hidden
+// tripcode' and use that as tripcode (to allow further editing of the post).
+// If a hidden tripcode was generated, send a cookie to the client to tell it
+// to save the tripcode for further use.
+// POST params: text, [nickname]
 func apiReply(rw http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	threadUrl := vars["thread"]
@@ -83,12 +94,12 @@ func apiReply(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	nickname, tcode := parseNickname(postNickname)
-	hidden := false
-	if len(tcode) < 1 && len(req.PostFormValue("htrip")) > 0 {
-		tcode = tripcode(req.PostFormValue("htrip"))
-		hidden = true
+	var hTrip string
+	if len(tcode) < 1 {
+		hTrip = randomString(8)
+		tcode = tripcode(hTrip)
 	}
-	user := User{nickname, tcode, hidden}
+	user := User{nickname, tcode, len(hTrip) > 0}
 	content := postContent
 
 	if postTooLong(content) {
@@ -107,6 +118,15 @@ func apiReply(rw http.ResponseWriter, req *http.Request) {
 		basepath = val.BasePath
 	}
 
+	if len(hTrip) > 0 {
+		http.SetCookie(rw, &http.Cookie{
+			Name:     "crSetLatestPost",
+			Value:    thread.ShortUrl + "/" + strconv.Itoa(count) + "/" + hTrip,
+			Path:     "/thread/",
+			MaxAge:   600,
+			HttpOnly: false,
+		})
+	}
 	http.Redirect(rw, req, basepath+"thread/"+thread.ShortUrl+"/page/"+strconv.Itoa(page)+"#p"+strconv.Itoa(count), http.StatusMovedPermanently)
 }
 
