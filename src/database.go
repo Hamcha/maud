@@ -295,7 +295,7 @@ func (db Database) DeletePost(id bson.ObjectId, admin bool) error {
 	err := db.database.C("posts").UpdateId(id, bson.M{
 		"$set": bson.M{
 			"lastmodified": time.Now().UTC().Unix(),
-			"content-type": ctype,
+			"contenttype":  ctype,
 		},
 	})
 	return err

@@ -33,7 +33,6 @@ editPost = (id) ->
 			tripcodebar = "<input type=\"hidden\" name=\"tripcode\" value=\"#{htrip}\" required />"
 		else  # visible tripcode
 			tripcodebar = "<input class=\"full short inline verysmall\" type=\"text\" name=\"tripcode\" placeholder=\"Tripcode (required)\" required />"
-	
 	# if post is OP, allow editing thread tags
 	tagsbar = ""
 	tags = post.dataset?.tags
@@ -85,9 +84,16 @@ deletePost = (id) ->
 		type = "post"
 		idname = "##{id}"
 	post = document.getElementById pid
-	nick = document.querySelector("##{pid}  .nickname").innerHTML
+	nickspan = document.querySelector "##{pid} .nickname"
+	nick = nickspan.innerHTML
 	original[id] = post.innerHTML
-	tripcodebar = if !window.adminMode then "<input class=\"full short inline verysmall\" type=\"text\" name=\"tripcode\" placeholder=\"Tripcode (required)\" required />" else ""
+	tripcodebar = ""
+	if !window.adminMode
+		if typeof nickspan.firstChild is 'object' # hidden tripcode
+			htrip = JSON.parse(window.localStorage?.getItem 'crLatestPost')?.htrip
+			tripcodebar = "<input type=\"hidden\" name=\"tripcode\" value=\"#{htrip}\" required />"
+		else  # visible tripcode
+			tripcodebar = "<input class=\"full short inline verysmall\" type=\"text\" name=\"tripcode\" placeholder=\"Tripcode (required)\" required />"
 	post.innerHTML = """
 <section id="#{id}" class="form"><a name="delete" class="noborder"></a>
   <form method="POST" action="#{window.stripPage(location.pathname) + "/post/" + id + "/delete"}">
