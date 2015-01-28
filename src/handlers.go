@@ -299,7 +299,6 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		Page       int
 		MaxPages   int
 		HasOP      bool
-		PostCount  int
 	}{
 		thread,
 		threadPost,
@@ -307,7 +306,6 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		pageInt,
 		(postCount + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
 		pageInt == 1,
-		len(postsInfo),
 	})
 }
 
