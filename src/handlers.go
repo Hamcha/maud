@@ -263,6 +263,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		Data      Post
 		IsDeleted bool
 		Editable  bool
+		Modified  bool
 	}
 	posts, err := db.GetPosts(&thread, siteInfo.PostsPerPage, pageOffset)
 	if err != nil {
@@ -272,6 +273,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 	postsInfo := make([]PostInfo, len(posts))
 	for index := range posts {
 		posts[index].Content = parseContent(posts[index].Content, posts[index].ContentType)
+		// Modules for changing content based on a condition, e.g. Lightify
 		for _, m := range mutators {
 			if m.Condition(req) {
 				posts[index].Content = m.Mutator(posts[index].Content)
@@ -280,7 +282,8 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		postsInfo[index].Data = posts[index]
 		postsInfo[index].IsDeleted = posts[index].ContentType == "deleted" || posts[index].ContentType == "admin-deleted"
 		postsInfo[index].PostId = index + pageOffset
-		postsInfo[index].Editable = !postsInfo[index].IsDeleted && (isAdmin || len(posts[index].Author.Tripcode) > 0)
+		postsInfo[index].Modified = posts[index].LastModified != 0
+		postsInfo[index].Editable = !postsInfo[index].IsDeleted && (isAdmin || !posts[index].Author.HiddenTripcode && len(posts[index].Author.Tripcode) > 0)
 	}
 
 	var threadPost PostInfo
@@ -296,6 +299,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		Page       int
 		MaxPages   int
 		HasOP      bool
+		PostCount  int
 	}{
 		thread,
 		threadPost,
@@ -303,6 +307,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		pageInt,
 		(postCount + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
 		pageInt == 1,
+		len(postsInfo),
 	})
 }
 

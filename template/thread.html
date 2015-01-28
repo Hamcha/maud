@@ -19,7 +19,7 @@
     <h3 class="thread-author">
         {{#Author}}
         <span class="nickname">{{Nickname}}</span>
-        <span class="tripcode">{{Tripcode}}</span>
+        <span class="tripcode">{{^HiddenTripcode}}{{Tripcode}}{{/HiddenTripcode}}</span>
         {{/Author}}
         <a href="#thread" class="date">{{Date}}</a>
     </h3>
@@ -46,20 +46,20 @@
     <h3 class="post-author">
         {{#Author}}
         <span class="nickname">{{Nickname}}</span>
-        <span class="tripcode">{{Tripcode}}</span>
+        <span class="tripcode">{{^HiddenTripcode}}{{Tripcode}}{{/HiddenTripcode}}</span>
         {{/Author}}
         <a href="#p{{PostId}}" class="date">{{Date}}</a> <span class="postId">#{{PostId}}</span>
     </h3>
     <div class="right">
-        {{#Editable}}
-        <span class="lastedit">{{LastModified}}</span>
-        <a href="#p{{PostId}}" class="edit nolink" onclick="editPost({{PostId}})">
-            <img src="/static/images/edit.svg" style="height: 20px;" />
-        </a>
-        <a href="#p{{PostId}}" class="delete nolink" onclick="deletePost({{PostId}})">
-            <img src="/static/images/delete.svg" style="height: 18px;" />
-        </a>
-        {{/Editable}}
+        {{#Modified}}<span class="lastedit">{{LastModified}}</span>{{/Modified}}
+        <div id="p{{PostId}}_btn" {{^Editable}}style='display: none'{{/Editable}} />
+            <a href="#p{{PostId}}" class="edit nolink" onclick="editPost({{PostId}})">
+                <img src="/static/images/edit.svg" style="height: 20px;" />
+            </a>
+            <a href="#p{{PostId}}" class="delete nolink" onclick="deletePost({{PostId}})">
+                <img src="/static/images/delete.svg" style="height: 18px;" />
+            </a>
+        </div>
     </div>
     <div class="post-content type{{ContentType}}">{{{Content}}}</div>
     {{/Data}}
@@ -69,8 +69,9 @@
 <div class="pages" data-current="{{Page}}" data-max="{{MaxPages}}"></div>
 <hr />
 <section class="form"><a name="reply" class="noborder"></a>
-    <form id="prev-form" method="POST" action="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/reply">
+<form id="prev-form" onsubmit="return replyPreSubmit(this, '{{#Thread}}{{ShortUrl}}', {{PostCount}}{{/Thread}})" method="POST" action="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/reply">
         <input class="full verysmall" type="text" name="nickname" placeholder="Nickname#Tripcode (optional)" />
+        <input type="hidden" name="htrip" value="" />
 
         <!-- Editor buttons -->
         <div id="editorRight" class="small">
@@ -88,8 +89,7 @@
             <a onclick="editorAdd(this, 'html')">html</a>
             <a onclick="quoteText(this)">&gt;</a>
         </div>
-        <textarea class="full verysmall" name="text" required placeholder="Thread text (Markdown is supported)"></textarea>
-        <input type="hidden" name="preview" id="preview" />
+        <textarea class="full verysmall" name="text" required placeholder="Post content (Markdown, HTML and BBCode are supported)"></textarea>
         <div>
             <center>
                 <div class="chars-count" data-maxlen="{{#Info}}{{MaxPostLength}}{{/Info}}"></div>

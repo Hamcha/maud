@@ -14,7 +14,9 @@ editPost = (id) ->
 	qwest.post(window.stripPage(location.pathname) + "/post/" + id + "/raw")
 		.then (resp) ->
 			content = resp
-			document.querySelector("##{pid} textarea[name='text']").value = content
+			textarea = document.querySelector("##{pid} textarea[name='text']")
+			textarea.value = content
+			textarea.placeholder = "Post content (Markdown, HTML and BBCode are supported)"
 		.catch (err) ->
 			content = ""
 			section = document.getElementById(id)
@@ -22,8 +24,16 @@ editPost = (id) ->
 			errmsg.className = "errmsg"
 			errmsg.innerHTML = "Failed to retrieve content."
 			section.insertBefore errmsg, section.firstChild
-	nick = document.querySelector("##{pid}  .nickname").innerHTML
-	tripcodebar = if !window.adminMode then "<input class=\"full short inline verysmall\" type=\"text\" name=\"tripcode\" placeholder=\"Tripcode (required)\" required />" else ""
+	nickspan = document.querySelector "##{pid} .nickname"
+	nick = nickspan.innerHTML
+	tripcodebar = ""
+	if !window.adminMode
+		if typeof nickspan.firstChild is 'object' # hidden tripcode
+			htrip = JSON.parse(window.localStorage?.getItem 'crLatestPost')?.htrip
+			tripcodebar = "<input type=\"hidden\" name=\"tripcode\" value=\"#{htrip}\" required />"
+		else  # visible tripcode
+			tripcodebar = "<input class=\"full short inline verysmall\" type=\"text\" name=\"tripcode\" placeholder=\"Tripcode (required)\" required />"
+	
 	# if post is OP, allow editing thread tags
 	tagsbar = ""
 	tags = post.dataset?.tags
@@ -54,7 +64,7 @@ editPost = (id) ->
 		<a onclick="editorAdd(this, 'html')">html</a>
 		<a onclick="quoteText(this)">&gt;</a>
 	</div>
-	<textarea class="full small editor" name="text" required placeholder="Thread text (Markdown is supported)">#{content}</textarea>
+	<textarea class="full small editor" name="text" required placeholder="Retreiving content..."></textarea>
 	#{tagsbar}
 	<center>
 	  <div class="chars-count" data-maxlen="#{maxlen}"></div>
@@ -134,7 +144,27 @@ createPreview = (content) ->
 	<div class="post-content typebbcode">#{content}</div>
 	"""
 
+replyPreSubmit = (elem, threadUrl, curPostCount) ->
+	nick = document.querySelector("##{elem.id} input[name='nickname']").value
+	if nick.indexOf('#') > 0
+		if nick.indexOf('#') == nick.length - 1
+			alert "Tripcode must have at least 1 character."
+			return false
+	else
+		saveHiddenTripcode elem, threadUrl, curPostCount
+	
+# hidden tripcode: allow editing posts as anon
+saveHiddenTripcode = (elem, threadUrl, curPostCount) ->
+	storage = window.localStorage
+	return unless storage?
+	hiddenTripcode = Math.random().toString(16).slice(2)
+	document.querySelector("##{elem.id} input[name='htrip']").value = hiddenTripcode
+	# save hidden tripcode in storage
+	storage.setItem "crLatestPost", JSON.stringify { thread: threadUrl, post: curPostCount + 1, htrip: hiddenTripcode }
+	return
+
 window.editPost = editPost
 window.deletePost = deletePost
 window.cancelForm = cancelForm
 window.showPreview = showPreview
+window.replyPreSubmit = replyPreSubmit

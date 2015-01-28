@@ -70,7 +70,10 @@ func (db Database) NewThread(user User, title, content string, tags []string) (s
 	return thread.ShortUrl, err
 }
 
-// ReplyThread appends a reply to the thread `thread`.
+// ReplyThread appends a reply to the thread `thread` and increases the popularity
+// of all the thread tags.
+// Returns the number of posts in the thread (after this was inserted) and any error
+// which may have happened during the transaction.
 func (db Database) ReplyThread(thread *Thread, user User, content string) (int, error) {
 	post := Post{
 		Id:          bson.NewObjectId(),
@@ -298,7 +301,7 @@ func (db Database) DeletePost(id bson.ObjectId, admin bool) error {
 	return err
 }
 
-// DBSetThreadTags changes the tags of the thread with id `id` to `newTags`
+// SetThreadTags changes the tags of the thread with id `id` to `newTags`
 // and returns an error, or nil if no error occurred
 func (db Database) SetThreadTags(id bson.ObjectId, newTags []string) error {
 	err := db.database.C("threads").UpdateId(id, bson.M{
@@ -307,7 +310,7 @@ func (db Database) SetThreadTags(id bson.ObjectId, newTags []string) error {
 	return err
 }
 
-// DBGetMatchingTags returns a slice of Tags matching the given word.
+// GetMatchingTags returns a slice of Tags matching the given word.
 // If word given is "", the behaviour is the same as DBGetPopularTags.
 func (db Database) GetMatchingTags(word string, limit, offset int, filter []string) ([]Tag, error) {
 	if len(word) < 1 {

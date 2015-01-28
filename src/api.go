@@ -22,7 +22,7 @@ func apiNewThread(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	nickname, tripcode := parseNickname(postNickname)
-	user := User{nickname, tripcode}
+	user := User{nickname, tripcode, isHiddenTripcode(tripcode)}
 	content := postContent
 	tags := parseTags(postTags)
 
@@ -46,8 +46,10 @@ func apiNewThread(rw http.ResponseWriter, req *http.Request) {
 	http.Redirect(rw, req, basepath+"thread/"+threadId, http.StatusMovedPermanently)
 }
 
-// apiReply: appends a post to a thread.
-// POST params: text, [nickname]
+// apiReply: appends a post to a thread. If POST parameter 'nickname' is given
+// and has a tripcode, use that as "visible tripcode", else if 'htrip' param
+// is given, use that as hidden tripcode (to allow further editing of the post)
+// POST params: text, [nickname, htrip]
 func apiReply(rw http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	threadUrl := vars["thread"]
@@ -75,8 +77,12 @@ func apiReply(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	nickname, tripcode := parseNickname(postNickname)
-	user := User{nickname, tripcode}
+	nickname, tcode := parseNickname(postNickname)
+	if len(tcode) < 1 && len(req.PostFormValue("htrip")) > 0 {
+		// tripcodes starting with '!' are hidden
+		tcode = "!" + tripcode(req.PostFormValue("htrip"))
+	}
+	user := User{nickname, tcode, isHiddenTripcode(tcode)}
 	content := postContent
 
 	if postTooLong(content) {
@@ -135,8 +141,8 @@ func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 	// check tripcode
-	trip := req.PostFormValue("tripcode")
-	if !isAdmin && tripcode(trip) != post.Author.Tripcode {
+	trip := tripcode(req.PostFormValue("tripcode"))
+	if !(isAdmin || post.Author.HiddenTripcode && trip == post.Author.Tripcode[1:] || !post.Author.HiddenTripcode && trip == post.Author.Tripcode) {
 		sendError(rw, 401, "Invalid tripcode")
 		return
 	}

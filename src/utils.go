@@ -197,3 +197,7 @@ func generateURL(db Database, name string) string {
 	str := base64.URLEncoding.EncodeToString(btr)
 	return strings.TrimRight(str, "=")
 }
+
+func isHiddenTripcode(tripcode string) bool {
+	return len(tripcode) > 0 && tripcode[0] == '!'
+}

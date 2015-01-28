@@ -4,20 +4,6 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-type SiteInfo struct {
-	Title              string
-	Secret             string
-	PostsPerPage       int
-	ThreadsPerPage     int
-	TagResultsPerPage  int
-	TagsPerPage        int
-	MaxPostLength      int
-	Footer             []string
-	PostFooter         string
-	FullVersionDomain  string
-	LightVersionDomain string
-}
-
 type AdminConfig struct {
 	EnablePath   bool
 	EnableDomain bool
@@ -26,22 +12,9 @@ type AdminConfig struct {
 	Admins       map[string]string
 }
 
-type User struct {
-	Nickname string
-	Tripcode string
-}
-
-type Thread struct {
-	Id         bson.ObjectId "_id"
-	ShortUrl   string
-	Title      string
-	Author     User
-	Tags       []string
-	Date       int64
-	Messages   int32
-	ThreadPost bson.ObjectId
-	LastReply  bson.ObjectId
-	LRDate     int64
+type Counter struct {
+	Name string
+	Seq  int64
 }
 
 type Post struct {
@@ -54,9 +27,18 @@ type Post struct {
 	ContentType  string
 }
 
-type Counter struct {
-	Name string
-	Seq  int64
+type SiteInfo struct {
+	Title              string
+	Secret             string
+	PostsPerPage       int
+	ThreadsPerPage     int
+	TagResultsPerPage  int
+	TagsPerPage        int
+	MaxPostLength      int
+	Footer             []string
+	PostFooter         string
+	FullVersionDomain  string
+	LightVersionDomain string
 }
 
 type Tag struct {
@@ -73,9 +55,28 @@ type TagData struct {
 	LastIndex  int64
 }
 
+type Thread struct {
+	Id         bson.ObjectId "_id"
+	ShortUrl   string
+	Title      string
+	Author     User
+	Tags       []string
+	Date       int64
+	Messages   int32
+	ThreadPost bson.ObjectId
+	LastReply  bson.ObjectId
+	LRDate     int64
+}
+
 type ThreadInfo struct {
 	Thread      Thread
 	LastPost    Post
 	LastMessage int
 	Page        int
+}
+
+type User struct {
+	Nickname       string
+	Tripcode       string
+	HiddenTripcode bool
 }
