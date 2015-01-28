@@ -49,6 +49,7 @@ func setupHandlers(router *mux.Router, isAdmin, isSubdir bool) {
 	SetHandler(POST, "/tagsearch", apiTagSearch, isAdmin, isSubdir)
 	SetHandler(POST, "/postpreview", apiPreview, isAdmin, isSubdir)
 	SetHandler(POST, "/taglist", apiTagList, isAdmin, isSubdir)
+	SetHandler(POST, "/search", httpTextSearch, isAdmin, isSubdir)
 }
 
 func dontListDirs(h http.Handler) http.HandlerFunc {

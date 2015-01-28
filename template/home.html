@@ -1,6 +1,7 @@
 <nav>
     <a href="{{BasePath}}new" class="button">New thread</a>
     <a class="button" id="tagsearchbtn">Tag search</a>
+    <a class="button" id="fulltextbtn">Text search</a>
     <a href="{{BasePath}}stiki" class="button">Stiki</a>
     <a href="{{BasePath}}hidden" class="button">Hidden</a>
 </nav>
@@ -13,7 +14,7 @@
 {{#Thread}}
 <article class="thread-item thread">
     <h3 class="thread-name"><a href="{{BasePath}}thread/{{ShortUrl}}" class="nolink">{{Title}}</a></h3>
-    <div>Last reply: 
+    <div>Last reply:
         <a href="{{BasePath}}thread/{{ShortUrl}}/page/{{Page}}#p{{LastMessage}}">
             {{#LastPost}}{{#Data}}
             {{#Author}}

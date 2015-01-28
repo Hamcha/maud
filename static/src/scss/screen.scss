@@ -128,9 +128,9 @@ a[href], a[href]:visited {
 
 a.nolink { border: 0; }
 
-/* Tag search */
+/* Tag/Text search */
 
-#tagsearch {
+#tagsearch, #textsearch {
     font-size: 1.2em;
     background: transparent;
     border: 1px solid #aaa;

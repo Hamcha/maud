@@ -81,6 +81,17 @@ toggle?.onclick = ->
 	toggleAutocomplete box, "#{basepath}taglist"
 	box.focus()
 
+fulltext = document.getElementById "fulltextbtn"
+fulltext?.onclick = () ->
+	fulltext.outerHTML = """
+    <form style="display: inline-block" method="POST" action="#{basepath}textsearch">
+      <input type="text" name="text" id="textsearch" placeholder="Search terms here" required title="Insert your search query here" />
+      <input type="submit" value="Search" />
+    </form>
+	"""
+	box = document.getElementById "textsearch"
+	box.focus()
+
 # Unhide post actions to admins
 if window.adminMode
 	con.style.display = "inline-block" for con in document.querySelectorAll ".postactions"

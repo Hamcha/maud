@@ -391,6 +391,36 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 	})
 }
 
+func httpTextSearch(rw http.ResponseWriter, req *http.Request) {
+	text := req.PostFormValue("text")
+	if len(text) < 1 {
+		sendError(rw, 400, "Empty search")
+		return
+	}
+
+	basepath := "/"
+	if ok, val := isAdmin(req); ok {
+		basepath = val.BasePath
+	}
+
+	posts := db.Search(text, filterFromCookie(req))
+
+	type PostSearchInfo struct {
+		Post   Post
+		Thread Thread
+	}
+
+	send(rw, req, "textsearch", "Posts containing \""+text+"\"", struct {
+		PostList    []PostSearchInfo
+		CurrentPage int
+		More        bool
+	}{
+		threadlist,
+		pageInt,
+		len(threadlist) == siteInfo.TagResultsPerPage,
+	})
+}
+
 func httpNewThread(rw http.ResponseWriter, req *http.Request) {
 	if req.Header.Get("Captcha-required") == "true" {
 		captchaData, err := randomCaptcha()
