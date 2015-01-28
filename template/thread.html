@@ -69,7 +69,7 @@
 <div class="pages" data-current="{{Page}}" data-max="{{MaxPages}}"></div>
 <hr />
 <section class="form"><a name="reply" class="noborder"></a>
-<form id="prev-form" onsubmit="return replyPreSubmit(this, '{{#Thread}}{{ShortUrl}}', {{PostCount}}{{/Thread}})" method="POST" action="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/reply">
+<form id="prev-form" onsubmit="return replyPreSubmit(this, '{{#Thread}}{{ShortUrl}}', {{Messages}}{{/Thread}})" method="POST" action="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/reply">
         <input class="full verysmall" type="text" name="nickname" placeholder="Nickname#Tripcode (optional)" />
         <input type="hidden" name="htrip" value="" />
 

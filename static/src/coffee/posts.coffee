@@ -155,12 +155,13 @@ replyPreSubmit = (elem, threadUrl, curPostCount) ->
 	
 # hidden tripcode: allow editing posts as anon
 saveHiddenTripcode = (elem, threadUrl, curPostCount) ->
+	console.log "called with #{elem},#{threadUrl},#{curPostCount}"
 	storage = window.localStorage
 	return unless storage?
 	hiddenTripcode = Math.random().toString(16).slice(2)
 	document.querySelector("##{elem.id} input[name='htrip']").value = hiddenTripcode
 	# save hidden tripcode in storage
-	storage.setItem "crLatestPost", JSON.stringify { thread: threadUrl, post: curPostCount + 1, htrip: hiddenTripcode }
+	storage.setItem "crLatestPost", JSON.stringify { thread: threadUrl, post: curPostCount, htrip: hiddenTripcode }
 	return
 
 window.editPost = editPost

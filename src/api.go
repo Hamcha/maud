@@ -21,8 +21,13 @@ func apiNewThread(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	nickname, tripcode := parseNickname(postNickname)
-	user := User{nickname, tripcode, isHiddenTripcode(tripcode)}
+	nickname, tcode := parseNickname(postNickname)
+	hidden := false
+	if len(tcode) < 1 && len(req.PostFormValue("htrip")) > 0 {
+		tcode = tripcode(req.PostFormValue("htrip"))
+		hidden = true
+	}
+	user := User{nickname, tcode, hidden}
 	content := postContent
 	tags := parseTags(postTags)
 
@@ -78,11 +83,12 @@ func apiReply(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	nickname, tcode := parseNickname(postNickname)
+	hidden := false
 	if len(tcode) < 1 && len(req.PostFormValue("htrip")) > 0 {
-		// tripcodes starting with '!' are hidden
-		tcode = "!" + tripcode(req.PostFormValue("htrip"))
+		tcode = tripcode(req.PostFormValue("htrip"))
+		hidden = true
 	}
-	user := User{nickname, tcode, isHiddenTripcode(tcode)}
+	user := User{nickname, tcode, hidden}
 	content := postContent
 
 	if postTooLong(content) {
@@ -142,7 +148,7 @@ func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 	}
 	// check tripcode
 	trip := tripcode(req.PostFormValue("tripcode"))
-	if !(isAdmin || post.Author.HiddenTripcode && trip == post.Author.Tripcode[1:] || !post.Author.HiddenTripcode && trip == post.Author.Tripcode) {
+	if !isAdmin && trip != post.Author.Tripcode {
 		sendError(rw, 401, "Invalid tripcode")
 		return
 	}
