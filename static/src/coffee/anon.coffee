@@ -8,6 +8,21 @@ fromList(document.querySelectorAll ".thread-author,.post-author").map (elem) ->
 	return if nick.innerHTML.length + trip.innerHTML.length > 0
 	nick.innerHTML = "<span class=\"anon\">"+randomAnon()+"</span>"
 
+# if 'crSetLatestPost' cookie is set, save hidden tripcode and delete the cookie
+saveHiddenTripcode = (thread, post, htrip) ->
+	storage = window.localStorage
+	return unless storage?
+	# save hidden tripcode in storage
+	storage.setItem "crLatestPost", JSON.stringify { thread: thread, post: post, htrip: htrip }
+	return
+
+lpCookie = Cookies.get 'crSetLatestPost'
+if lpCookie?
+	[thread, post, htrip] = lpCookie.split '/'
+	if thread? and post? and htrip?
+		saveHiddenTripcode thread, post, htrip
+	Cookies.expire 'crSetLatestPost', { path: '/thread/' }
+
 # check if any post in this page is editable (i.e. we have the hidden tripcode
 # for it in localStorage)
 if window.localStorage?.getItem('crLatestPost')?

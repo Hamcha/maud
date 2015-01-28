@@ -13,6 +13,8 @@ import (
 	"unicode/utf8"
 )
 
+const LETTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_"
+
 func parseNickname(nickname string) (string, string) {
 	if len(nickname) < 1 {
 		return "", ""
@@ -200,10 +202,9 @@ func generateURL(db Database, name string) string {
 }
 
 func randomString(length int) string {
-	letters := []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_")
 	b := make([]rune, length)
 	for i := range b {
-		b[i] = letters[rand.Intn(len(letters))]
+		b[i] = rune(LETTERS[rand.Intn(len(LETTERS))])
 	}
 	return string(b)
 }
