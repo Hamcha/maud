@@ -13,7 +13,7 @@
     <h3 class="thread-author">
         {{#Author}}
         <span class="nickname">{{Nickname}}</span>
-        <span class="tripcode">{{Tripcode}}</span>
+        <span class="tripcode">{{^HiddenTripcode}}{{Tripcode}}{{/HiddenTripcode}}</span>
         {{/Author}}
         <span class="date">{{Date}}</span>
     </h3>
@@ -30,7 +30,7 @@
     <h3 class="post-author">
         {{#Author}}
         <span class="nickname">{{Nickname}}</span>
-        <span class="tripcode">{{Tripcode}}</span>
+        <span class="tripcode">{{^HiddenTripcode}}{{Tripcode}}{{/HiddenTripcode}}</span>
         {{/Author}}
         <span class="date">{{Date}}</span>
     </h3>
