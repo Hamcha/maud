@@ -2,18 +2,17 @@ package main
 
 import (
 	"bytes"
+	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/binary"
 	"errors"
-	"math/rand"
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 	"unicode/utf8"
 )
-
-const LETTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_"
 
 func parseNickname(nickname string) (string, string) {
 	if len(nickname) < 1 {
@@ -202,9 +201,17 @@ func generateURL(db Database, name string) string {
 }
 
 func randomString(length int) string {
-	b := make([]rune, length)
-	for i := range b {
-		b[i] = rune(LETTERS[rand.Intn(len(LETTERS))])
+	b := make([]byte, length)
+	_, err := rand.Read(b)
+	if err != nil {
+		// Fallback to a quite less secure method
+		sum := sha256.Sum256([]byte(strconv.Itoa(int(time.Now().UnixNano())) + siteInfo.Secret))
+		b64 := base64.URLEncoding.EncodeToString(sum[:])
+		for len(b64) < length {
+			sum2 := sha256.Sum256(sum[:])
+			b64 = base64.URLEncoding.EncodeToString(sum2[:]) + b64
+		}
+		return b64[0:length]
 	}
-	return string(b)
+	return base64.URLEncoding.EncodeToString(b)[0:length]
 }

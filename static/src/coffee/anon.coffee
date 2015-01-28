@@ -30,5 +30,7 @@ if window.localStorage?.getItem('crLatestPost')?
 	return unless latestPost.thread == location.pathname.split('/')[2]
 	btnDiv = document.getElementById "p#{latestPost.post}_btn"
 	return unless btnDiv?
+	# check if the post is deleted
+	return if (document.querySelector "#p#{latestPost.post} .typedeleted")
 	# mark the post as editable
 	btnDiv.style.display = "block"
