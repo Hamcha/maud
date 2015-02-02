@@ -10,5 +10,5 @@ type Formatter interface {
 
 type Mutator struct {
 	Condition func(*http.Request) bool
-	Mutator   func(string) string
+	Mutator   func(content, threadUrl string) string
 }

@@ -6,6 +6,7 @@ import (
 	"./modules/formatters/bbcode"
 	"./modules/formatters/lightify"
 	"./modules/formatters/markdown"
+	"./modules/maudtext"
 )
 
 var formatters []modules.Formatter
@@ -27,4 +28,7 @@ func InitFormatters() {
 	}
 	formatters = append(formatters, lightifier)
 	mutators = append(mutators, lightmutator)
+
+	// Maudtext (handles quotes etc)
+	mutators = append(mutators, maudtext.Provide(siteInfo.PostsPerPage))
 }

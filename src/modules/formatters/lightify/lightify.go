@@ -40,7 +40,8 @@ func (f *LightifyFormatter) Format(content string) string {
 	return content
 }
 
-func (f *LightifyFormatter) ReplaceTags(content string) string {
+// ReplaceTags replaces all <img> and <iframe> tags with hyperlinks to those resources.
+func (f *LightifyFormatter) ReplaceTags(content, _ string) string {
 	for _, match := range f.imgRgx.FindAllStringSubmatch(content, -1) {
 		url := match[1]
 		spl := strings.Split(url, "/")

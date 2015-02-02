@@ -70,7 +70,7 @@ func main() {
 	// Command line parameters
 	bind := flag.String("port", ":8080", "Address to bind to")
 	mongo := flag.String("dburl", "localhost", "MongoDB servers, separated by comma")
-	dbname := flag.String("dbname", "maud", "MongoDB database to use")
+	dbname := flag.String("dbname", "maud-test", "MongoDB database to use")
 	adminfile := flag.String("admin", "admin.conf", "Admin configuration file")
 	flag.StringVar(&maudRoot, "root", maudRoot, "The HTTP server root directory")
 	flag.Parse()

@@ -5,8 +5,6 @@
 // so `markdownText` should have already been properly treated
 // (e.g. disallowing dangerous tags like <script> and sanitizing HTML
 // special characters).
-// HOWEVER: leading ">" should NOT be converted to &gt; or else the
-// line won't be accounted as quote.
 // The parser is line-oriented, so it doesn't support multiline MD snippets.
 // Currently, differently from standard Markdown, a newline gets converted in <br/>
 // regardless of the trailing spaces.
@@ -37,8 +35,6 @@ func (m *MarkdownFormatter) Init() {
 		regexp.MustCompile(`(?U)(^|\\\\|[^\\])!\[(.*)\]\((.*)\)`):   mdConvertImg,
 		regexp.MustCompile(`(?U)(^|\\\\|[^\\])\[(.*)\]\((.*)\)`):    mdConvertTagParam("a", "href"),
 		regexp.MustCompile("(?U)(^|\\\\\\\\|[^\\\\])`(.*[^\\\\])`"): mdConvertTag("code"),
-		regexp.MustCompile(`^\s*&gt;&gt;\s?#([0-9]+)\s*$`):          mdConvertPostQuote,
-		regexp.MustCompile(`^&gt;.*$`):                              mdConvertQuote,
 	}
 	m.trimEscape = regexp.MustCompile("\\\\([*\\[!`\\\\])")
 }
@@ -49,9 +45,6 @@ func (m *MarkdownFormatter) Init() {
 //   [alt](url)
 //   ![alt](url)  -- embeds resource
 //   `inline code`
-// (extra markdown)
-//   >> #postId
-//   >quote
 func (m *MarkdownFormatter) Format(content string) string {
 	lines := strings.Split(content, "\n")
 

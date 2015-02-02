@@ -148,6 +148,11 @@ func apiPreview(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 	content := parseContent(postContent, "bbcode")
+	for _, m := range mutators {
+		if m.Condition(req) {
+			content = m.Mutator(content, "")
+		}
+	}
 	fmt.Fprintln(rw, content)
 }
 

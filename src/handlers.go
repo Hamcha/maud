@@ -276,7 +276,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		// Modules for changing content based on a condition, e.g. Lightify
 		for _, m := range mutators {
 			if m.Condition(req) {
-				posts[index].Content = m.Mutator(posts[index].Content)
+				posts[index].Content = m.Mutator(posts[index].Content, threadUrl)
 			}
 		}
 		postsInfo[index].Data = posts[index]
@@ -366,7 +366,7 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 		content := parseContent(post.Content, post.ContentType)
 		for _, m := range mutators {
 			if m.Condition(req) {
-				content = m.Mutator(content)
+				content = m.Mutator(content, v.ShortUrl)
 			}
 		}
 		short, isbroken := shortify(content)
@@ -402,7 +402,7 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 			content = parseContent(reply.Content, reply.ContentType)
 			for _, m := range mutators {
 				if m.Condition(req) {
-					content = m.Mutator(content)
+					content = m.Mutator(content, v.ShortUrl)
 				}
 			}
 			lp.ShortContent, lp.HasBroken = shortify(content)
