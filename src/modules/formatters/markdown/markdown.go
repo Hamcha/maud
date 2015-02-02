@@ -32,12 +32,13 @@ type MarkdownFormatter struct {
 
 func (m *MarkdownFormatter) Init() {
 	m.mdElements = map[*regexp.Regexp]func(*regexp.Regexp, string) string{
-		regexp.MustCompile("(?U)(^|\\\\\\\\|[^\\\\])\\*\\*(.*[^\\\\])\\*\\*"): mdConvertTag("b"),
-		regexp.MustCompile("(?U)(^|\\\\\\\\|[^\\\\])\\*(.*[^\\\\])\\*"):       mdConvertTag("i"),
-		regexp.MustCompile("(?U)(^|\\\\\\\\|[^\\\\])!\\[(.*)\\]\\((.*)\\)"):   mdConvertTagParam("img", "src"),
-		regexp.MustCompile("(?U)(^|\\\\\\\\|[^\\\\])\\[(.*)\\]\\((.*)\\)"):    mdConvertTagParam("a", "href"),
-		regexp.MustCompile("(?U)(^|\\\\\\\\|[^\\\\])`(.*[^\\\\])`"):           mdConvertTag("code"),
-		regexp.MustCompile("^&gt;.*$"):                                        mdConvertQuote,
+		regexp.MustCompile(`(?U)(^|\\\\|[^\\])\*\*(.*[^\\])\*\*`):   mdConvertTag("b"),
+		regexp.MustCompile(`(?U)(^|\\\\|[^\\])\*(.*[^\\])\*`):       mdConvertTag("i"),
+		regexp.MustCompile(`(?U)(^|\\\\|[^\\])!\[(.*)\]\((.*)\)`):   mdConvertImg,
+		regexp.MustCompile(`(?U)(^|\\\\|[^\\])\[(.*)\]\((.*)\)`):    mdConvertTagParam("a", "href"),
+		regexp.MustCompile("(?U)(^|\\\\\\\\|[^\\\\])`(.*[^\\\\])`"): mdConvertTag("code"),
+		regexp.MustCompile(`^\s*&gt;&gt;\s?#([0-9]+)\s*$`):          mdConvertPostQuote,
+		regexp.MustCompile(`^&gt;.*$`):                              mdConvertQuote,
 	}
 	m.trimEscape = regexp.MustCompile("\\\\([*\\[!`\\\\])")
 }
@@ -47,8 +48,10 @@ func (m *MarkdownFormatter) Init() {
 //   **bold**
 //   [alt](url)
 //   ![alt](url)  -- embeds resource
-//   >quote
 //   `inline code`
+// (extra markdown)
+//   >> #postId
+//   >quote
 func (m *MarkdownFormatter) Format(content string) string {
 	lines := strings.Split(content, "\n")
 
@@ -79,6 +82,14 @@ func mdConvertTagParam(tag, param string) func(*regexp.Regexp, string) string {
 	}
 }
 
-func mdConvertQuote(regex *regexp.Regexp, str string) string {
+func mdConvertImg(regex *regexp.Regexp, str string) string {
+	return regex.ReplaceAllString(str, "$1<img src=\"$3\" alt=\"$2\"/>")
+}
+
+func mdConvertQuote(_ *regexp.Regexp, str string) string {
 	return "<span class=\"purpletext\">&gt; " + strings.TrimSpace(str[4:]) + "</span>"
+}
+
+func mdConvertPostQuote(regex *regexp.Regexp, str string) string {
+	return regex.ReplaceAllString(str, "<a href=\"#p$1\" class=\"postIdQuote\">$0</a>")
 }

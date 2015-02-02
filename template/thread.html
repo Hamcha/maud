@@ -48,7 +48,7 @@
         <span class="nickname">{{Nickname}}</span>
         <span class="tripcode">{{^HiddenTripcode}}{{Tripcode}}{{/HiddenTripcode}}</span>
         {{/Author}}
-        <a href="#p{{PostId}}" class="date">{{Date}}</a> <span class="postId">#{{PostId}}</span>
+        <a href="#p{{PostId}}" class="date">{{Date}}</a> <a href="#reply" class="postId" onclick="quotePostId({{PostId}})">#{{PostId}}</a>
     </h3>
     <div class="right">
         {{#Modified}}<span class="lastedit">{{LastModified}}</span>{{/Modified}}

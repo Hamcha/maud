@@ -150,6 +150,7 @@ createPreview = (content) ->
 	<div class="post-content typebbcode">#{content}</div>
 	"""
 
+# check form before submitting
 replyPreSubmit = (elem, threadUrl, curPostCount) ->
 	nick = document.querySelector("##{elem.id} input[name='nickname']").value
 	if nick.indexOf('#') > 0 and nick.indexOf('#') == nick.length - 1
@@ -157,8 +158,17 @@ replyPreSubmit = (elem, threadUrl, curPostCount) ->
 		return false
 	return true
 
+# post quote by id
+quotePostId = (id) ->
+	text = document.querySelector("#prev-form textarea[name='text']")
+	if text.value.length > 0 and text.value[text.value.length - 1] isnt "\n"
+		text.value += "\n>> ##{id}\n"
+	else
+		text.value += ">> ##{id}\n"
+
 window.editPost = editPost
 window.deletePost = deletePost
 window.cancelForm = cancelForm
 window.showPreview = showPreview
 window.replyPreSubmit = replyPreSubmit
+window.quotePostId = quotePostId
