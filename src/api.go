@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
+	"runtime/debug"
 	"strconv"
 	"strings"
 )
@@ -32,14 +33,15 @@ func apiNewThread(rw http.ResponseWriter, req *http.Request) {
 	tags := parseTags(postTags)
 
 	if postTooLong(content) {
-		http.Error(rw, "Post is too long.", 400)
+		sendError(rw, 400, "Post is too long.")
 		return
 	}
 
 	threadId, err := db.NewThread(user, postTitle, content, tags)
 	if err != nil {
 		fmt.Println(err.Error())
-		sendError(rw, 500, err.Error())
+		debug.PrintStack()
+		sendError(rw, 500, "Database error: "+err.Error())
 		return
 	}
 
@@ -72,13 +74,15 @@ func apiReply(rw http.ResponseWriter, req *http.Request) {
 	thread, err := db.GetThread(threadUrl)
 	if err != nil {
 		fmt.Println(err.Error())
-		sendError(rw, 500, err.Error())
+		debug.PrintStack()
+		sendError(rw, 500, "Database error: "+err.Error())
 		return
 	}
 	count, err := db.PostCount(&thread)
 	if err != nil {
 		fmt.Println(err.Error())
-		sendError(rw, 500, err.Error())
+		debug.PrintStack()
+		sendError(rw, 500, "Database error: "+err.Error())
 		return
 	}
 	page := (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage
@@ -109,7 +113,8 @@ func apiReply(rw http.ResponseWriter, req *http.Request) {
 	_, err = db.ReplyThread(&thread, user, content)
 	if err != nil {
 		fmt.Println(err.Error())
-		sendError(rw, 500, err.Error())
+		debug.PrintStack()
+		sendError(rw, 500, "Database error: "+err.Error())
 		return
 	}
 
@@ -136,10 +141,10 @@ func apiReply(rw http.ResponseWriter, req *http.Request) {
 func apiPreview(rw http.ResponseWriter, req *http.Request) {
 	postContent := strings.TrimRight(req.PostFormValue("text"), "\r\n") + "\r\n"
 	if len(postContent) < 1 {
-		http.Error(rw, "Required fields are missing", 400)
+		sendError(rw, 400, "Required fields are missing")
 		return
 	} else if postTooLong(postContent) {
-		http.Error(rw, "Post is too long", 400)
+		sendError(rw, 400, "Post is too long")
 		return
 	}
 	content := parseContent(postContent, "bbcode")
@@ -156,11 +161,14 @@ func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 
 	postId, err := strconv.Atoi(vars["post"])
 	if err != nil {
-		http.Error(rw, "Invalid post id", 400)
+		sendError(rw, 400, "Invalid post id")
 		return
 	}
 
 	thread, post, err := threadPostOrErr(rw, vars["thread"], vars["post"])
+	if err != nil {
+		return
+	}
 	// if post has no tripcode associated, refuse to edit
 	if !isAdmin && len(post.Author.Tripcode) < 1 {
 		sendError(rw, 403, "Forbidden")

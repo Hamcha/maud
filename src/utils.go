@@ -143,16 +143,16 @@ func threadPostOrErr(rw http.ResponseWriter, threadId, postIdStr string) (Thread
 	// retreive post
 	postId, err := strconv.Atoi(postIdStr)
 	if err != nil {
-		http.Error(rw, "Invalid post ID", 400)
+		sendError(rw, 400, err.Error())
 		return thread, Post{}, err
 	}
 	posts, err := db.GetPosts(&thread, 1, postId)
 	if err != nil {
-		http.Error(rw, err.Error(), 500)
+		sendError(rw, 500, err.Error())
 		return thread, posts[0], err
 	}
 	if len(posts) < 1 {
-		http.Error(rw, "Post not found", 404)
+		sendError(rw, 404, "Post not found")
 		return thread, posts[0], errors.New("Post not found")
 	}
 	return thread, posts[0], nil
