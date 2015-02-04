@@ -8,7 +8,12 @@ type Formatter interface {
 	Format(string) string
 }
 
-type Mutator struct {
+type PostMutatorData struct {
+	Request *http.Request
+	Content *string
+}
+
+type PostMutator struct {
 	Condition func(*http.Request) bool
-	Mutator   func(content, threadUrl string) string
+	Mutator   func(post PostMutatorData)
 }

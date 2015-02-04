@@ -1,6 +1,7 @@
 package lightify
 
 import (
+	"../.."
 	"regexp"
 	"strings"
 )
@@ -41,7 +42,8 @@ func (f *LightifyFormatter) Format(content string) string {
 }
 
 // ReplaceTags replaces all <img> and <iframe> tags with hyperlinks to those resources.
-func (f *LightifyFormatter) ReplaceTags(content, _ string) string {
+func (f *LightifyFormatter) ReplaceTags(data modules.PostMutatorData) {
+	content := *data.Content
 	for _, match := range f.imgRgx.FindAllStringSubmatch(content, -1) {
 		url := match[1]
 		spl := strings.Split(url, "/")
@@ -54,8 +56,7 @@ func (f *LightifyFormatter) ReplaceTags(content, _ string) string {
 			content = strings.Replace(content, match[0], "<a class='toggleImage' data-url="+url+">[Click to view image]</a>", 1)
 		}
 	}
-	content = f.iframeRgx.ReplaceAllString(content, "<a target=\"_blank\" href=$1>[Click to open embedded content]</a>")
-	return content
+	*data.Content = f.iframeRgx.ReplaceAllString(content, "<a target=\"_blank\" href=$1>[Click to open embedded content]</a>")
 }
 
 //// Unexported ////

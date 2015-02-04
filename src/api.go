@@ -148,11 +148,15 @@ func apiPreview(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 	content := parseContent(postContent, "bbcode")
-	for _, m := range mutators {
-		if m.Condition(req) {
-			content = m.Mutator(content, "")
-		}
+
+	// Do a dummy post for mutators
+	var fakepost Post
+	fakepost.Content = content
+	for _, m := range postmutators {
+		applyPostMutator(m, nil, &fakepost, req)
 	}
+	content = fakepost.Content
+
 	fmt.Fprintln(rw, content)
 }
 

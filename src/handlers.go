@@ -274,10 +274,8 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 	for index := range posts {
 		posts[index].Content = parseContent(posts[index].Content, posts[index].ContentType)
 		// Modules for changing content based on a condition, e.g. Lightify
-		for _, m := range mutators {
-			if m.Condition(req) {
-				posts[index].Content = m.Mutator(posts[index].Content, threadUrl)
-			}
+		for _, m := range postmutators {
+			applyPostMutator(m, &thread, &posts[index], req)
 		}
 		postsInfo[index].Data = posts[index]
 		postsInfo[index].IsDeleted = posts[index].ContentType == "deleted" || posts[index].ContentType == "admin-deleted"
@@ -364,10 +362,8 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 		}
 
 		content := parseContent(post.Content, post.ContentType)
-		for _, m := range mutators {
-			if m.Condition(req) {
-				content = m.Mutator(content, v.ShortUrl)
-			}
+		for _, m := range postmutators {
+			applyPostMutator(m, &v, &post, req)
 		}
 		short, isbroken := shortify(content)
 
@@ -400,10 +396,8 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 			lp.Author = reply.Author
 			lp.Date = reply.Date
 			content = parseContent(reply.Content, reply.ContentType)
-			for _, m := range mutators {
-				if m.Condition(req) {
-					content = m.Mutator(content, v.ShortUrl)
-				}
+			for _, m := range postmutators {
+				applyPostMutator(m, &v, &reply, req)
 			}
 			lp.ShortContent, lp.HasBroken = shortify(content)
 			lp.Number = count - 1
