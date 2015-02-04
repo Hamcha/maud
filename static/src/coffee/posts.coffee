@@ -160,7 +160,7 @@ replyPreSubmit = (elem, threadUrl, curPostCount) ->
 
 # post quote by id
 quotePostId = (id) ->
-	text = document.querySelector("#prev-form textarea[name='text']")
+	text = document.querySelector "#prev-form textarea[name='text']"
 	if text.value.length > 0 and text.value[text.value.length - 1] isnt "\n"
 		text.value += "\n>> ##{id}\n"
 	else
