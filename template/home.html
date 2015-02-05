@@ -12,10 +12,10 @@
 {{#Thread}}
 <article class="thread-item">
     <h3 class="thread-name"><a href="{{BasePath}}thread/{{ShortUrl}}" class="nolink">{{Title}}</a></h3>
-    <div>Last reply: <a href="{{BasePath}}thread/{{ShortUrl}}/page/{{Page}}#p{{LastMessage}}">{{#LastPost}}{{#Author}}
+    <div>Last reply: <a href="{{BasePath}}thread/{{ShortUrl}}/page/{{Page}}#p{{LastMessage}}">{{#LastPost}}{{#Data}}{{#Author}}
     <span class="nickname">{{Nickname}}</span>
     <span class="tripcode">{{^HiddenTripcode}}{{Tripcode}}{{/HiddenTripcode}}</span>
-    {{/Author}}{{/LastPost}}<span class="date">{{LRDate}}</span></a></div>
+    {{/Author}} <span class="date" data-udate="{{Date}}">{{StrDate}}</span>{{/Data}}{{/LastPost}}</a></div>
 </article>
 {{/Thread}}
 {{/Last}}
@@ -27,7 +27,7 @@
 {{#Tags}}
 <article class="tag-item">
     <h3 class="tag-name"><a href="{{BasePath}}tag/{{Name}}" class="nolink">{{{Name}}}</a></h3>
-    <div>Last updated thread: {{#LastThread}}{{#Thread}}<a href="{{BasePath}}thread/{{ShortUrl}}/page/{{Page}}#p{{LastMessage}}" class="thread-title">{{Title}}</a>{{/Thread}}{{/LastThread}} (<span class="date">{{LastUpdate}}</span>)</div>
+    <div>Last updated thread: {{#LastThread}}{{#Thread}}<a href="{{BasePath}}thread/{{ShortUrl}}/page/{{Page}}#p{{LastMessage}}" class="thread-title">{{Title}}</a>{{/Thread}}{{/LastThread}} (<span class="date" data-udate="{{LastUpdate}}">{{StrLastUpdate}}</span>)</div>
 </article>
 {{/Tags}}
 <a href='{{BasePath}}tags' class="article"><article>View all</article></a>

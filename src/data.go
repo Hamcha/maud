@@ -27,6 +27,17 @@ type Post struct {
 	ContentType  string
 }
 
+type PostInfo struct {
+	PostId          int
+	Data            Post
+	StrDate         string
+	StrLastModified string
+	IsDeleted       bool
+	Editable        bool
+	Modified        bool
+	IsAnon          bool
+}
+
 type SiteInfo struct {
 	Title              string
 	Secret             string
@@ -49,10 +60,11 @@ type Tag struct {
 }
 
 type TagData struct {
-	Name       string
-	LastUpdate int64
-	LastThread ThreadInfo
-	LastIndex  int64
+	Name          string
+	LastUpdate    int64
+	LastThread    ThreadInfo
+	LastIndex     int64
+	StrLastUpdate string
 }
 
 type Thread struct {
@@ -70,7 +82,7 @@ type Thread struct {
 
 type ThreadInfo struct {
 	Thread      Thread
-	LastPost    Post
+	LastPost    PostInfo
 	LastMessage int
 	Page        int
 }

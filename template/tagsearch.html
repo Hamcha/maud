@@ -8,14 +8,14 @@
 {{#ThreadList}}
 <hr />
 <article class="home-thread">
-    <div class="last-update">Last activity: <span class="date">{{LRDate}}</span></div>
+    <div class="last-update">Last activity: <span class="date" data-udate="{{LRDate}}">{{LRStrDate}}</span></div>
     <h2 class="thread-title"><a href="{{BasePath}}thread/{{ShortUrl}}" class="noborder">{{Title}}</a></h2>
     <h3 class="thread-author">
         {{#Author}}
-        <span class="nickname">{{Nickname}}</span>
+        <span class="nickname">{{#IsAnon}}<span class="anon">Rock</span>{{/IsAnon}}{{#Nickname}}{{Nickname}}{{/Nickname}}</span>
         <span class="tripcode">{{^HiddenTripcode}}{{Tripcode}}{{/HiddenTripcode}}</span>
         {{/Author}}
-        <span class="date">{{Date}}</span>
+        <span class="date" data-udate="{{Date}}">{{StrDate}}</span>
     </h3>
     <div class="thread-content type{{ContentType}}">
         {{{ShortContent}}}{{#HasBroken}}...<br /><br /><a href="{{BasePath}}thread/{{ShortUrl}}">Post truncated, click here to view the full text.</a>{{/HasBroken}}
@@ -29,10 +29,10 @@
 <article class="home-post">
     <h3 class="post-author">
         {{#Author}}
-        <span class="nickname">{{Nickname}}</span>
+        <span class="nickname">{{#IsAnon}}<span class="anon">Rock</span>{{/IsAnon}}{{#Nickname}}{{Nickname}}{{/Nickname}}</span>
         <span class="tripcode">{{^HiddenTripcode}}{{Tripcode}}{{/HiddenTripcode}}</span>
         {{/Author}}
-        <span class="date">{{Date}}</span>
+        <span class="date" data-udate="{{Date}}">{{StrDate}}</span>
     </h3>
     <div class="post-content type{{ContentType}}">
         {{{ShortContent}}}{{#HasBroken}}...<br /><br /><a href="{{BasePath}}thread/{{ShortUrl}}/page/{{Page}}#p{{Number}}">Post truncated, click here to view the full text.</a>{{/HasBroken}}

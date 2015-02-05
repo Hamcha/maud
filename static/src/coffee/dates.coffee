@@ -26,10 +26,10 @@ since = (time, brief) ->
 		else                        sincetime(diff)
 
 fromList(document.querySelectorAll ".date").map (elem) ->
-	elem.innerHTML = since(parseInt(elem.innerHTML)*1000)
+	elem.innerHTML = since parseInt(elem.dataset.udate)*1000, false
 
 fromList(document.querySelectorAll ".lastedit").map (elem) ->
 	if elem.innerHTML is "0"
 		elem.style.visibility = 'hidden'
 		return
-	elem.innerHTML = "edited #{since(parseInt(elem.innerHTML)*1000, true)}"
+	elem.innerHTML = "edited #{since(parseInt(elem.dataset.udate)*1000, true)}"
