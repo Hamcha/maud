@@ -457,6 +457,7 @@ func httpStikiIndex(rw http.ResponseWriter, req *http.Request) {
 		PageTitle  string
 		PageUrl    string
 		LastUpdate int64
+		StrDate    string
 	}
 	stikiPages := make([]StikiPage, 0)
 	for _, file := range fileList {
@@ -468,7 +469,7 @@ func httpStikiIndex(rw http.ResponseWriter, req *http.Request) {
 		title := strings.ToUpper(url[0:1]) + strings.Replace(url[1:], "-", " ", -1)
 		modTime := file.ModTime().Unix()
 		if len(title) > 0 {
-			stikiPages = append(stikiPages, StikiPage{title, url, modTime})
+			stikiPages = append(stikiPages, StikiPage{title, url, modTime, strdate(modTime)})
 		}
 	}
 
