@@ -18,7 +18,7 @@ quoteText = (elem) ->
 		txt.focus()
 		return
 	txt.value = (if txt.selectionStart > 0 then txt.value[0..txt.selectionStart-1] else "") + "> " +
-		txt.value[txt.selectionStart..txt.selectionEnd].trim().replace(///\n///g, "\n> ") + "\n" +
+		txt.value[txt.selectionStart..txt.selectionEnd].trim().replace(/\n/g, "\n> ") + "\n" +
 		txt.value[txt.selectionEnd+1..]
 	txt.selectionStart = txt.selectionEnd = txt.value.length + 1
 	txt.focus()

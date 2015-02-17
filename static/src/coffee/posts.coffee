@@ -36,7 +36,7 @@ editPost = (id) ->
 	# if post is OP, allow editing thread tags
 	tagsbar = ""
 	tags = post.dataset?.tags
-	if idname is "OP" and tags.replace(/// ///g, '').length > 0
+	if idname is "OP" and tags.replace(/\ /g, '').length > 0
 		tagsbar = "<input class=\"full small\" type=\"text\" name=\"tags\" placeholder=\"Tags (separated by #)\" value=\"#{tags}\"/>"
 	original[id] = post.innerHTML
 	post.innerHTML = """
