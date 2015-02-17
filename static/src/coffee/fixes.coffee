@@ -97,4 +97,5 @@ toggle?.onclick = () ->
     </form>
 	"""
 	box = document.getElementById "tagsearch"
+	toggleAutocomplete box, "#{basepath}taglist", { minChars: 2 }
 	box.focus()
