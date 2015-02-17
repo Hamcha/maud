@@ -31,14 +31,32 @@ header {
     background-image: url(/static/images/headerbg.png), url(/static/images/maud.gif);
     background-repeat: no-repeat;
     background-position: left, right;
+
+    a[href], a[href]:visited {
+        color: #fff; border: 0;
+        font-weight: 200;
+    }
+}
+
+nav.upper {
+    display: block;
+    padding: 0; font-size: 0.9em;
+    background: none; margin-top: 5px;
+    a[href], a[href]:visited {
+        background: rgba(0,0,0,0.5);
+        display: inline-block;
+        color: #fff; border: 0; text-transform: uppercase;
+        padding: 3px; font-weight: 300;
+        @include transition-property(all);
+        @include transition-duration(0.2s);
+        &:hover {
+            background-color: #fff;
+            color: #000;
+        }
+    }
 }
 
 img.head { width: 100%; max-width: 410px; margin-top: 10px; }
-
-header a[href], header a[href]:visited {
-    color: #fff; border: 0;
-    font-weight: 200;
-}
 
 footer {
     margin: 10px;
@@ -50,6 +68,8 @@ hr {
     background: transparent;
     padding: 3px; margin: 2px 0; border: 0;
 }
+
+ol { margin: 0; }
 
 /* Buttons and links */
 
@@ -178,7 +198,7 @@ article.post-selected { background-color: rgba(0,0,0,.7); }
 
 .nickname { font-weight: 600; }
 .tripcode { color: #777; }
-a.date    { border: 0; color: #ccc; &:hover { color: #eee; }}
+a.date, a.postId, a.date:visited, a.postId:visited { border: 0; cursor: pointer; color: #ccc; &:hover { color: #eee; }}
 .lastedit { font-size: 0.8em; color: #ddd; opacity: 0.6; }
 
 .tags { font-size: 0.9em; opacity: 0.8; padding: 3px 5px 5px 5px; }
@@ -197,9 +217,18 @@ h2 { font-size: 1.3em; margin: 0; padding: 0; }
 .thread-content p { display: inline; }
 
 .type blockquote { margin: 0; padding: 0; }
-.type blockquote p, .purpletext { color: #cae; }
+.type blockquote p, .purpletext,{
+    color: #cae;
+}
+a[href].postIdQuote, a[href].postIdQuote:visited {
+    color: #c8f;
+    border: 0;
+}
+a[href].postIdQuote:hover {
+    color: #fcf;
+}
 
-span.spoiler {
+span.spoiler, span.spoiler a[href], span.spoiler a[href]:visited {
     background-color: #555; color: #555;
     &:hover { color: inherit; background-color: inherit; }
 }
@@ -213,6 +242,11 @@ span.spoiler {
 		font-size: 0.7em;
 		text-transform: uppercase;
 	}
+}
+
+a.toggleImage, a.toggleIframe {
+    cursor: pointer;
+    border-bottom: 1px dotted #ccc;
 }
 
 /* Homepage */
@@ -239,10 +273,32 @@ textarea.full { margin: 6px auto; min-height: 200px; overflow: auto; }
 .small { font-size: 1rem; }
 .verysmall { font-size: 1rem; }
 textarea.verysmall { min-height: 100px; }
-textarea.editor { margin: 2px 0 5px 0; width: 98%; min-height: 150px; }
+textarea.editor { min-height: 150px; }
 
 input.short { max-width: 150px; }
 input.inline { display: inline-block; padding: 3px; margin-right: 5px; }
+
+#editorButtons, #editorRight {
+    &.small {
+        font-size: 0.9em;
+        margin: 0 6px;
+    }
+
+    margin: 0 7px;
+    a, a[href] {
+        @extend a[href].button;
+        border-color: #666;
+        font-size: 1em;
+        min-width: 1em;
+        text-align: center;
+        margin-top: 5px;
+    }
+}
+
+#editorRight {
+    &.small { margin: 0 4px; }
+    float: right; margin: 0 4px;
+}
 
 /* Errors */
 

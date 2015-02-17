@@ -1,0 +1,61 @@
+<header>
+    <a href="/">
+        <p style='line-height: 40pt; vertical-align: middle'>Forbidden<br />
+            <span style='font-size: 40%'>Keeping an eye on you...</span>
+        </p>
+    </a>
+</header>
+<hr />
+<div id='maud'>
+    <img id="base" src="/static/images/maudlook/maud.png"/>
+    <img id="eye" src="/static/images/maudlook/eye.png"/>
+    <img id="corneas" src="/static/images/maudlook/corneas.png"/>
+</div>
+<style>
+#maud {
+    margin: auto;
+    width: 650px;
+    position: relative;
+}
+#maud img {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
+#corneas { z-index: 0; width: 100%; }
+#eye     { z-index: 1; width: 10%; }
+#base    { z-index: 3; width: 100%; }
+</style>
+<script>
+    var eye = document.getElementById('eye');
+    var maud = document.getElementById('maud');
+
+    // eyes' initial position
+    eye.style.left = "264px";
+    eye.style.top = "210px";
+
+    function clamp(n, min, max) {
+        return Math.min(Math.max(n, min), max);
+    }
+
+    function moveEye(eye) {
+        var orig = { x: parseInt(eye.style.left), y: parseInt(eye.style.top) };
+        var bounds = {
+            right: 20,
+            left: -30,
+            top: -20,
+            bottom: 30,
+            center: { x: 264, y: 210 }
+        };
+
+        return function (event) {
+            var x = event.clientX;
+            var y = event.clientY;
+            var xOffset = x - (maud.getBoundingClientRect().left + bounds.center.x);
+            var yOffset = y - (maud.getBoundingClientRect().top + bounds.center.y);
+            eye.style.left = clamp(orig.x + Math.floor(xOffset / 6), orig.x + bounds.left, orig.x + bounds.right) + "px";
+            eye.style.top = clamp(orig.y + Math.floor(yOffset / 6), orig.y + bounds.top, orig.y + bounds.bottom) + "px";
+        }
+    }
+    window.addEventListener('mousemove', moveEye(eye), true);
+</script>

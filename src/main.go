@@ -9,10 +9,12 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 var siteInfo SiteInfo
 var adminConf AdminConfig
+var db Database
 
 // absolute path to Maud root directory
 var maudRoot string
@@ -31,6 +33,11 @@ func setupHandlers(router *mux.Router, isAdmin, isSubdir bool) {
 	SetHandler(GET, "/threads/page/{page}", httpAllThreads, isAdmin, isSubdir)
 	SetHandler(GET, "/tags", httpAllTags, isAdmin, isSubdir)
 	SetHandler(GET, "/tags/page/{page}", httpAllTags, isAdmin, isSubdir)
+	SetHandler(GET, "/stiki", httpStikiIndex, isAdmin, isSubdir)
+	SetHandler(GET, "/stiki/{page}", httpStiki, isAdmin, isSubdir)
+	SetHandler(GET, "/{otherwise}", func(rw http.ResponseWriter, req *http.Request) {
+		sendError(rw, 404, "Not found")
+	}, isAdmin, isSubdir)
 
 	SetHandler(POST, "/new", apiNewThread, isAdmin, isSubdir)
 	SetHandler(POST, "/thread/{thread}/reply", apiReply, isAdmin, isSubdir)
@@ -40,6 +47,16 @@ func setupHandlers(router *mux.Router, isAdmin, isSubdir bool) {
 	SetHandler(POST, "/tagsearch", apiTagSearch, isAdmin, isSubdir)
 	SetHandler(POST, "/postpreview", apiPreview, isAdmin, isSubdir)
 	SetHandler(POST, "/taglist", apiTagList, isAdmin, isSubdir)
+}
+
+func dontListDirs(h http.Handler) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasSuffix(r.URL.Path, "/") {
+			sendError(w, 403, "Forbidden")
+			return
+		}
+		h.ServeHTTP(w, r)
+	})
 }
 
 func main() {
@@ -75,13 +92,10 @@ func main() {
 		panic(err)
 	}
 
-	// Initialize parsers
-	initMarkdown()
-	initbbcode()
-
-	// Initialize database
-	DBInit(*mongo, *dbname)
-	defer DBClose()
+	// Initialize formatters, database and other modules
+	db = InitDatabase(*mongo, *dbname)
+	defer db.Close()
+	InitFormatters()
 
 	// Setup request handlers
 	router := mux.NewRouter()
@@ -99,7 +113,7 @@ func main() {
 
 	setupHandlers(router, false, false)
 	http.Handle("/", router)
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(maudRoot+"/static"))))
+	http.Handle("/static/", dontListDirs(http.StripPrefix("/static/", http.FileServer(http.Dir(maudRoot+"/static")))))
 
 	// Start serving pages
 	fmt.Printf("Listening on %s\r\nServer root: %s\r\n", *bind, maudRoot)

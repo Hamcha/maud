@@ -4,18 +4,6 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-type SiteInfo struct {
-	Title             string
-	Secret            string
-	PostsPerPage      int
-	ThreadsPerPage    int
-	TagResultsPerPage int
-	TagsPerPage       int
-	MaxPostLength     int
-	Footer            []string
-	PostFooter        string
-}
-
 type AdminConfig struct {
 	EnablePath   bool
 	EnableDomain bool
@@ -24,9 +12,59 @@ type AdminConfig struct {
 	Admins       map[string]string
 }
 
-type User struct {
-	Nickname string
-	Tripcode string
+type Counter struct {
+	Name string
+	Seq  int64
+}
+
+type Post struct {
+	Id           bson.ObjectId "_id"
+	ThreadId     bson.ObjectId
+	Author       User
+	Content      string
+	Date         int64
+	LastModified int64
+	ContentType  string
+}
+
+type PostInfo struct {
+	PostId          int
+	Data            Post
+	StrDate         string
+	StrLastModified string
+	IsDeleted       bool
+	Editable        bool
+	Modified        bool
+	IsAnon          bool
+}
+
+type SiteInfo struct {
+	Title              string
+	Secret             string
+	PostsPerPage       int
+	ThreadsPerPage     int
+	TagResultsPerPage  int
+	TagsPerPage        int
+	MaxPostLength      int
+	Footer             []string
+	PostFooter         string
+	FullVersionDomain  string
+	LightVersionDomain string
+}
+
+type Tag struct {
+	Name       string
+	Posts      int64
+	LastUpdate int64
+	LastThread bson.ObjectId
+}
+
+type TagData struct {
+	Name          string
+	LastUpdate    int64
+	LastThread    ThreadInfo
+	LastIndex     int64
+	StrLastUpdate string
 }
 
 type Thread struct {
@@ -42,38 +80,15 @@ type Thread struct {
 	LRDate     int64
 }
 
-type Post struct {
-	Id           bson.ObjectId "_id"
-	ThreadId     bson.ObjectId
-	Author       User
-	Content      string
-	Date         int64
-	LastModified int64
-	ContentType  string
-}
-
-type Counter struct {
-	Name string
-	Seq  int64
-}
-
-type Tag struct {
-	Name       string
-	Posts      int64
-	LastUpdate int64
-	LastThread bson.ObjectId
-}
-
-type TagData struct {
-	Name       string
-	LastUpdate int64
-	LastThread ThreadInfo
-	LastIndex  int64
-}
-
 type ThreadInfo struct {
 	Thread      Thread
-	LastPost    Post
+	LastPost    PostInfo
 	LastMessage int
 	Page        int
+}
+
+type User struct {
+	Nickname       string
+	Tripcode       string
+	HiddenTripcode bool
 }

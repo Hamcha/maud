@@ -19,7 +19,7 @@
     <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/static/images/favicons/favicon-114.png">
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/static/images/favicons/favicon-72.png">
     <!-- Chrome -->
-    <link rel="icon" href="/path/to/favicon-128.png" sizes="128x128">
+    <link rel="icon" href="/static/images/favicons/favicon-128.png" sizes="128x128">
     <!-- Windows 8 / Phone -->
     <meta name="application-name" content="{{#Info}}{{Title}}{{/Info}}"/>
     <meta name="msapplication-square70x70logo" content="/static/images/favicons/ms70.png" />
@@ -32,7 +32,9 @@
     {{#IsAdmin}}
         window.adminMode = true;
     {{/IsAdmin}}
-        window.maxlen = {{MaxPostLength}};
+        window.domain = "{{#Info}}{{FullVersionDomain}}{{/Info}}";
+        window.maxlen = {{#Info}}{{MaxPostLength}}{{/Info}};
+		window.basepath = "{{BasePath}}";
     </script>
 </head>
 <body>
@@ -40,9 +42,19 @@
         <header><a href="{{BasePath}}"><img class="head" src="/static/images/header.png" /></a></header>
         <main>{{{content}}}</main>
     </div>
-    <footer>{{{Footer}}}</footer>
+    <footer>{{{Footer}}}<br />
+    <nav class="upper">
+    {{^IsLight}}
+            <a href="//{{#Info}}{{LightVersionDomain}}{{/Info}}{{UrlPath}}" style="box-shadow: 0 0 0 1px darkred inset;">LIGHT VERSION</a>
+    {{/IsLight}}
+    {{#IsLight}}
+            <a href="//{{#Info}}{{FullVersionDomain}}{{/Info}}{{UrlPath}}" style="box-shadow: 0 0 0 1px green inset;">EXIT LIGHT VERSION</a>
+    {{/IsLight}}
+            <a id="safeBtn" href="#">SAFE MODE</a>
+    </nav></footer>
     <script src="/static/lib/qwest.min.js"></script>
     <script src="/static/lib/taggle.min.js"></script>
+    <script src="/static/lib/cookies.min.js"></script>
     <script src="/static/js/utils.js"></script>
     <script src="/static/js/fixes.js"></script>
     <script src="/static/js/dates.js"></script>

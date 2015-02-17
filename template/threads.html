@@ -1,9 +1,7 @@
 <nav>
     <a href="{{BasePath}}new" class="button">New thread</a>
-    <form style="display: inline-block" method="POST" action="{{BasePath}}tagsearch">
-      <input type="text" name="tags" id="tagsearch" placeholder="Filter by tag" required title="Insert tags separated by commas" />
-      <input type="submit" value="Search" />
-    </form>
+	<a class="button" id="tagsearchbtn">Tag search</a>
+	<a href="{{BasePath}}stiki" class="button">Stiki</a>
 </nav>
 <hr />
 <article class="hidden2">
@@ -14,10 +12,10 @@
 {{#Thread}}
 <article class="thread-item">
     <h3 class="thread-name"><a href="{{BasePath}}thread/{{ShortUrl}}" class="nolink">{{Title}}</a></h3>
-    <div>Last reply: <a href="{{BasePath}}thread/{{ShortUrl}}/page/{{Page}}#p{{LastMessage}}">{{#LastPost}}{{#Author}}
+    <div>Last reply: <a href="{{BasePath}}thread/{{ShortUrl}}/page/{{Page}}#p{{LastMessage}}">{{#LastPost}}{{#Data}}{{#Author}}
     <span class="nickname">{{Nickname}}</span>
-    <span class="tripcode">{{Tripcode}}</span>
-    {{/Author}}{{/LastPost}}<span class="date">{{LRDate}}</span></a></div>
+    <span class="tripcode">{{^HiddenTripcode}}{{Tripcode}}{{/HiddenTripcode}}</span>
+    {{/Author}}<span class="date" data-udate="{{Date}}">{{StrDate}}</span>{{/Data}}{{/LastPost}}</a></div>
 </article>
 {{/Thread}}
 {{/Last}}

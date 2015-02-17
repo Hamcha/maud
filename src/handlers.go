@@ -4,14 +4,18 @@ import (
 	"../mustache"
 	"fmt"
 	"github.com/gorilla/mux"
+	"io/ioutil"
 	"math/rand"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
 
 func httpHome(rw http.ResponseWriter, req *http.Request) {
-	tags, err := DBGetPopularTags(10, 0)
+	filter := filterFromCookie(req)
+	tags, err := db.GetPopularTags(10, 0, filter)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -20,29 +24,33 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 	tagdata := make([]TagData, len(tags))
 
 	for i := range tags {
-		thread, err := DBGetThreadById(tags[i].LastThread)
+		thread, err := db.GetThreadById(tags[i].LastThread)
 		if err != nil {
 			sendError(rw, 500, err.Error())
 			return
 		}
-		count, err := DBPostCount(&thread)
+		count, err := db.PostCount(&thread)
 		if err != nil {
 			sendError(rw, 500, err.Error())
 			return
 		}
 
 		tagdata[i] = TagData{
-			Name:       tags[i].Name,
-			LastUpdate: tags[i].LastUpdate,
+			Name:          sanitizeURL(tags[i].Name),
+			LastUpdate:    tags[i].LastUpdate,
+			StrLastUpdate: strdate(tags[i].LastUpdate),
 			LastThread: ThreadInfo{
 				Thread:      thread,
 				LastMessage: count - 1,
 				Page:        (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
 			},
 		}
+		if tagdata[i].LastThread.Page < 1 {
+			tagdata[i].LastThread.Page = 1
+		}
 	}
 
-	threads, err := DBGetThreadList("", 5, 0)
+	threads, err := db.GetThreadList("", 5, 0, filter)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -50,13 +58,13 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 
 	tinfos := make([]ThreadInfo, len(threads))
 	for i, _ := range threads {
-		count, err := DBPostCount(&threads[i])
+		count, err := db.PostCount(&threads[i])
 		if err != nil {
 			sendError(rw, 500, err.Error())
 			return
 		}
 
-		lastPost, err := DBGetPost(threads[i].LastReply)
+		lastPost, err := db.GetPost(threads[i].LastReply)
 		if err != nil {
 			sendError(rw, 500, err.Error())
 			return
@@ -65,8 +73,14 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 		tinfos[i] = ThreadInfo{
 			Thread:      threads[i],
 			LastMessage: count - 1,
-			LastPost:    lastPost,
-			Page:        (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
+			LastPost: PostInfo{
+				Data:    lastPost,
+				StrDate: strdate(lastPost.Date),
+			},
+			Page: (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
+		}
+		if tinfos[i].Page < 1 {
+			tinfos[i].Page = 1
 		}
 	}
 
@@ -97,7 +111,7 @@ func httpAllThreads(rw http.ResponseWriter, req *http.Request) {
 		pageOffset = 0
 	}
 
-	threads, err := DBGetThreadList("", siteInfo.ThreadsPerPage, pageOffset)
+	threads, err := db.GetThreadList("", siteInfo.ThreadsPerPage, pageOffset, filterFromCookie(req))
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -105,13 +119,13 @@ func httpAllThreads(rw http.ResponseWriter, req *http.Request) {
 
 	tinfos := make([]ThreadInfo, len(threads))
 	for i, _ := range threads {
-		count, err := DBPostCount(&threads[i])
+		count, err := db.PostCount(&threads[i])
 		if err != nil {
 			sendError(rw, 500, err.Error())
 			return
 		}
 
-		lastPost, err := DBGetPost(threads[i].LastReply)
+		lastPost, err := db.GetPost(threads[i].LastReply)
 		if err != nil {
 			sendError(rw, 500, err.Error())
 			return
@@ -120,8 +134,14 @@ func httpAllThreads(rw http.ResponseWriter, req *http.Request) {
 		tinfos[i] = ThreadInfo{
 			Thread:      threads[i],
 			LastMessage: count - 1,
-			LastPost:    lastPost,
-			Page:        (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
+			LastPost: PostInfo{
+				Data:    lastPost,
+				StrDate: strdate(lastPost.Date),
+			},
+			Page: (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
+		}
+		if tinfos[i].Page < 1 {
+			tinfos[i].Page = 1
 		}
 	}
 
@@ -148,13 +168,16 @@ func httpAllTags(rw http.ResponseWriter, req *http.Request) {
 			sendError(rw, 400, "Invalid page number")
 			return
 		}
+		if pageInt < 1 {
+			pageInt = 1
+		}
 		pageOffset = (pageInt - 1) * siteInfo.TagsPerPage
 	} else {
 		pageInt = 1
 		pageOffset = 0
 	}
 
-	tags, err := DBGetPopularTags(siteInfo.TagsPerPage, pageOffset)
+	tags, err := db.GetPopularTags(siteInfo.TagsPerPage, pageOffset, filterFromCookie(req))
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -162,25 +185,29 @@ func httpAllTags(rw http.ResponseWriter, req *http.Request) {
 	tagdata := make([]TagData, len(tags))
 
 	for i := range tags {
-		thread, err := DBGetThreadById(tags[i].LastThread)
+		thread, err := db.GetThreadById(tags[i].LastThread)
 		if err != nil {
 			sendError(rw, 500, err.Error())
 			return
 		}
-		count, err := DBPostCount(&thread)
+		count, err := db.PostCount(&thread)
 		if err != nil {
 			sendError(rw, 500, err.Error())
 			return
 		}
 
 		tagdata[i] = TagData{
-			Name:       tags[i].Name,
-			LastUpdate: tags[i].LastUpdate,
+			Name:          sanitizeURL(tags[i].Name),
+			LastUpdate:    tags[i].LastUpdate,
+			StrLastUpdate: strdate(tags[i].LastUpdate),
 			LastThread: ThreadInfo{
 				Thread:      thread,
 				LastMessage: count - 1,
 				Page:        (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
 			},
+		}
+		if tagdata[i].LastThread.Page < 1 {
+			tagdata[i].LastThread.Page = 1
 		}
 	}
 
@@ -198,7 +225,7 @@ func httpAllTags(rw http.ResponseWriter, req *http.Request) {
 func httpThread(rw http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	threadUrl := vars["thread"]
-	thread, err := DBGetThread(threadUrl)
+	thread, err := db.GetThread(threadUrl)
 	isAdmin, _ := isAdmin(req)
 
 	if err != nil {
@@ -218,26 +245,28 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 			sendError(rw, 400, "Invalid page number")
 			return
 		}
+		if pageInt < 1 {
+			pageInt = 1
+		}
 		pageOffset = (pageInt - 1) * siteInfo.PostsPerPage
 	} else {
 		pageInt = 1
 		pageOffset = 0
 	}
 
-	postCount, err := DBPostCount(&thread)
+	postCount, err := db.PostCount(&thread)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
 	}
 
-	// Parse posts
-	type PostInfo struct {
-		PostId    int
-		Data      Post
-		IsDeleted bool
-		Editable  bool
+	// Escape tags
+	for t := range thread.Tags {
+		thread.Tags[t] = sanitizeURL(thread.Tags[t])
 	}
-	posts, err := DBGetPosts(&thread, siteInfo.PostsPerPage, pageOffset)
+
+	// Parse posts
+	posts, err := db.GetPosts(&thread, siteInfo.PostsPerPage, pageOffset)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -245,10 +274,18 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 	postsInfo := make([]PostInfo, len(posts))
 	for index := range posts {
 		posts[index].Content = parseContent(posts[index].Content, posts[index].ContentType)
+		// Modules for changing content based on a condition, e.g. Lightify
+		for _, m := range postmutators {
+			applyPostMutator(m, &thread, &posts[index], req)
+		}
 		postsInfo[index].Data = posts[index]
 		postsInfo[index].IsDeleted = posts[index].ContentType == "deleted" || posts[index].ContentType == "admin-deleted"
 		postsInfo[index].PostId = index + pageOffset
-		postsInfo[index].Editable = !postsInfo[index].IsDeleted && (isAdmin || len(posts[index].Author.Tripcode) > 0)
+		postsInfo[index].Modified = posts[index].LastModified != 0
+		postsInfo[index].Editable = !postsInfo[index].IsDeleted && (isAdmin || !posts[index].Author.HiddenTripcode && len(posts[index].Author.Tripcode) > 0)
+		postsInfo[index].StrDate = strdate(posts[index].Date)
+		postsInfo[index].StrLastModified = strdate(posts[index].LastModified)
+		postsInfo[index].IsAnon = len(posts[index].Author.Nickname) < 1 && (len(posts[index].Author.Tripcode) < 1 || posts[index].Author.HiddenTripcode)
 	}
 
 	var threadPost PostInfo
@@ -293,7 +330,7 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 		pageOffset = 0
 	}
 
-	threads, err := DBGetThreadList(tagName, siteInfo.TagResultsPerPage, pageOffset)
+	threads, err := db.GetThreadList(tagName, siteInfo.TagResultsPerPage, pageOffset, filterFromCookie(req))
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -305,30 +342,38 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 		Author       User
 		Tags         []string
 		Date         int64
+		StrDate      string
 		Messages     int32
 		ShortContent string
 		HasBroken    bool
 		LRDate       int64
+		LRStrDate    string
 		HasLR        bool
 		LastPost     struct {
 			Author       User
 			Date         int64
+			StrDate      string
 			HasBroken    bool
 			ShortContent string
 			Number       int
 			Page         int
+			IsAnon       bool
 		}
 	}
 
 	threadlist := make([]ThreadData, len(threads))
 	for i, v := range threads {
-		post, err := DBGetPost(v.ThreadPost)
+		post, err := db.GetPost(v.ThreadPost)
 		if err != nil {
 			sendError(rw, 500, err.Error())
 			return
 		}
 
-		short, isbroken := shortify(parseContent(post.Content, post.ContentType))
+		content := parseContent(post.Content, post.ContentType)
+		for _, m := range postmutators {
+			applyPostMutator(m, &v, &post, req)
+		}
+		short, isbroken := shortify(content)
 
 		threadlist[i] = ThreadData{
 			ShortUrl:     v.ShortUrl,
@@ -336,7 +381,9 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 			Author:       v.Author,
 			Tags:         v.Tags,
 			Date:         v.Date,
+			StrDate:      strdate(v.Date),
 			LRDate:       v.LRDate,
+			LRStrDate:    strdate(v.LRDate),
 			Messages:     v.Messages - 1,
 			ShortContent: short,
 			HasBroken:    isbroken,
@@ -344,12 +391,12 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 		}
 
 		if threadlist[i].HasLR {
-			reply, err := DBGetPost(v.LastReply)
+			reply, err := db.GetPost(v.LastReply)
 			if err != nil {
 				sendError(rw, 500, err.Error())
 				return
 			}
-			count, err := DBPostCount(&v)
+			count, err := db.PostCount(&v)
 			if err != nil {
 				sendError(rw, 500, err.Error())
 				return
@@ -358,9 +405,15 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 			lp := &threadlist[i].LastPost
 			lp.Author = reply.Author
 			lp.Date = reply.Date
-			lp.ShortContent, lp.HasBroken = shortify(parseContent(reply.Content, reply.ContentType))
+			lp.StrDate = strdate(reply.Date)
+			content = parseContent(reply.Content, reply.ContentType)
+			for _, m := range postmutators {
+				applyPostMutator(m, &v, &reply, req)
+			}
+			lp.ShortContent, lp.HasBroken = shortify(content)
 			lp.Number = count - 1
 			lp.Page = (count + siteInfo.PostsPerPage - 2) / siteInfo.PostsPerPage
+			lp.IsAnon = len(reply.Author.Nickname) < 1 && (len(reply.Author.Tripcode) < 1 || reply.Author.HiddenTripcode)
 		}
 	}
 
@@ -377,6 +430,54 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 
 func httpNewThread(rw http.ResponseWriter, req *http.Request) {
 	send(rw, req, "newthread", "New thread", nil)
+}
+
+func httpStiki(rw http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+	path := filepath.Base(vars["page"])
+	_, err := os.Stat(maudRoot + "/stiki/" + path + ".html")
+	if os.IsNotExist(err) {
+		sendError(rw, 404, nil)
+		return
+	} else if err != nil {
+		sendError(rw, 500, err.Error())
+		return
+	}
+	stiki(rw, req, path)
+}
+
+func httpStikiIndex(rw http.ResponseWriter, req *http.Request) {
+	fileList, err := ioutil.ReadDir(maudRoot + "/stiki/")
+	if err != nil {
+		sendError(rw, 500, err.Error())
+		return
+	}
+
+	type StikiPage struct {
+		PageTitle  string
+		PageUrl    string
+		LastUpdate int64
+		StrDate    string
+	}
+	stikiPages := make([]StikiPage, 0)
+	for _, file := range fileList {
+		if file.IsDir() || !strings.HasSuffix(file.Name(), ".html") {
+			continue
+		}
+		url := strings.TrimSuffix(file.Name(), ".html")
+		// Prettify title
+		title := strings.ToUpper(url[0:1]) + strings.Replace(url[1:], "-", " ", -1)
+		modTime := file.ModTime().Unix()
+		if len(title) > 0 {
+			stikiPages = append(stikiPages, StikiPage{title, url, modTime, strdate(modTime)})
+		}
+	}
+
+	send(rw, req, "stiki-index", "Stiki Index", struct {
+		Pages []StikiPage
+	}{
+		stikiPages,
+	})
 }
 
 func send(rw http.ResponseWriter, req *http.Request, name string, title string, context interface{}) {
@@ -397,21 +498,53 @@ func send(rw http.ResponseWriter, req *http.Request, name string, title string, 
 			maudRoot+"/template/"+name+".html",
 			maudRoot+"/template/layout.html",
 			struct {
-				Info          SiteInfo
-				Title         string
-				MaxPostLength int
-				Footer        string
-				Data          interface{}
-				BasePath      string
-				IsAdmin       bool
+				Info     SiteInfo
+				Title    string
+				Footer   string
+				Data     interface{}
+				BasePath string
+				UrlPath  string
+				IsAdmin  bool
+				IsLight  bool
 			}{
 				siteInfo,
 				siteInfo.Title + title,
-				siteInfo.MaxPostLength,
 				footer,
 				context,
 				basepath,
+				req.URL.String(),
 				ok,
+				isLightVersion(req),
+			}))
+}
+
+func stiki(rw http.ResponseWriter, req *http.Request, name string) {
+	basepath := "/"
+	ok, val := isAdmin(req)
+	if ok {
+		basepath = val.BasePath
+	}
+	footer := siteInfo.Footer[rand.Intn(len(siteInfo.Footer))]
+	if len(siteInfo.PostFooter) > 0 {
+		footer += siteInfo.PostFooter
+	}
+	title := strings.ToUpper(name[0:1]) + strings.Replace(name[1:], "-", " ", -1)
+	fmt.Fprintln(rw,
+		mustache.RenderFileInLayout(
+			maudRoot+"/stiki/"+name+".html",
+			maudRoot+"/template/layout.html",
+			struct {
+				Info     SiteInfo
+				Title    string
+				Footer   string
+				BasePath string
+				UrlPath  string
+			}{
+				siteInfo,
+				siteInfo.Title + " ~ Stiki: " + title,
+				footer,
+				basepath,
+				req.URL.String(),
 			}))
 }
 

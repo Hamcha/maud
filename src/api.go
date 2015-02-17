@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
+	"runtime/debug"
 	"strconv"
 	"strings"
 )
@@ -14,27 +15,33 @@ import (
 func apiNewThread(rw http.ResponseWriter, req *http.Request) {
 	postTitle := req.PostFormValue("title")
 	postNickname := req.PostFormValue("nickname")
-	postContent := req.PostFormValue("text")
+	postContent := strings.TrimRight(req.PostFormValue("text"), "\r\n") + "\r\n"
 	postTags := req.PostFormValue("tags")
 	if len(postTitle) < 1 || len(postContent) < 1 {
 		http.Error(rw, "Required fields are missing", 400)
 		return
 	}
 
-	nickname, tripcode := parseNickname(postNickname)
-	user := User{nickname, tripcode}
+	nickname, tcode := parseNickname(postNickname)
+	var hTrip string
+	if len(tcode) < 1 {
+		hTrip = randomString(8)
+		tcode = tripcode(hTrip)
+	}
+	user := User{nickname, tcode, len(hTrip) > 0}
 	content := postContent
 	tags := parseTags(postTags)
 
 	if postTooLong(content) {
-		http.Error(rw, "Post is too long.", 400)
+		sendError(rw, 400, "Post is too long.")
 		return
 	}
 
-	threadId, err := DBNewThread(user, postTitle, content, tags)
+	threadId, err := db.NewThread(user, postTitle, content, tags)
 	if err != nil {
 		fmt.Println(err.Error())
-		sendError(rw, 500, err.Error())
+		debug.PrintStack()
+		sendError(rw, 500, "Database error: "+err.Error())
 		return
 	}
 
@@ -43,47 +50,71 @@ func apiNewThread(rw http.ResponseWriter, req *http.Request) {
 		basepath = val.BasePath
 	}
 
+	if len(hTrip) > 0 {
+		http.SetCookie(rw, &http.Cookie{
+			Name:     "crSetLatestPost",
+			Value:    threadId + "/0/" + hTrip,
+			Path:     "/thread/",
+			MaxAge:   600,
+			HttpOnly: false,
+		})
+	}
 	http.Redirect(rw, req, basepath+"thread/"+threadId, http.StatusMovedPermanently)
 }
 
-// apiReply: appends a post to a thread.
+// apiReply: appends a post to a thread. If POST parameter 'nickname' is given
+// and has a tripcode, use that as "visible tripcode", else generate a 'hidden
+// tripcode' and use that as tripcode (to allow further editing of the post).
+// If a hidden tripcode was generated, send a cookie to the client to tell it
+// to save the tripcode for further use.
 // POST params: text, [nickname]
 func apiReply(rw http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	threadUrl := vars["thread"]
-	thread, err := DBGetThread(threadUrl)
+	thread, err := db.GetThread(threadUrl)
 	if err != nil {
 		fmt.Println(err.Error())
-		sendError(rw, 500, err.Error())
+		debug.PrintStack()
+		sendError(rw, 500, "Database error: "+err.Error())
 		return
 	}
-	count, err := DBPostCount(&thread)
+	count, err := db.PostCount(&thread)
 	if err != nil {
 		fmt.Println(err.Error())
-		sendError(rw, 500, err.Error())
+		debug.PrintStack()
+		sendError(rw, 500, "Database error: "+err.Error())
 		return
 	}
 	page := (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage
+	if page < 1 {
+		page = 1
+	}
 
 	postNickname := req.PostFormValue("nickname")
-	postContent := req.PostFormValue("text")
+	postContent := strings.TrimRight(req.PostFormValue("text"), "\r\n") + "\r\n"
 	if len(postContent) < 1 {
 		http.Error(rw, "Required fields are missing", 400)
 		return
 	}
 
-	nickname, tripcode := parseNickname(postNickname)
-	user := User{nickname, tripcode}
+	nickname, tcode := parseNickname(postNickname)
+	var hTrip string
+	if len(tcode) < 1 {
+		hTrip = randomString(8)
+		tcode = tripcode(hTrip)
+	}
+	user := User{nickname, tcode, len(hTrip) > 0}
 	content := postContent
 
 	if postTooLong(content) {
 		http.Error(rw, "Post is too long.", 400)
 		return
 	}
-	_, err = DBReplyThread(&thread, user, content)
+	_, err = db.ReplyThread(&thread, user, content)
 	if err != nil {
 		fmt.Println(err.Error())
-		sendError(rw, 500, err.Error())
+		debug.PrintStack()
+		sendError(rw, 500, "Database error: "+err.Error())
 		return
 	}
 
@@ -92,6 +123,15 @@ func apiReply(rw http.ResponseWriter, req *http.Request) {
 		basepath = val.BasePath
 	}
 
+	if len(hTrip) > 0 {
+		http.SetCookie(rw, &http.Cookie{
+			Name:     "crSetLatestPost",
+			Value:    thread.ShortUrl + "/" + strconv.Itoa(count) + "/" + hTrip,
+			Path:     "/thread/",
+			MaxAge:   600,
+			HttpOnly: false,
+		})
+	}
 	http.Redirect(rw, req, basepath+"thread/"+thread.ShortUrl+"/page/"+strconv.Itoa(page)+"#p"+strconv.Itoa(count), http.StatusMovedPermanently)
 }
 
@@ -99,54 +139,87 @@ func apiReply(rw http.ResponseWriter, req *http.Request) {
 // were a reply.
 // POST params: text
 func apiPreview(rw http.ResponseWriter, req *http.Request) {
-	postContent := req.PostFormValue("text")
+	postContent := strings.TrimRight(req.PostFormValue("text"), "\r\n") + "\r\n"
 	if len(postContent) < 1 {
-		http.Error(rw, "Required fields are missing", 400)
+		sendError(rw, 400, "Required fields are missing")
 		return
 	} else if postTooLong(postContent) {
-		http.Error(rw, "Post is too long", 400)
+		sendError(rw, 400, "Post is too long")
 		return
 	}
 	content := parseContent(postContent, "bbcode")
+
+	// Do a dummy post for mutators
+	var fakepost Post
+	fakepost.Content = content
+	for _, m := range postmutators {
+		applyPostMutator(m, nil, &fakepost, req)
+	}
+	content = fakepost.Content
+
 	fmt.Fprintln(rw, content)
 }
 
 // apiEditPost: updates the content of a post and its LastModified field
-// (auth via tripcode); returns the new content as response so it can
-// be used to update the original post via AJAX
-// POST params: tripcode, text
+// (auth via tripcode); if post is OP, also accepts 'tags' param to edit
+// thread tags.
+// POST params: tripcode, text, [tags]
 func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	isAdmin, val := isAdmin(req)
 
 	postId, err := strconv.Atoi(vars["post"])
 	if err != nil {
-		http.Error(rw, "Invalid post id", 400)
+		sendError(rw, 400, "Invalid post id")
 		return
 	}
 
 	thread, post, err := threadPostOrErr(rw, vars["thread"], vars["post"])
+	if err != nil {
+		return
+	}
 	// if post has no tripcode associated, refuse to edit
 	if !isAdmin && len(post.Author.Tripcode) < 1 {
-		http.Error(rw, "Forbidden", 403)
+		sendError(rw, 403, "Forbidden")
 		return
 	}
 	// check tripcode
-	trip := req.PostFormValue("tripcode")
-	if !isAdmin && tripcode(trip) != post.Author.Tripcode {
-		http.Error(rw, "Invalid tripcode", 401)
+	trip := tripcode(req.PostFormValue("tripcode"))
+	if !isAdmin && trip != post.Author.Tripcode {
+		sendError(rw, 401, "Invalid tripcode")
 		return
 	}
-	// update post content and date
-	newContent := req.PostFormValue("text")
+	// update post content and date (strip multiple whitespaces at the end of the text)
+	newContent := strings.TrimRight(req.PostFormValue("text"), "\r\n") + "\r\n"
 	if postTooLong(newContent) {
 		http.Error(rw, "Post is too long.", 400)
 		return
 	}
+	// update tags if post is OP and 'tags' was passed
+	tags := parseTags(req.PostFormValue("tags"))
+	if post.Id == thread.ThreadPost && len(tags) > 0 {
+		oldtags := make(map[string]bool, len(thread.Tags))
+		for _, tag := range thread.Tags {
+			oldtags[tag] = true
+		}
+		err = db.SetThreadTags(thread.Id, tags)
+		for _, tag := range tags {
+			if oldtags[tag] {
+				delete(oldtags, tag)
+				continue // no need to inc/dec tag
+			}
+			// increment new tag
+			db.IncTag(tag, thread.Id)
+		}
+		// decrement any tag which was removed
+		for tag := range oldtags {
+			db.DecTag(tag)
+		}
+	}
 
-	err = DBEditPost(post.Id, newContent)
+	err = db.EditPost(post.Id, newContent)
 	if err != nil {
-		http.Error(rw, err.Error(), 500)
+		sendError(rw, 500, err.Error())
 		return
 	}
 
@@ -156,6 +229,9 @@ func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	page := (postId + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage
+	if page < 1 {
+		page = 1
+	}
 	http.Redirect(rw, req, basepath+"thread/"+thread.ShortUrl+"/page/"+strconv.Itoa(page)+"#p"+vars["post"], http.StatusMovedPermanently)
 }
 
@@ -178,21 +254,17 @@ func apiDeletePost(rw http.ResponseWriter, req *http.Request) {
 	}
 	// if post has no tripcode associated, refuse to delete
 	if !isAdmin && len(post.Author.Tripcode) < 1 {
-		http.Error(rw, "Forbidden", 403)
+		sendError(rw, 403, "Forbidden")
 		return
 	}
 	// check tripcode
 	trip := req.PostFormValue("tripcode")
 	if !isAdmin && tripcode(trip) != post.Author.Tripcode {
-		http.Error(rw, "Invalid tripcode", 401)
+		sendError(rw, 401, "Invalid tripcode")
 		return
 	}
-	// set ContentType to 'deleted'
-	post.ContentType = "deleted"
-	if isAdmin {
-		post.ContentType = "admin-deleted"
-	}
-	if err := database.C("posts").UpdateId(post.Id, post); err != nil {
+
+	if err = db.DeletePost(post.Id, isAdmin); err != nil {
 		http.Error(rw, err.Error(), 500)
 		return
 	}
@@ -203,6 +275,9 @@ func apiDeletePost(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	page := (postId + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage
+	if page < 1 {
+		page = 1
+	}
 	http.Redirect(rw, req, basepath+"thread/"+thread.ShortUrl+"/page/"+strconv.Itoa(page)+"#p"+vars["post"], http.StatusMovedPermanently)
 }
 
@@ -219,7 +294,7 @@ func apiTagSearch(rw http.ResponseWriter, req *http.Request) {
 		basepath = val.BasePath
 	}
 
-	http.Redirect(rw, req, basepath+"tag/"+strings.ToLower(tags), http.StatusMovedPermanently)
+	http.Redirect(rw, req, basepath+"tag/"+sanitizeURL(tags), http.StatusMovedPermanently)
 }
 
 // apiGetRaw: retreive the raw content of a post.
@@ -231,7 +306,7 @@ func apiGetRaw(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 	if post.ContentType == "deleted" || post.ContentType == "admin-deleted" {
-		http.Error(rw, "Forbidden", 403)
+		sendError(rw, 403, "Forbidden")
 		return
 	}
 	fmt.Fprintln(rw, post.Content)
@@ -241,7 +316,7 @@ func apiGetRaw(rw http.ResponseWriter, req *http.Request) {
 // POST params: tag
 func apiTagList(rw http.ResponseWriter, req *http.Request) {
 	tag := req.PostFormValue("tag")
-	tags, err := DBGetMatchingTags(tag, 0, 0)
+	tags, err := db.GetMatchingTags(tag, 0, 0, filterFromCookie(req))
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return

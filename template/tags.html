@@ -1,9 +1,7 @@
 <nav>
     <a href="/new" class="button">New thread</a>
-    <form style="display: inline-block" method="POST" action="/tagsearch">
-      <input type="text" name="tags" id="tagsearch" placeholder="Filter by tag" required title="Insert tags separated by commas" />
-      <input type="submit" value="Search" />
-    </form>
+	<a class="button" id="tagsearchbtn">Tag search</a>
+	<a href="{{BasePath}}stiki" class="button">Stiki</a>
 </nav>
 <hr />
 <article class="hidden2">
@@ -12,8 +10,8 @@
 {{#Data}}
 {{#Tags}}
 <article class="tag-item">
-    <h3 class="tag-name"><a href="{{BasePath}}tag/{{Name}}" class="nolink">{{Name}}</a></h3>
-    <div>Last updated thread: {{#LastThread}}{{#Thread}}<a href="{{BasePath}}thread/{{ShortUrl}}/page/{{Page}}#p{{LastMessage}}" class="thread-title">{{Title}}</a>{{/Thread}}{{/LastThread}} (<span class="date">{{LastUpdate}}</span>)</div>
+    <h3 class="tag-name"><a href="{{BasePath}}tag/{{Name}}" class="nolink">{{{Name}}}</a></h3>
+    <div>Last updated thread: {{#LastThread}}{{#Thread}}<a href="{{BasePath}}thread/{{ShortUrl}}/page/{{Page}}#p{{LastMessage}}" class="thread-title">{{Title}}</a>{{/Thread}}{{/LastThread}} (<span class="date" data-udate="{{LastUpdate}}">{{StrLastUpdate}}</span>)</div>
 </article>
 {{/Tags}}
 <div class="pages" data-current="{{CurrentPage}}" data-max="nomax" data-more="{{#More}}yes{{/More}}{{^More}}no{{/More}}"></div>
