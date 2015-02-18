@@ -92,7 +92,7 @@ toggle = document.getElementById "tagsearchbtn"
 toggle?.onclick = () ->
 	toggle.outerHTML = """
     <form style="display: inline-block" method="POST" action="#{basepath}tagsearch">
-      <input type="text" name="tags" id="tagsearch" placeholder="Filter by tag" required title="Insert tags separated by commas (without hashtag)" />
+      <input type="text" name="tags" id="tagsearch" placeholder="Filter by tag" required title="Insert tags separated by commas (without hashtag)" autocomplete="off" />
       <input type="submit" value="Search" />
     </form>
 	"""

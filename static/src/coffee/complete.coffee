@@ -19,38 +19,44 @@ toggleAutocomplete = (elem, url, opts) ->
 	# element holding the autocomplete data
 	ul = document.createElement 'ul'
 	ul.className = 'autocomplete-list'
+	ul.style.visibility = 'hidden'
+	ul.style.zIndex = 10
+	ul.id = 'ac_list'
 	insertAfter = (newNode, node) ->
 		node.parentNode.insertBefore(newNode, node.nextSibling)
 	insertAfter ul, elem
 	console.log "data: #{data}"
 	elem.onkeyup = (e) ->
-		curTag = if elem.value.indexOf ',' > 0 then elem.value[elem.value.lastIndexOf(',') + 1..].trim() else elem.value.trim()
+		curTag =
+			if elem.value.indexOf ',' > 0
+				elem.value[elem.value.lastIndexOf(',') + 1..].trim()
+			else
+				elem.value.trim()
 		if !opts.minChars? || curTag.length >= opts.minChars
 			updateAutocompleteList ul, curTag, data
 		else
 			ul.innerHTML = ""
+		ul.style.visibility = if ul.innerHTML.length > 0 then 'visible' else 'hidden'
 
 updateAutocompleteList = (list, txt, data) ->
 	console.log "called autocomplete. txt: #{txt}, data: #{data}"
-	list.innerHTML = ("<li><a class='noborder' href='#' onclick='acUpdateTags(\"#{list.parentNode.firstChild.id}\",\"#{el}\")'>#{el}</a></li>" for el in data when el.startsWith txt).join "\n"
+	list.innerHTML =
+		(for el in data
+			if el.startsWith txt
+				"<li><a class='noborder' href='#' onclick='acUpdateTags(" +
+				"\"#{list.parentNode.querySelector('input').id}\",\"#{el}\", " +
+				"\"#{list.id}\")'>#{el}</a></li>"
+		).join("\n").trim()
 
-#autocomplete '#tagsearch', '/taglist', { minChars: 2 }
-# TODO: integrate with Taggle
-#autocomplete '.taggle_input', '/taglist', {
-#	minChars: 2,
-#	keyupFunc: (key) ->
-#		if key.keyCode is 188 # comma
-#			newThreadTaggle.add(document.querySelector('.taggle_input').value)
-#			return true
-#		return false
-#}
 
 window.toggleAutocomplete = toggleAutocomplete
-# FIXME
-window.acUpdateTags = (elemId, tag) ->
-	el = document.querySelector "##{elemId} ul"
+window.acUpdateTags = (elemId, tag, listId) ->
+	el = document.getElementById elemId
 	v = el.value
-	if v.indexOf ',' > 0
-		el.value = v[0..v.lastIndexOf ','] + ', ' + tag
+	if v.indexOf(',') > 0
+		el.value = v[0..v.lastIndexOf ','] + " #{tag}, "
 	else
-		el.value = tag
+		el.value = tag + ", "
+	el.selectionStart = el.value.length
+	el.focus()
+	document.getElementById(listId).style.visibility = 'hidden'
