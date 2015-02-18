@@ -7,7 +7,6 @@
 # opts:
 #   - minChars
 toggleAutocomplete = (elem, url, opts) ->
-	console.log "elem: #{elem}"
 	return unless elem?
 	# get the JSON from the server
 	data = []
@@ -25,7 +24,6 @@ toggleAutocomplete = (elem, url, opts) ->
 	insertAfter = (newNode, node) ->
 		node.parentNode.insertBefore(newNode, node.nextSibling)
 	insertAfter ul, elem
-	console.log "data: #{data}"
 	elem.onkeyup = (e) ->
 		curTag =
 			if elem.value.indexOf ',' > 0
@@ -39,7 +37,6 @@ toggleAutocomplete = (elem, url, opts) ->
 		ul.style.visibility = if ul.innerHTML.length > 0 then 'visible' else 'hidden'
 
 updateAutocompleteList = (list, txt, data) ->
-	console.log "called autocomplete. txt: #{txt}, data: #{data}"
 	list.innerHTML =
 		(for el in data
 			if el.startsWith txt
