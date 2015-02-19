@@ -76,7 +76,7 @@ func mdConvertTagParam(tag, param string) func(*regexp.Regexp, string) string {
 }
 
 func mdConvertImg(regex *regexp.Regexp, str string) string {
-	return regex.ReplaceAllString(str, "$1<img src=\"$3\" alt=\"$2\"/>")
+	return regex.ReplaceAllString(str, "$1<a href=\"$3\"><img src=\"$3\" alt=\"$2\"/></a>")
 }
 
 func mdConvertQuote(_ *regexp.Regexp, str string) string {
