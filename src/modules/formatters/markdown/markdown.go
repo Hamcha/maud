@@ -33,7 +33,7 @@ func (m *MarkdownFormatter) Init() {
 		regexp.MustCompile(`(?U)(^|\\\\|[^\\])\*\*(.*[^\\])\*\*`):   mdConvertTag("b"),
 		regexp.MustCompile(`(?U)(^|\\\\|[^\\])\*(.*[^\\])\*`):       mdConvertTag("i"),
 		regexp.MustCompile(`(?U)(^|\\\\|[^\\])!\[(.*)\]\((.*)\)`):   mdConvertImg,
-		regexp.MustCompile(`(?U)(^|\\\\|[^\\])\[(.*)\]\((.*)\)`):    mdConvertTagParam("a", "href"),
+		regexp.MustCompile(`(?U)(^|\\\\|[^\\!])\[(.*)\]\((.*)\)`):   mdConvertTagParam("a", "href"),
 		regexp.MustCompile("(?U)(^|\\\\\\\\|[^\\\\])`(.*[^\\\\])`"): mdConvertTag("code"),
 	}
 	m.trimEscape = regexp.MustCompile("\\\\([*\\[!`\\\\])")
@@ -43,7 +43,7 @@ func (m *MarkdownFormatter) Init() {
 //   *italic*
 //   **bold**
 //   [alt](url)
-//   ![alt](url)  -- embeds resource
+//   ![alt](url)  -- insert image
 //   `inline code`
 func (m *MarkdownFormatter) Format(content string) string {
 	lines := strings.Split(content, "\n")
