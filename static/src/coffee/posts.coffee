@@ -19,10 +19,11 @@ editPost = (id) ->
 			textarea.placeholder = "Post content (Markdown, HTML and BBCode are supported)"
 		.catch (err) ->
 			content = ""
-			section = document.getElementById(id)
+			return if section.firstChild.className == "errmsg"
+			section = document.getElementById id
 			errmsg = document.createElement 'p'
 			errmsg.className = "errmsg"
-			errmsg.innerHTML = "Failed to retrieve content."
+			errmsg.innerHTML = "Failed to retrieve content: #{err}"
 			section.insertBefore errmsg, section.firstChild
 	nickspan = document.querySelector "##{pid} .nickname"
 	nick = nickspan.innerHTML
@@ -134,7 +135,11 @@ showPreview = () ->
 		.then (resp) ->
 			createPreview resp
 		.catch (err) ->
-			console.log err
+			return if form.firstChild.className == 'errmsg'
+			errmsg = document.createElement 'p'
+			errmsg.className = "errmsg"
+			errmsg.innerHTML = "Failed to retrieve content: #{err}"
+			form.insertBefore errmsg, form.firstChild
 
 createPreview = (content) ->
 	# deselect selected post, if any
