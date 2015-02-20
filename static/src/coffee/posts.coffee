@@ -117,9 +117,9 @@ cancelForm = (id) ->
 
 # post preview
 showPreview = () ->
-	form = document.getElementById 'prev-form'
-	text = document.querySelector("#prev-form textarea[name='text']").value
-	nick = document.querySelector("#prev-form input[name='nickname']").value
+	form = document.getElementById 'reply-form'
+	text = document.querySelector("#reply-form textarea[name='text']").value
+	nick = document.querySelector("#reply-form input[name='nickname']").value
 	unless text
 		return if form.firstChild.className == 'errmsg'
 		errmsg = document.createElement 'p'
@@ -150,7 +150,7 @@ createPreview = (content) ->
 		prevpost = document.createElement 'article'
 		prevpost.id = 'post-preview'
 		# insert preview before the preview form
-		document.getElementById('prev-form').parentNode.insertBefore prevpost, document.getElementById 'prev-form'
+		document.getElementById('reply-form').parentNode.insertBefore prevpost, document.getElementById 'reply-form'
 	prevpost.innerHTML = """<h3 class="post-author">Post preview</h3>
 	<div class="post-content typebbcode">#{content}</div>
 	"""
@@ -165,7 +165,7 @@ replyPreSubmit = (elem, threadUrl, curPostCount) ->
 
 # post quote by id
 quotePostId = (id) ->
-	text = document.querySelector "#prev-form textarea[name='text']"
+	text = document.querySelector "#reply-form textarea[name='text']"
 	if text.value.length > 0 and text.value[text.value.length - 1] isnt "\n"
 		text.value += "\n>> ##{id}\n"
 	else

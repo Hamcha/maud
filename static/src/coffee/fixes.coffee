@@ -56,7 +56,7 @@ charsCount = (id) ->
 			text.style.borderColor = if remaining < 0 then "#E33" else ""
 	return
 
-charsCount "prev-form"
+charsCount "reply-form"
 
 window.charsCount = charsCount
 
