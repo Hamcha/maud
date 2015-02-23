@@ -30,7 +30,7 @@ toggleAutocomplete = (elem, url, opts) ->
 				elem.value[elem.value.lastIndexOf(',') + 1..].trim()
 			else
 				elem.value.trim()
-		if !opts.minChars? || curTag.length >= opts.minChars
+		if !opts?.minChars? || curTag.length >= opts.minChars
 			updateAutocompleteList ul, curTag, data
 		else
 			ul.innerHTML = ""
@@ -39,7 +39,7 @@ toggleAutocomplete = (elem, url, opts) ->
 updateAutocompleteList = (list, txt, data) ->
 	list.innerHTML =
 		(for el in data
-			if el.startsWith txt
+			if el[0..txt.length-1] == txt
 				"<li><a class='noborder' href='#' onclick='acUpdateTags(" +
 				"\"#{list.parentNode.querySelector('input').id}\",\"#{el}\", " +
 				"\"#{list.id}\")'>#{el}</a></li>"

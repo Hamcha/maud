@@ -3,7 +3,7 @@
     <form id="prev-form" method="POST" action="{{BasePath}}new">
         <input class="full small" type="text" name="nickname" placeholder="Nickname#Tripcode (optional)" autofocus />
         <input class="full" type="text" name="title" placeholder="Thread title" required />
-        <input class="full small" type="text" name="tags" placeholder="Tags (separated by #)" />
+        <input id='newthread-tags' class="full small" type="text" name="tags" placeholder="Tags (separated by #)" autocomplete="off"/>
 
         <!-- Editor buttons -->
         <div id="editorRight">
@@ -31,3 +31,8 @@
     </form>
 </section>
 <script src="/static/js/editor.js"></script>
+<script>
+window.onload = function () {
+    toggleAutocomplete(document.getElementById('newthread-tags'), '/taglist');
+}
+</script>
