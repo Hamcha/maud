@@ -1,6 +1,10 @@
 ###
-  AJAX tags autocomplete plugin
-  (requires qwest)
+  AJAX tags autocomplete plugin (requires qwest)
+  How to use:
+     1. Create a wrapper element (e.g. a form) with an ID
+     2. Inside the wrapper, there must be an element with class 'ac_input'
+        (most likely an input)
+     3. Call toggleAutocomplete(the_ac_input_element, '/url_where_to_retreive_data'[, {opts}])
 ###
 
 # autocomplete input from a JSON list (retreived via AJAX)
@@ -17,7 +21,7 @@ toggleAutocomplete = (elem, url, opts) ->
 			console.log 'Error retreiving data'
 	# element holding the autocomplete data
 	ul = document.createElement 'ul'
-	ul.className = 'autocomplete-list'
+	ul.className = 'ac_list'
 	ul.style.visibility = 'hidden'
 	ul.style.zIndex = 10
 	ul.id = 'ac_list'
@@ -41,14 +45,16 @@ updateAutocompleteList = (list, txt, data) ->
 		(for el in data
 			if el[0..txt.length-1] == txt
 				"<li><a class='noborder' href='#' onclick='acUpdateTags(" +
-				"\"#{list.parentNode.querySelector('input').id}\",\"#{el}\", " +
+				"\"#{list.parentNode.id}\", \"#{el}\", " +
 				"\"#{list.id}\")'>#{el}</a></li>"
 		).join("\n").trim()
 
 
 window.toggleAutocomplete = toggleAutocomplete
-window.acUpdateTags = (elemId, tag, listId) ->
-	el = document.getElementById elemId
+
+window.acUpdateTags = (formId, tag, listId) ->
+	# input to append the tags to
+	el = document.getElementById(formId).querySelector '.ac_input'
 	v = el.value
 	if v.indexOf(',') > 0
 		el.value = v[0..v.lastIndexOf ','] + " #{tag}, "
