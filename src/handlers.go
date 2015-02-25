@@ -4,6 +4,7 @@ import (
 	"../mustache"
 	"fmt"
 	"github.com/gorilla/mux"
+	"html"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
@@ -36,7 +37,7 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 		}
 
 		tagdata[i] = TagData{
-			Name:          escapeHTML(tags[i].Name),
+			Name:          html.EscapeString(tags[i].Name),
 			LastUpdate:    tags[i].LastUpdate,
 			StrLastUpdate: strdate(tags[i].LastUpdate),
 			LastThread: ThreadInfo{
@@ -197,7 +198,7 @@ func httpAllTags(rw http.ResponseWriter, req *http.Request) {
 		}
 
 		tagdata[i] = TagData{
-			Name:          escapeHTML(tags[i].Name),
+			Name:          html.EscapeString(tags[i].Name),
 			LastUpdate:    tags[i].LastUpdate,
 			StrLastUpdate: strdate(tags[i].LastUpdate),
 			LastThread: ThreadInfo{
@@ -262,7 +263,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 
 	// Escape tags
 	for t := range thread.Tags {
-		thread.Tags[t] = escapeHTML(thread.Tags[t])
+		thread.Tags[t] = html.EscapeString(thread.Tags[t])
 	}
 
 	// Parse posts

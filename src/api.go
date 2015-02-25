@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
+	"net/url"
 	"runtime/debug"
 	"strconv"
 	"strings"
@@ -294,7 +295,7 @@ func apiTagSearch(rw http.ResponseWriter, req *http.Request) {
 		basepath = val.BasePath
 	}
 
-	http.Redirect(rw, req, basepath+"tag/"+sanitizeURL(tags), http.StatusMovedPermanently)
+	http.Redirect(rw, req, basepath+"tag/"+url.QueryEscape(tags), http.StatusMovedPermanently)
 }
 
 // apiGetRaw: retreive the raw content of a post.

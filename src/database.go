@@ -3,7 +3,8 @@ package main
 import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"html"
+	//"html"
+	"net/url"
 	"sort"
 	"strings"
 	"time"
@@ -112,9 +113,12 @@ func (db Database) ReplyThread(thread *Thread, user User, content string) (int, 
 // a tag matching it (i.e. thread.tag ~ /tag/i); else, return all
 // threads with at least 1 tag matching at least 1 of the words in
 // the `tag` string. Separator is "#"
-func (db Database) GetThreadList(tag string, limit, offset int, filter []string) ([]Thread, error) {
+func (db Database) GetThreadList(tag string, limit, offset int, filter []string) (threads []Thread, err error) {
 	var filterByTag bson.M
-	tag = html.UnescapeString(tag)
+	tag, err = url.QueryUnescape(tag)
+	if err != nil {
+		return threads, err
+	}
 	if tag != "" {
 		if idx := strings.Index(tag, "#"); idx > -1 {
 			// tag1,tag2,... means 'union'
@@ -155,8 +159,7 @@ func (db Database) GetThreadList(tag string, limit, offset int, filter []string)
 		query = query.Limit(limit)
 	}
 
-	var threads []Thread
-	err := query.All(&threads)
+	err = query.All(&threads)
 	return threads, err
 }
 
