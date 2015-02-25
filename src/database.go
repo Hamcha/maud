@@ -116,7 +116,7 @@ func (db Database) GetThreadList(tag string, limit, offset int, filter []string)
 	var filterByTag bson.M
 	tag, err = url.QueryUnescape(tag)
 	if err != nil {
-		return threads, err
+		return
 	}
 	if tag != "" {
 		if idx := strings.Index(tag, "#"); idx > -1 {
@@ -159,7 +159,7 @@ func (db Database) GetThreadList(tag string, limit, offset int, filter []string)
 	}
 
 	err = query.All(&threads)
-	return threads, err
+	return
 }
 
 // GetThread returns the thread identified by the shorturl `surl`.
