@@ -3,7 +3,6 @@ package main
 import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	//"html"
 	"net/url"
 	"sort"
 	"strings"
