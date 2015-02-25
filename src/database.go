@@ -111,17 +111,25 @@ func (db Database) ReplyThread(thread *Thread, user User, content string) (int, 
 // `tag` string. If `tag` is a single word, return all threads with
 // a tag matching it (i.e. thread.tag ~ /tag/i); else, return all
 // threads with at least 1 tag matching at least 1 of the words in
-// the `tag` string.
+// the `tag` string. Separator is "#"
 func (db Database) GetThreadList(tag string, limit, offset int, filter []string) ([]Thread, error) {
 	var filterByTag bson.M
 	tag = html.UnescapeString(tag)
 	if tag != "" {
-		if idx := strings.IndexRune(tag, ','); idx > 0 {
+		if idx := strings.Index(tag, "#"); idx > -1 {
 			// tag1,tag2,... means 'union'
-			tags := strings.Split(tag, ",")
-			tagsRgx := make([]bson.RegEx, len(tags))
+			tags := strings.Split(tag, "#")
+			tagsRgx := make([]bson.RegEx, 0)
 			for i, _ := range tags {
-				tagsRgx[i] = bson.RegEx{strings.TrimSpace(tags[i]), "i"}
+				t := strings.TrimSpace(tags[i])
+				if len(t) == 0 {
+					continue
+				}
+				tagsRgx = append(tagsRgx, bson.RegEx{t, "i"})
+				// limit query to this number of tags
+				if len(tagsRgx) == 10 {
+					break
+				}
 			}
 			filterByTag = bson.M{"tags": bson.M{"$in": tagsRgx}}
 		} else {

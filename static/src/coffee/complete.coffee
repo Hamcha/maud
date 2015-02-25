@@ -7,6 +7,9 @@
      3. Call toggleAutocomplete(the_ac_input_element, '/url_where_to_retreive_data'[, {opts}])
 ###
 
+# tag separator
+sep = '#'
+
 # autocomplete input from a JSON list (retreived via AJAX)
 # opts:
 #   - minChars
@@ -30,11 +33,11 @@ toggleAutocomplete = (elem, url, opts) ->
 	insertAfter ul, elem
 	elem.onkeyup = (e) ->
 		curTag =
-			if elem.value.indexOf ',' > 0
-				elem.value[elem.value.lastIndexOf(',') + 1..].trim()
+			if elem.value.indexOf sep > 0
+				elem.value[elem.value.lastIndexOf(sep) + 1..].trim()
 			else
 				elem.value.trim()
-		if !opts?.minChars? || curTag.length >= opts.minChars
+		if not opts?.minChars? or curTag.length >= opts.minChars
 			updateAutocompleteList ul, curTag, data
 		else
 			ul.innerHTML = ""
@@ -56,10 +59,10 @@ window.acUpdateTags = (formId, tag, listId) ->
 	# input to append the tags to
 	el = document.getElementById(formId).querySelector '.ac_input'
 	v = el.value
-	if v.indexOf(',') > 0
-		el.value = v[0..v.lastIndexOf ','] + " #{tag}, "
+	if v.lastIndexOf(sep) > 0
+		el.value = v[0..v.lastIndexOf(sep)-1] + "#{sep}#{tag} "
 	else
-		el.value = tag + ", "
+		el.value = "#{sep}#{tag} "
 	el.selectionStart = el.value.length
 	el.focus()
 	document.getElementById(listId).style.visibility = 'hidden'

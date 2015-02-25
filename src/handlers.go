@@ -36,7 +36,7 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 		}
 
 		tagdata[i] = TagData{
-			Name:          sanitizeURL(tags[i].Name),
+			Name:          escapeHTML(tags[i].Name),
 			LastUpdate:    tags[i].LastUpdate,
 			StrLastUpdate: strdate(tags[i].LastUpdate),
 			LastThread: ThreadInfo{
@@ -197,7 +197,7 @@ func httpAllTags(rw http.ResponseWriter, req *http.Request) {
 		}
 
 		tagdata[i] = TagData{
-			Name:          sanitizeURL(tags[i].Name),
+			Name:          escapeHTML(tags[i].Name),
 			LastUpdate:    tags[i].LastUpdate,
 			StrLastUpdate: strdate(tags[i].LastUpdate),
 			LastThread: ThreadInfo{
@@ -262,7 +262,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 
 	// Escape tags
 	for t := range thread.Tags {
-		thread.Tags[t] = sanitizeURL(thread.Tags[t])
+		thread.Tags[t] = escapeHTML(thread.Tags[t])
 	}
 
 	// Parse posts

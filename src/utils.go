@@ -174,11 +174,17 @@ func isLightVersion(req *http.Request) bool {
 	return len(siteInfo.LightVersionDomain) > 0 && req.Host == siteInfo.LightVersionDomain
 }
 
-func sanitizeURL(tags string) string {
-	// replace all characters which are dangerous in an URL
-	sane := strings.Replace(tags, "/", "&sol;", -1)
+func escapeHTML(raw string) string {
+	sane := strings.Replace(raw, "/", "&sol;", -1)
 	sane = strings.Replace(sane, "#", "&num;", -1)
 	sane = strings.Replace(sane, "?", "&quest;", -1)
+	return sane
+}
+
+func sanitizeURL(raw string) string {
+	sane := strings.Replace(raw, "/", "%2F", -1)
+	sane = strings.Replace(sane, "#", "%23", -1)
+	sane = strings.Replace(sane, "?", "%3F", -1)
 	return sane
 }
 
