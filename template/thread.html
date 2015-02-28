@@ -18,13 +18,13 @@
     {{#Data}}
     <h3 class="thread-author">
         {{#Author}}
-        <span class="nickname">{{Nickname}}</span>
+        <span class="nickname">{{#IsAnon}}<span class="anon">Rock</span>{{/IsAnon}}{{#Nickname}}{{Nickname}}{{/Nickname}}</span>
         <span class="tripcode">{{^HiddenTripcode}}{{Tripcode}}{{/HiddenTripcode}}</span>
         {{/Author}}
-        <a href="#thread" class="date">{{Date}}</a>
+        <a href="#thread" class="date" data-udate="{{Date}}">{{StrDate}}</a>
     </h3>
     <div class="right">
-        {{#Modified}}<span class="lastedit">{{LastModified}}</span>{{/Modified}}
+        {{#Modified}}<span class="lastedit" data-udate="{{LastModified}}">edited {{StrLastModified}}</span>{{/Modified}}
         <div id="p0_btn" {{^Editable}}style='display: none'{{/Editable}} />
             <a href="#thread" class="edit nolink" onclick="editPost(0)">
                 <img src="/static/images/edit.svg" style="height: 20px;" />
@@ -45,13 +45,13 @@
     {{#Data}}
     <h3 class="post-author">
         {{#Author}}
-        <span class="nickname">{{Nickname}}</span>
+        <span class="nickname">{{#IsAnon}}<span class="anon">Rock</span>{{/IsAnon}}{{#Nickname}}{{Nickname}}{{/Nickname}}</span>
         <span class="tripcode">{{^HiddenTripcode}}{{Tripcode}}{{/HiddenTripcode}}</span>
         {{/Author}}
-        <a href="#p{{PostId}}" class="date">{{Date}}</a> <a href="#reply" class="postId" onclick="quotePostId({{PostId}})">#{{PostId}}</a>
+        <a href="#p{{PostId}}" class="date" data-udate="{{Date}}">{{StrDate}}</a> <a href="#reply" class="postId" onclick="quotePostId({{PostId}})">#{{PostId}}</a>
     </h3>
     <div class="right">
-        {{#Modified}}<span class="lastedit">{{LastModified}}</span>{{/Modified}}
+        {{#Modified}}<span class="lastedit" data-udate="{{LastModified}}">edited {{StrLastModified}}</span>{{/Modified}}
         <div id="p{{PostId}}_btn" {{^Editable}}style='display: none'{{/Editable}} />
             <a href="#p{{PostId}}" class="edit nolink" onclick="editPost({{PostId}})">
                 <img src="/static/images/edit.svg" style="height: 20px;" />

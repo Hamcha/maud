@@ -215,3 +215,7 @@ func randomString(length int) string {
 	}
 	return base64.URLEncoding.EncodeToString(b)[0:length]
 }
+
+func strdate(unixtime int64) string {
+	return time.Unix(unixtime, 0).Format("02/01/2006 15:04")
+}

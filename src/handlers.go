@@ -36,8 +36,9 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 		}
 
 		tagdata[i] = TagData{
-			Name:       sanitizeURL(tags[i].Name),
-			LastUpdate: tags[i].LastUpdate,
+			Name:          sanitizeURL(tags[i].Name),
+			LastUpdate:    tags[i].LastUpdate,
+			StrLastUpdate: strdate(tags[i].LastUpdate),
 			LastThread: ThreadInfo{
 				Thread:      thread,
 				LastMessage: count - 1,
@@ -72,8 +73,11 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 		tinfos[i] = ThreadInfo{
 			Thread:      threads[i],
 			LastMessage: count - 1,
-			LastPost:    lastPost,
-			Page:        (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
+			LastPost: PostInfo{
+				Data:    lastPost,
+				StrDate: strdate(lastPost.Date),
+			},
+			Page: (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
 		}
 		if tinfos[i].Page < 1 {
 			tinfos[i].Page = 1
@@ -130,8 +134,11 @@ func httpAllThreads(rw http.ResponseWriter, req *http.Request) {
 		tinfos[i] = ThreadInfo{
 			Thread:      threads[i],
 			LastMessage: count - 1,
-			LastPost:    lastPost,
-			Page:        (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
+			LastPost: PostInfo{
+				Data:    lastPost,
+				StrDate: strdate(lastPost.Date),
+			},
+			Page: (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
 		}
 		if tinfos[i].Page < 1 {
 			tinfos[i].Page = 1
@@ -190,8 +197,9 @@ func httpAllTags(rw http.ResponseWriter, req *http.Request) {
 		}
 
 		tagdata[i] = TagData{
-			Name:       sanitizeURL(tags[i].Name),
-			LastUpdate: tags[i].LastUpdate,
+			Name:          sanitizeURL(tags[i].Name),
+			LastUpdate:    tags[i].LastUpdate,
+			StrLastUpdate: strdate(tags[i].LastUpdate),
 			LastThread: ThreadInfo{
 				Thread:      thread,
 				LastMessage: count - 1,
@@ -258,13 +266,6 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	// Parse posts
-	type PostInfo struct {
-		PostId    int
-		Data      Post
-		IsDeleted bool
-		Editable  bool
-		Modified  bool
-	}
 	posts, err := db.GetPosts(&thread, siteInfo.PostsPerPage, pageOffset)
 	if err != nil {
 		sendError(rw, 500, err.Error())
@@ -282,6 +283,9 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		postsInfo[index].PostId = index + pageOffset
 		postsInfo[index].Modified = posts[index].LastModified != 0
 		postsInfo[index].Editable = !postsInfo[index].IsDeleted && (isAdmin || !posts[index].Author.HiddenTripcode && len(posts[index].Author.Tripcode) > 0)
+		postsInfo[index].StrDate = strdate(posts[index].Date)
+		postsInfo[index].StrLastModified = strdate(posts[index].LastModified)
+		postsInfo[index].IsAnon = len(posts[index].Author.Nickname) < 1 && (len(posts[index].Author.Tripcode) < 1 || posts[index].Author.HiddenTripcode)
 	}
 
 	var threadPost PostInfo
@@ -338,18 +342,22 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 		Author       User
 		Tags         []string
 		Date         int64
+		StrDate      string
 		Messages     int32
 		ShortContent string
 		HasBroken    bool
 		LRDate       int64
+		LRStrDate    string
 		HasLR        bool
 		LastPost     struct {
 			Author       User
 			Date         int64
+			StrDate      string
 			HasBroken    bool
 			ShortContent string
 			Number       int
 			Page         int
+			IsAnon       bool
 		}
 	}
 
@@ -373,7 +381,9 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 			Author:       v.Author,
 			Tags:         v.Tags,
 			Date:         v.Date,
+			StrDate:      strdate(v.Date),
 			LRDate:       v.LRDate,
+			LRStrDate:    strdate(v.LRDate),
 			Messages:     v.Messages - 1,
 			ShortContent: short,
 			HasBroken:    isbroken,
@@ -395,6 +405,7 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 			lp := &threadlist[i].LastPost
 			lp.Author = reply.Author
 			lp.Date = reply.Date
+			lp.StrDate = strdate(reply.Date)
 			content = parseContent(reply.Content, reply.ContentType)
 			for _, m := range postmutators {
 				applyPostMutator(m, &v, &reply, req)
@@ -402,6 +413,7 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 			lp.ShortContent, lp.HasBroken = shortify(content)
 			lp.Number = count - 1
 			lp.Page = (count + siteInfo.PostsPerPage - 2) / siteInfo.PostsPerPage
+			lp.IsAnon = len(reply.Author.Nickname) < 1 && (len(reply.Author.Tripcode) < 1 || reply.Author.HiddenTripcode)
 		}
 	}
 
@@ -445,6 +457,7 @@ func httpStikiIndex(rw http.ResponseWriter, req *http.Request) {
 		PageTitle  string
 		PageUrl    string
 		LastUpdate int64
+		StrDate    string
 	}
 	stikiPages := make([]StikiPage, 0)
 	for _, file := range fileList {
@@ -456,7 +469,7 @@ func httpStikiIndex(rw http.ResponseWriter, req *http.Request) {
 		title := strings.ToUpper(url[0:1]) + strings.Replace(url[1:], "-", " ", -1)
 		modTime := file.ModTime().Unix()
 		if len(title) > 0 {
-			stikiPages = append(stikiPages, StikiPage{title, url, modTime})
+			stikiPages = append(stikiPages, StikiPage{title, url, modTime, strdate(modTime)})
 		}
 	}
 

@@ -20,7 +20,7 @@ type LightifyFormatter struct {
 
 func (f *LightifyFormatter) Init() {
 	f.imgRgx = regexp.MustCompile(`(?:<a [^>]+>)?<img .*src=("[^"]+"|'[^']+'|[^'"][^\s]+).*>(?:</a>)?`)
-	f.derpiRgx = regexp.MustCompile(`img[0-9]\.derpicdn\.net`)
+	f.derpiRgx = regexp.MustCompile(`(?:img[0-9]\.)?derpicdn\.net`)
 	f.iframeRgx = regexp.MustCompile(`<iframe .*src=("[^"]+"|'[^']+'|[^'"][^\s]+).*>`)
 }
 
