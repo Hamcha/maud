@@ -97,6 +97,9 @@ func main() {
 	defer db.Close()
 	InitFormatters()
 
+	// Initialize blacklist
+	initBL()
+
 	// Setup request handlers
 	router := mux.NewRouter()
 

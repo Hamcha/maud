@@ -40,11 +40,21 @@ func wrapAdmin(handler http.HandlerFunc, usePath bool) http.HandlerFunc {
 	}
 }
 
+func wrapBlacklist(handler http.HandlerFunc) http.HandlerFunc {
+	return func(rw http.ResponseWriter, req *http.Request) {
+		if isBanned, banReason := checkBlacklist(req); !isBanned {
+			handler(rw, req)
+		} else {
+			sendError(rw, 423, banReason)
+		}
+	}
+}
+
 func SetHandler(router *mux.Router, path string, handler http.HandlerFunc, isAdmin, isSubdir bool) {
 	if isAdmin {
 		handler = wrapAdmin(handler, isSubdir)
 	}
-
+	handler = wrapBlacklist(handler)
 	router.HandleFunc(path, handler)
 }
 
