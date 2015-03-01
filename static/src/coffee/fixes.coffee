@@ -4,7 +4,7 @@ fromList(document.querySelectorAll "img").map (e) ->
 	e.title = e.alt if e.alt != ""
 
 # Handle hash changes
-window.onhashchange = () ->
+window.onhashchange = ->
 	return unless location.hash.length > 0
 	# Post selected
 	if location.hash[1] is 'p'
@@ -49,7 +49,7 @@ charsCount = (id) ->
 	if form?
 		text = document.querySelector("##{id} textarea")
 		div = document.querySelector("##{id} .chars-count")
-		text.onkeyup = () ->
+		text.onkeyup = ->
 			remaining = div.dataset.maxlen - text.value.length
 			div.innerHTML = "#{remaining} characters left"
 			div.style.padding = "0 0 0.5em 0"
@@ -66,13 +66,13 @@ filter = window.getFilter()
 if "nsfw" in filter
 	safeButton.innerHTML = "EXIT SAFE MODE"
 	safeButton.style.boxShadow = "0 0 0 1px green inset"
-	safeButton.onclick = () ->
+	safeButton.onclick = ->
 		status = window.removeFilter ["nsfw"]
 		location.reload true
 		return
 else
 	safeButton.style.boxShadow = "0 0 0 1px darkred inset"
-	safeButton.onclick = () ->
+	safeButton.onclick = ->
 		status = window.addFilter ["nsfw"]
 		if status == false
 			alert "Cookies are not enabled, Safe mode couldn't be enabled"
@@ -82,14 +82,14 @@ else
 # Setup toggle buttons in light mode
 lightimagebtn = document.querySelectorAll ".toggleImage"
 imgsetup = (btn) ->
-	btn.onclick = () ->
+	btn.onclick = ->
 		url = btn.dataset.url
 		btn.outerHTML = "<a href=\"#{url}\"><img src=\"#{url}\" /></a>"
 imgsetup imgbtn for imgbtn in lightimagebtn
 
 # Tag search / Fulltext search buttons (in pages which have it)
 toggle = document.getElementById "tagsearchbtn"
-toggle?.onclick = () ->
+toggle?.onclick = ->
 	toggle.outerHTML = """
     <form style="display: inline-block" method="POST" action="#{basepath}tagsearch">
       <input type="text" name="tags" id="tagsearch" placeholder="Filter by tag" required title="Insert tags separated by commas (without hashtag)" />
@@ -98,3 +98,18 @@ toggle?.onclick = () ->
 	"""
 	box = document.getElementById "tagsearch"
 	box.focus()
+
+# Hiding functions
+toggleHideThread = (url) ->
+	# check if crHidden cookie exists
+	cookie = Cookies.get 'crHidden'
+	unless cookie?
+		Cookies.set 'crHidden', url, { expires: Infinity }
+		return
+	hidden = cookie.split ' '
+	if url in hidden
+		Cookies.set 'crHidden', ((u for u in hidden when u isnt url).join ' '), { expires: Infinity }
+	else
+		Cookies.set 'crHidden', "#{cookie} #{url}", { expires: Infinity }
+
+window.toggleHideThread = toggleHideThread

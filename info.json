@@ -2,6 +2,8 @@
     "Title" : "Maud pie lair",
     "Secret" : "secret key",
     "PostsPerPage" : 30,
+    "HomeThreadsNum": 5,
+    "HomeTagsNum": 10,
     "ThreadsPerPage" : 20,
     "TagResultsPerPage": 10,
     "TagsPerPage" : 20,

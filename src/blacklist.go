@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"regexp"
 )
@@ -21,8 +22,12 @@ var blacklists map[string]Blacklist
 
 func initBL() {
 	// Load Site info file
-	rawconf, _ := ioutil.ReadFile(maudRoot + "/blacklist.conf")
-	err := json.Unmarshal(rawconf, &blacklists)
+	rawconf, err := ioutil.ReadFile(maudRoot + "/blacklist.conf")
+	if err != nil {
+		log.Printf("[ WARNING ] %s/blacklist.conf not found. BL not initialized.\n", maudRoot)
+		return
+	}
+	err = json.Unmarshal(rawconf, &blacklists)
 	if err != nil {
 		panic(err)
 	}

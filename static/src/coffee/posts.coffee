@@ -115,7 +115,7 @@ cancelForm = (id) ->
 	post.innerHTML = original[id]
 
 # post preview
-showPreview = () ->
+showPreview = ->
 	form = document.getElementById 'prev-form'
 	text = document.querySelector("#prev-form textarea[name='text']").value
 	nick = document.querySelector("#prev-form input[name='nickname']").value

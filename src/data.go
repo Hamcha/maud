@@ -41,6 +41,8 @@ type PostInfo struct {
 type SiteInfo struct {
 	Title              string
 	Secret             string
+	HomeThreadsNum     int
+	HomeTagsNum        int
 	PostsPerPage       int
 	ThreadsPerPage     int
 	TagResultsPerPage  int

@@ -8,6 +8,7 @@ import (
 	"encoding/binary"
 	"errors"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -218,4 +219,74 @@ func randomString(length int) string {
 
 func strdate(unixtime int64) string {
 	return time.Unix(unixtime, 0).Format("02/01/2006 15:04")
+}
+
+// getHiddenElems checks if the request contains a cookie 'crHidden'
+// and parses its value, returning a slice with shorturls of hidden threads.
+// If no cookie exists, or its value is invalid, err != nil is returned.
+func getHiddenElems(req *http.Request) ([]string, error) {
+	if cookie, err := req.Cookie("crHidden"); err == nil {
+		// cookie value has the format: "url1 url2 url3 ..."
+		val, err := url.QueryUnescape(cookie.Value)
+		if err != nil {
+			return nil, err
+		}
+		threads := strings.Split(val, " ")
+		return threads, err
+	} else {
+		return nil, err
+	}
+}
+
+func retreiveThreads(n, offset int, req *http.Request, filter []string) ([]ThreadInfo, error) {
+	// check if some threads have been hidden by the user
+	hiddenThreads, err := getHiddenElems(req)
+
+	extra := 0
+	if err == nil {
+		extra = len(hiddenThreads)
+	}
+
+	threads, err := db.GetThreadList("", n+extra, offset, filter)
+	if err != nil {
+		return nil, err
+	}
+
+	tinfos := make([]ThreadInfo, 0, siteInfo.HomeThreadsNum)
+Outer:
+	for i, _ := range threads {
+		for _, hidden := range hiddenThreads {
+			if threads[i].ShortUrl == hidden {
+				continue Outer
+			}
+		}
+
+		count, err := db.PostCount(&threads[i])
+		if err != nil {
+			return tinfos, err
+		}
+
+		lastPost, err := db.GetPost(threads[i].LastReply)
+		if err != nil {
+			return tinfos, err
+		}
+
+		tinfos = append(tinfos, ThreadInfo{
+			Thread:      threads[i],
+			LastMessage: count - 1,
+			LastPost: PostInfo{
+				Data:    lastPost,
+				StrDate: strdate(lastPost.Date),
+			},
+			Page: (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
+		})
+		j := len(tinfos) - 1
+		if tinfos[j].Page < 1 {
+			tinfos[j].Page = 1
+		}
+		if j == n-1 {
+			break
+		}
+	}
+	return tinfos, err
 }

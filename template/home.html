@@ -2,6 +2,7 @@
     <a href="{{BasePath}}new" class="button">New thread</a>
 	<a class="button" id="tagsearchbtn">Tag search</a>
 	<a href="{{BasePath}}stiki" class="button">Stiki</a>
+    <a href="#" class="button" onclick="showHiddenThreads()">Hidden</a>
 </nav>
 <hr />
 <article class="hidden2">
@@ -10,12 +11,22 @@
 {{#Data}}
 {{#Last}}
 {{#Thread}}
-<article class="thread-item">
+<article class="thread-item thread">
     <h3 class="thread-name"><a href="{{BasePath}}thread/{{ShortUrl}}" class="nolink">{{Title}}</a></h3>
-    <div>Last reply: <a href="{{BasePath}}thread/{{ShortUrl}}/page/{{Page}}#p{{LastMessage}}">{{#LastPost}}{{#Data}}{{#Author}}
-    <span class="nickname">{{Nickname}}</span>
-    <span class="tripcode">{{^HiddenTripcode}}{{Tripcode}}{{/HiddenTripcode}}</span>
-    {{/Author}} <span class="date" data-udate="{{Date}}">{{StrDate}}</span>{{/Data}}{{/LastPost}}</a></div>
+    <div>Last reply: 
+        <a href="{{BasePath}}thread/{{ShortUrl}}/page/{{Page}}#p{{LastMessage}}">
+            {{#LastPost}}{{#Data}}
+            {{#Author}}
+            <span class="nickname">{{Nickname}}</span>
+            <span class="tripcode">{{^HiddenTripcode}}{{Tripcode}}{{/HiddenTripcode}}</span>
+            {{/Author}}
+            <span class="date" data-udate="{{Date}}">{{StrDate}}</span>
+            {{/Data}}{{/LastPost}}
+        </a>
+    </div>
+    <div class="right">
+        <a class="noborder" href="#" onclick="toggleHideThread('{{ShortUrl}}')">Hide</a>
+    </div>
 </article>
 {{/Thread}}
 {{/Last}}

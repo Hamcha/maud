@@ -14,8 +14,9 @@ import (
 )
 
 func httpHome(rw http.ResponseWriter, req *http.Request) {
+	// TODO: incorporate this filter into crHidden cookie.
 	filter := filterFromCookie(req)
-	tags, err := db.GetPopularTags(10, 0, filter)
+	tags, err := db.GetPopularTags(siteInfo.HomeTagsNum, 0, filter)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -50,40 +51,11 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	threads, err := db.GetThreadList("", 5, 0, filter)
+	tinfos, err := retreiveThreads(siteInfo.HomeThreadsNum, 0, req, filter)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
 	}
-
-	tinfos := make([]ThreadInfo, len(threads))
-	for i, _ := range threads {
-		count, err := db.PostCount(&threads[i])
-		if err != nil {
-			sendError(rw, 500, err.Error())
-			return
-		}
-
-		lastPost, err := db.GetPost(threads[i].LastReply)
-		if err != nil {
-			sendError(rw, 500, err.Error())
-			return
-		}
-
-		tinfos[i] = ThreadInfo{
-			Thread:      threads[i],
-			LastMessage: count - 1,
-			LastPost: PostInfo{
-				Data:    lastPost,
-				StrDate: strdate(lastPost.Date),
-			},
-			Page: (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
-		}
-		if tinfos[i].Page < 1 {
-			tinfos[i].Page = 1
-		}
-	}
-
 	send(rw, req, "home", "", struct {
 		Last []ThreadInfo
 		Tags []TagData
@@ -111,38 +83,10 @@ func httpAllThreads(rw http.ResponseWriter, req *http.Request) {
 		pageOffset = 0
 	}
 
-	threads, err := db.GetThreadList("", siteInfo.ThreadsPerPage, pageOffset, filterFromCookie(req))
+	tinfos, err := retreiveThreads(siteInfo.ThreadsPerPage, pageOffset, req, filterFromCookie(req))
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
-	}
-
-	tinfos := make([]ThreadInfo, len(threads))
-	for i, _ := range threads {
-		count, err := db.PostCount(&threads[i])
-		if err != nil {
-			sendError(rw, 500, err.Error())
-			return
-		}
-
-		lastPost, err := db.GetPost(threads[i].LastReply)
-		if err != nil {
-			sendError(rw, 500, err.Error())
-			return
-		}
-
-		tinfos[i] = ThreadInfo{
-			Thread:      threads[i],
-			LastMessage: count - 1,
-			LastPost: PostInfo{
-				Data:    lastPost,
-				StrDate: strdate(lastPost.Date),
-			},
-			Page: (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
-		}
-		if tinfos[i].Page < 1 {
-			tinfos[i].Page = 1
-		}
 	}
 
 	send(rw, req, "threads", "All threads", struct {
@@ -152,7 +96,7 @@ func httpAllThreads(rw http.ResponseWriter, req *http.Request) {
 	}{
 		tinfos,
 		pageInt,
-		len(threads) == siteInfo.ThreadsPerPage,
+		len(tinfos) == siteInfo.ThreadsPerPage,
 	})
 }
 
