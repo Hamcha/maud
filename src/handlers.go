@@ -424,6 +424,71 @@ func httpStikiIndex(rw http.ResponseWriter, req *http.Request) {
 	})
 }
 
+func httpManageHidden(rw http.ResponseWriter, req *http.Request) {
+	var pageInt int
+	var pageOffset int
+	var err error
+	vars := mux.Vars(req)
+
+	if page, ok := vars["page"]; ok {
+		pageInt, err = strconv.Atoi(page)
+		if err != nil {
+			sendError(rw, 400, "Invalid page number")
+			return
+		}
+		pageOffset = (pageInt - 1) * siteInfo.ThreadsPerPage
+	} else {
+		pageInt = 1
+		pageOffset = 0
+	}
+
+	hiddenThreads, err := getHiddenElems(req)
+
+	threads, err := db.GetThreads(hiddenThreads, siteInfo.ThreadsPerPage, pageOffset)
+	if err != nil {
+		sendError(rw, 500, err.Error())
+		return
+	}
+
+	tinfos := make([]ThreadInfo, len(threads))
+	for i, _ := range threads {
+		count, err := db.PostCount(&threads[i])
+		if err != nil {
+			sendError(rw, 500, err.Error())
+			return
+		}
+
+		lastPost, err := db.GetPost(threads[i].LastReply)
+		if err != nil {
+			sendError(rw, 500, err.Error())
+			return
+		}
+
+		tinfos[i] = ThreadInfo{
+			Thread:      threads[i],
+			LastMessage: count - 1,
+			LastPost: PostInfo{
+				Data:    lastPost,
+				StrDate: strdate(lastPost.Date),
+			},
+			Page: (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
+		}
+		if tinfos[i].Page < 1 {
+			tinfos[i].Page = 1
+		}
+	}
+
+	send(rw, req, "hidden", "Hidden threads", struct {
+		Last        []ThreadInfo
+		CurrentPage int
+		More        bool
+	}{
+		tinfos,
+		pageInt,
+		len(tinfos) == siteInfo.ThreadsPerPage,
+	})
+}
+
 func send(rw http.ResponseWriter, req *http.Request, name string, title string, context interface{}) {
 	if len(title) > 0 {
 		title = " ~ " + title

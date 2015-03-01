@@ -159,6 +159,20 @@ func (db Database) GetThread(surl string) (Thread, error) {
 	return thread, err
 }
 
+// GetThreads is like GetThread but accepts a string of shorturls.
+func (db Database) GetThreads(surl []string, limit, offset int) ([]Thread, error) {
+	var threads []Thread
+	query := db.database.C("threads").Find(bson.M{"shorturl": bson.M{"$in": surl}})
+	if offset > 0 {
+		query = query.Skip(offset)
+	}
+	if limit > 0 {
+		query = query.Limit(limit)
+	}
+	err := query.All(&threads)
+	return threads, err
+}
+
 func (db Database) GetThreadById(id bson.ObjectId) (Thread, error) {
 	var thread Thread
 	err := db.database.C("threads").FindId(id).One(&thread)

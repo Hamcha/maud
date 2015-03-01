@@ -5,9 +5,11 @@
     <a href="{{BasePath}}hidden" class="button">Hidden</a>
 </nav>
 <hr />
-<article class="hidden2">
-    All threads, ordered by latest reply
-</article>
+<nav>
+    All hidden threads
+    &nbsp;&nbsp;
+    <a href="{{BasePath}}hidden" class="button" onclick="unhideAllThreads()">Unhide all</a>
+</nav>
 {{#Data}}
 {{#Last}}
 {{#Thread}}
@@ -25,7 +27,7 @@
         </a>
     </div>
     <div class="right">
-        <a class="noborder" href="" onclick="toggleHideThread('{{ShortUrl}}')">Hide</a>
+        <a class="noborder" href="" onclick="toggleHideThread('{{ShortUrl}}')">Unhide</a>
     </div>
 </article>
 {{/Thread}}

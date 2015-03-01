@@ -35,6 +35,8 @@ func setupHandlers(router *mux.Router, isAdmin, isSubdir bool) {
 	SetHandler(GET, "/tags/page/{page}", httpAllTags, isAdmin, isSubdir)
 	SetHandler(GET, "/stiki", httpStikiIndex, isAdmin, isSubdir)
 	SetHandler(GET, "/stiki/{page}", httpStiki, isAdmin, isSubdir)
+	SetHandler(GET, "/hidden", httpManageHidden, isAdmin, isSubdir)
+	SetHandler(GET, "/hidden/page/{page}", httpManageHidden, isAdmin, isSubdir)
 	SetHandler(GET, "/{otherwise}", func(rw http.ResponseWriter, req *http.Request) {
 		sendError(rw, 404, "Not found")
 	}, isAdmin, isSubdir)

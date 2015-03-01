@@ -113,3 +113,5 @@ toggleHideThread = (url) ->
 		Cookies.set 'crHidden', "#{cookie} #{url}", { expires: Infinity }
 
 window.toggleHideThread = toggleHideThread
+
+window.unhideAllThreads = -> Cookies.expire 'crHidden'
