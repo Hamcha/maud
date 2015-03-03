@@ -165,6 +165,8 @@ quotePostId = (id) ->
 		text.value += "\n>> ##{id}\n"
 	else
 		text.value += ">> ##{id}\n"
+	window.location.href = '#reply'
+	text.focus()
 
 window.editPost = editPost
 window.deletePost = deletePost

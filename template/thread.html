@@ -48,7 +48,7 @@
         <span class="nickname">{{#IsAnon}}<span class="anon">Rock</span>{{/IsAnon}}{{#Nickname}}{{Nickname}}{{/Nickname}}</span>
         <span class="tripcode">{{^HiddenTripcode}}{{Tripcode}}{{/HiddenTripcode}}</span>
         {{/Author}}
-        <a href="#p{{PostId}}" class="date" data-udate="{{Date}}">{{StrDate}}</a> <a href="#reply" class="postId" onclick="quotePostId({{PostId}})">#{{PostId}}</a>
+        <a href="#p{{PostId}}" class="date" data-udate="{{Date}}">{{StrDate}}</a> <a class="postId" onclick="quotePostId({{PostId}})">#{{PostId}}</a>
     </h3>
     <div class="right">
         {{#Modified}}<span class="lastedit" data-udate="{{LastModified}}">edited {{StrLastModified}}</span>{{/Modified}}
