@@ -253,6 +253,7 @@ a.toggleImage, a.toggleIframe {
 
 .tag-item, .thread-item { font-size: 0.9em; padding: 10px; }
 .tag-name, .thread-name { text-transform: capitalize; padding: 0; margin: 0; }
+.hide { opacity: 0.6; &:hover { opacity: 1; } }
 
 /* Forms */
 
