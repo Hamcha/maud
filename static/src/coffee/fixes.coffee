@@ -56,7 +56,7 @@ charsCount = (id) ->
 			text.style.borderColor = if remaining < 0 then "#E33" else ""
 	return
 
-charsCount "prev-form"
+charsCount "reply-form"
 
 window.charsCount = charsCount
 
@@ -91,12 +91,13 @@ imgsetup imgbtn for imgbtn in lightimagebtn
 toggle = document.getElementById "tagsearchbtn"
 toggle?.onclick = ->
 	toggle.outerHTML = """
-    <form style="display: inline-block" method="POST" action="#{basepath}tagsearch">
-      <input type="text" name="tags" id="tagsearch" placeholder="Filter by tag" required title="Insert tags separated by commas (without hashtag)" />
+    <form id="tagsearch-form" class="ac_wrapper" style="display: inline-block" method="POST" action="#{basepath}tagsearch">
+      <input class="ac_input" type="text" name="tags" id="tagsearch" placeholder="Filter by tag" required title="Insert tags separated by commas (without hashtag)" autocomplete="off" />
       <input type="submit" value="Search" />
     </form>
 	"""
 	box = document.getElementById "tagsearch"
+	toggleAutocomplete box, "#{basepath}taglist"
 	box.focus()
 
 # Hiding functions

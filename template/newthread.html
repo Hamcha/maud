@@ -1,9 +1,9 @@
 <section><h2 style="padding: 2px 5px;">Creating a new thread</h2></section>
 <section class="form">
-    <form id="prev-form" method="POST" action="{{BasePath}}new">
+    <form id="reply-form" class="ac_wrapper" method="POST" action="{{BasePath}}new">
         <input class="full small" type="text" name="nickname" placeholder="Nickname#Tripcode (optional)" autofocus />
         <input class="full" type="text" name="title" placeholder="Thread title" required />
-        <input class="full small" type="text" name="tags" placeholder="Tags (separated by #)" />
+        <input class="full small ac_input" type="text" name="tags" placeholder="Tags (separated by #)" autocomplete="off"/>
 
         <!-- Editor buttons -->
         <div id="editorRight">
@@ -31,3 +31,8 @@
     </form>
 </section>
 <script src="/static/js/editor.js"></script>
+<script>
+window.onload = function () {
+    toggleAutocomplete(document.querySelector('#reply-form .ac_input'), '/taglist');
+}
+</script>

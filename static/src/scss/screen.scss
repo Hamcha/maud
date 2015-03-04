@@ -315,3 +315,23 @@ header p { display: inline-block; font-size: 2em; font-weight: 900; margin: 0.4e
 .chars-count {
     font-size: 1.1em; font-weight: 300;
 }
+
+/* Autocomplete */
+.ac_wrapper {
+    position: relative;
+}
+
+ul.ac_list {
+    background-color: rgba(0, 0, 0, 0.85);
+    list-style: none;
+    padding: 5px;
+    position: absolute;
+    margin: 0;
+    li {
+        &:hover {
+            background-color: #fff;
+            color: #000;
+        }
+    }
+}
+
