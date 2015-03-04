@@ -63,9 +63,9 @@ window.acUpdateTags = (formId, tag, listId) ->
 	el = document.getElementById(formId).querySelector '.ac_input'
 	v = el.value
 	if v.lastIndexOf(sep) > 0
-		el.value = v[0..v.lastIndexOf(sep)-1] + "#{sep}#{tag} "
+		el.value = v[0..v.lastIndexOf(sep)-1] + "#{sep}#{tag} #"
 	else
-		el.value = "#{sep}#{tag} "
+		el.value = "#{sep}#{tag} #"
 	el.selectionStart = el.value.length
 	el.focus()
 	document.getElementById(listId).style.visibility = 'hidden'
