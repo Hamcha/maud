@@ -41,15 +41,18 @@ toggleAutocomplete = (elem, url, opts) ->
 			updateAutocompleteList ul, curTag, data
 		else
 			ul.innerHTML = ""
+		ul.style.width = "#{elem.offsetWidth}px"
+		ul.style.top = "#{elem.offsetTop + elem.offsetHeight}px"
+		ul.style.left = "#{elem.offsetLeft}px"
 		ul.style.visibility = if ul.innerHTML.length > 0 then 'visible' else 'hidden'
 
 updateAutocompleteList = (list, txt, data) ->
 	list.innerHTML =
 		(for el in data
 			if el[0..txt.length-1] == txt
-				"<li><a class='noborder' href='#' onclick='acUpdateTags(" +
+				"<a class='noborder' href='#' onclick='acUpdateTags(" +
 				"\"#{list.parentNode.id}\", \"#{el}\", " +
-				"\"#{list.id}\")'>#{el}</a></li>"
+				"\"#{list.id}\")'><li>#{el}</li></a>"
 		).join("\n").trim()
 
 
