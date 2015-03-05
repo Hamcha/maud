@@ -41,7 +41,7 @@ func initBL() {
 
 func checkBlacklist(req *http.Request) (bool, string) {
 	userAgent := req.UserAgent()
-	ip := req.Header["X-Real-IP"]
+	ip := req.Header["X-Real-IP"][0]
 	for i := range blacklists {
 		ipmatch := blacklists[i].IPRegexp.MatchString(ip)
 		uamatch := blacklists[i].UARegexp.MatchString(userAgent)
