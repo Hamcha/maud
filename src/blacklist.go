@@ -42,7 +42,7 @@ func initBL() {
 func checkBlacklist(req *http.Request) (bool, string) {
 	userAgent := req.UserAgent()
 	var ip string
-	if iphead, ok := req.Header["X-Real-IP"]; ok {
+	if iphead, ok := req.Header["X-Forwarded-For"]; ok {
 		ip = iphead[0]
 	} else {
 		ip = req.RemoteAddr
