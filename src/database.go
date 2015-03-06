@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"net/url"
@@ -299,11 +300,12 @@ func (db Database) DecTag(name string) error {
 
 // EditPost updates the post with id `id` by changing its content to
 // newContent and its lastmodified date to the current date.
-func (db Database) EditPost(id bson.ObjectId, newContent string) error {
+func (db Database) EditPost(id bson.ObjectId, newContent, newContentType string) error {
 	err := db.database.C("posts").UpdateId(id, bson.M{
 		"$set": bson.M{
 			"lastmodified": time.Now().UTC().Unix(),
 			"content":      newContent,
+			"contenttype":  newContentType,
 		},
 	})
 	return err
@@ -323,6 +325,84 @@ func (db Database) DeletePost(id bson.ObjectId, admin bool) error {
 		},
 	})
 	return err
+}
+
+// PurgePost deletes a post from the database (IRREVERSIBLE)
+// As this action requires many queries, this is considered
+// a quite expensive operation.
+// Returns an errors as well as a bool indicating if the thread
+// has been purged as well
+func (db Database) PurgePost(post Post) (error, bool) {
+	// Get thread
+	thread, err := db.GetThreadById(post.ThreadId)
+	if err != nil {
+		return err, false
+	}
+	if thread.LastReply == post.Id {
+		if thread.ThreadPost == post.Id {
+			return db.PurgeThread(&thread), true
+		}
+		// Get the new last post
+		posts, err := db.GetPosts(&thread, 1, int(thread.Messages)-2)
+		if err != nil {
+			return err, false
+		}
+		if len(posts) < 1 {
+			return errors.New("Something is wrong on this thread.."), false
+		}
+		// Decrement message count and update last post
+		err = db.database.C("threads").UpdateId(thread.Id, bson.M{
+			"$set": bson.M{
+				"lastreply": posts[0].Id,
+				"lrdate":    posts[0].Date,
+			},
+			"$inc": bson.M{
+				"messages": -1,
+			},
+		})
+		if err != nil {
+			return err, false
+		}
+	} else {
+		// Just decrement the post count
+		err = db.database.C("threads").UpdateId(thread.Id, bson.M{
+			"$inc": bson.M{
+				"messages": -1,
+			},
+		})
+		if err != nil {
+			return err, false
+		}
+	}
+
+	// Remove post from database
+	err = db.database.C("posts").RemoveId(post.Id)
+	return err, false
+}
+
+// PurgeThread deletes an entire thread from the database (IRREVERSIBLE)
+// This also deletes all the posts inside it.
+func (db Database) PurgeThread(thread *Thread) error {
+	// Firstly, remove thread from database
+	err := db.database.C("threads").RemoveId(thread.Id)
+	if err != nil {
+		return err
+	}
+	// Purge all posts from the thread
+	err = db.database.C("posts").Remove(bson.M{
+		"threadid": thread.Id,
+	})
+	if err != nil {
+		return err
+	}
+	// Decrement all tags
+	for i := range thread.Tags {
+		err = db.DecTag(thread.Tags[i])
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // SetThreadTags changes the tags of the thread with id `id` to `newTags`

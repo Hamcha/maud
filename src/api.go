@@ -179,16 +179,24 @@ func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		return
 	}
-	// if post has no tripcode associated, refuse to edit
-	if !isAdmin && len(post.Author.Tripcode) < 1 {
-		sendError(rw, 403, "Forbidden")
-		return
-	}
-	// check tripcode
-	trip := tripcode(req.PostFormValue("tripcode"))
-	if !isAdmin && trip != post.Author.Tripcode {
-		sendError(rw, 401, "Invalid tripcode")
-		return
+	// Skip a bunch of checks if the user is an admin
+	if !isAdmin {
+		// if post is deleted and it's not being edited by an admin, refuse
+		if post.ContentType == "deleted" || post.ContentType == "admin-deleted" {
+			sendError(rw, 403, "Forbidden")
+			return
+		}
+		// if post has no tripcode associated, refuse to edit
+		if len(post.Author.Tripcode) < 1 {
+			sendError(rw, 403, "Forbidden")
+			return
+		}
+		// check tripcode
+		trip := tripcode(req.PostFormValue("tripcode"))
+		if trip != post.Author.Tripcode {
+			sendError(rw, 401, "Invalid tripcode")
+			return
+		}
 	}
 	// update post content and date (strip multiple whitespaces at the end of the text)
 	newContent := strings.TrimRight(req.PostFormValue("text"), "\r\n") + "\r\n"
@@ -218,7 +226,7 @@ func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	err = db.EditPost(post.Id, newContent)
+	err = db.EditPost(post.Id, newContent, "bbcode")
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -265,9 +273,24 @@ func apiDeletePost(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if err = db.DeletePost(post.Id, isAdmin); err != nil {
-		http.Error(rw, err.Error(), 500)
-		return
+	// are we purging or deleting?
+	threadgone := false
+	dtype := req.PostFormValue("deletetype")
+	if dtype == "purge" {
+		if !isAdmin {
+			sendError(rw, 403, "Forbidden")
+			return
+		}
+		err, threadgone = db.PurgePost(post)
+		if err != nil {
+			http.Error(rw, err.Error(), 500)
+			return
+		}
+	} else {
+		if err = db.DeletePost(post.Id, isAdmin); err != nil {
+			http.Error(rw, err.Error(), 500)
+			return
+		}
 	}
 
 	basepath := "/"
@@ -279,7 +302,12 @@ func apiDeletePost(rw http.ResponseWriter, req *http.Request) {
 	if page < 1 {
 		page = 1
 	}
-	http.Redirect(rw, req, basepath+"thread/"+thread.ShortUrl+"/page/"+strconv.Itoa(page)+"#p"+vars["post"], http.StatusMovedPermanently)
+
+	rurl := basepath
+	if !threadgone {
+		rurl += "thread/" + thread.ShortUrl + "/page/" + strconv.Itoa(page) + "#p" + vars["post"]
+	}
+	http.Redirect(rw, req, rurl, http.StatusMovedPermanently)
 }
 
 func apiTagSearch(rw http.ResponseWriter, req *http.Request) {
@@ -301,14 +329,17 @@ func apiTagSearch(rw http.ResponseWriter, req *http.Request) {
 // apiGetRaw: retreive the raw content of a post.
 // POST params: none
 func apiGetRaw(rw http.ResponseWriter, req *http.Request) {
+	isAdmin, _ := isAdmin(req)
 	vars := mux.Vars(req)
 	_, post, err := threadPostOrErr(rw, vars["thread"], vars["post"])
 	if err != nil {
 		return
 	}
-	if post.ContentType == "deleted" || post.ContentType == "admin-deleted" {
-		sendError(rw, 403, "Forbidden")
-		return
+	if !isAdmin {
+		if post.ContentType == "deleted" || post.ContentType == "admin-deleted" {
+			sendError(rw, 403, "Forbidden")
+			return
+		}
 	}
 	fmt.Fprintln(rw, post.Content)
 }

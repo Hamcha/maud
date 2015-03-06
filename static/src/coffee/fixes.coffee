@@ -116,3 +116,7 @@ toggleHideThread = (url) ->
 window.toggleHideThread = toggleHideThread
 
 window.unhideAllThreads = -> Cookies.expire 'crHidden'
+
+# Unhide post actions to admins
+if window.adminMode
+	con.style.display = "inline-block" for con in document.querySelectorAll ".postactions"

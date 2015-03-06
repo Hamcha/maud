@@ -90,11 +90,14 @@ deletePost = (id) ->
 	original[id] = post.innerHTML
 	tripcodebar = ""
 	if !window.adminMode
+		purge = ""
 		if typeof nickspan.firstChild is 'object' # hidden tripcode
 			htrip = JSON.parse(window.localStorage?.getItem 'crLatestPost')?.htrip
 			tripcodebar = "<input type=\"hidden\" name=\"tripcode\" value=\"#{htrip}\" required />"
 		else  # visible tripcode
 			tripcodebar = "<input class=\"full short inline verysmall\" type=\"text\" name=\"tripcode\" placeholder=\"Tripcode (required)\" required />"
+	else
+		purge = '<button name="deletetype" value="purge" type="submit">Purge</button>'
 	post.innerHTML = """
 <section id="#{id}" class="form"><a name="delete" class="noborder"></a>
   <form method="POST" action="#{window.stripPage(location.pathname) + "/post/" + id + "/delete"}">
@@ -104,7 +107,7 @@ deletePost = (id) ->
 	  <span style="color: #ccc; display: inline-block; width: auto; font-size: 0.9em;">deleting ##{id}</span>
 	</div>
 	<center>
-	  <button type="submit">Delete post</button><button type="button" onclick="cancelForm(#{id});">Cancel</button>
+	  <button name="deletetype" value="soft" type="submit">Delete</button>#{purge}<button type="button" onclick="cancelForm(#{id});">Cancel</button>
 	</center>
   </form>
 </section>"""

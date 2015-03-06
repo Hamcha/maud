@@ -26,7 +26,7 @@
     </h3>
     <div class="right">
         {{#Modified}}<span class="lastedit" data-udate="{{LastModified}}">edited {{StrLastModified}}</span>{{/Modified}}
-        <div id="p0_btn" {{^Editable}}style='display: none'{{/Editable}} />
+        <div id="p0_btn" class="postactions" {{^Editable}}style='display: none'{{/Editable}} />
             <a href="#thread" class="edit nolink" onclick="editPost(0)">
                 <img src="/static/images/edit.svg" style="height: 20px;" />
             </a>
@@ -53,7 +53,7 @@
     </h3>
     <div class="right">
         {{#Modified}}<span class="lastedit" data-udate="{{LastModified}}">edited {{StrLastModified}}</span>{{/Modified}}
-        <div id="p{{PostId}}_btn" {{^Editable}}style='display: none'{{/Editable}} />
+        <div id="p{{PostId}}_btn" class="postactions" {{^Editable}}style='display: none'{{/Editable}} />
             <a href="#p{{PostId}}" class="edit nolink" onclick="editPost({{PostId}})">
                 <img src="/static/images/edit.svg" style="height: 20px;" />
             </a>
