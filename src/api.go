@@ -305,7 +305,7 @@ func apiDeletePost(rw http.ResponseWriter, req *http.Request) {
 
 	rurl := basepath
 	if !threadgone {
-		rurl += "thread/" + thread.ShortUrl + "/page/" + strconv.Itoa(page) + "#p" + strconv.Atoi(strconv.Itoa(vars["post"])-1)
+		rurl += "thread/" + thread.ShortUrl + "/page/" + strconv.Itoa(page) + "#p" + strconv.Itoa(strconv.Atoi(vars["post"])-1)
 	}
 	http.Redirect(rw, req, rurl, http.StatusMovedPermanently)
 }
