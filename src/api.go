@@ -16,10 +16,10 @@ import (
 func apiNewThread(rw http.ResponseWriter, req *http.Request) {
 	postTitle := req.PostFormValue("title")
 	postNickname := req.PostFormValue("nickname")
-	postContent := strings.TrimRight(req.PostFormValue("text"), "\r\n") + "\r\n"
+	postContent := strings.TrimSpace(req.PostFormValue("text"))
 	postTags := req.PostFormValue("tags")
 	if len(postTitle) < 1 || len(postContent) < 1 {
-		http.Error(rw, "Required fields are missing", 400)
+		sendError(rw, 400, "Required fields are missing")
 		return
 	}
 
@@ -92,9 +92,9 @@ func apiReply(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	postNickname := req.PostFormValue("nickname")
-	postContent := strings.TrimRight(req.PostFormValue("text"), "\r\n") + "\r\n"
+	postContent := strings.TrimSpace(req.PostFormValue("text"))
 	if len(postContent) < 1 {
-		http.Error(rw, "Required fields are missing", 400)
+		sendError(rw, 400, "Required fields are missing")
 		return
 	}
 
@@ -108,7 +108,7 @@ func apiReply(rw http.ResponseWriter, req *http.Request) {
 	content := postContent
 
 	if postTooLong(content) {
-		http.Error(rw, "Post is too long.", 400)
+		sendError(rw, 400, "Post is too long.")
 		return
 	}
 	_, err = db.ReplyThread(&thread, user, content)
@@ -140,7 +140,7 @@ func apiReply(rw http.ResponseWriter, req *http.Request) {
 // were a reply.
 // POST params: text
 func apiPreview(rw http.ResponseWriter, req *http.Request) {
-	postContent := strings.TrimRight(req.PostFormValue("text"), "\r\n") + "\r\n"
+	postContent := strings.TrimSpace(req.PostFormValue("text"))
 	if len(postContent) < 1 {
 		sendError(rw, 400, "Required fields are missing")
 		return
@@ -199,9 +199,12 @@ func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 		}
 	}
 	// update post content and date (strip multiple whitespaces at the end of the text)
-	newContent := strings.TrimRight(req.PostFormValue("text"), "\r\n") + "\r\n"
-	if postTooLong(newContent) {
-		http.Error(rw, "Post is too long.", 400)
+	newContent := strings.TrimSpace(req.PostFormValue("text"))
+	if len(newContent) < 1 {
+		sendError(rw, 400, "Required fields are missing.")
+		return
+	} else if postTooLong(newContent) {
+		sendError(rw, 400, "Post is too long.")
 		return
 	}
 	// update tags if post is OP and 'tags' was passed
@@ -253,7 +256,7 @@ func apiDeletePost(rw http.ResponseWriter, req *http.Request) {
 
 	postId, err := strconv.Atoi(vars["post"])
 	if err != nil {
-		http.Error(rw, "Invalid post id", 400)
+		sendError(rw, 400, "Invalid post id")
 		return
 	}
 
@@ -283,12 +286,12 @@ func apiDeletePost(rw http.ResponseWriter, req *http.Request) {
 		}
 		err, threadgone = db.PurgePost(post)
 		if err != nil {
-			http.Error(rw, err.Error(), 500)
+			sendError(rw, 500, err.Error())
 			return
 		}
 	} else {
 		if err = db.DeletePost(post.Id, isAdmin); err != nil {
-			http.Error(rw, err.Error(), 500)
+			sendError(rw, 500, err.Error())
 			return
 		}
 	}
