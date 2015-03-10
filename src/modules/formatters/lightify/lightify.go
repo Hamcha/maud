@@ -78,7 +78,7 @@ func imgurThumb(origUrl string) string {
 func derpibooruThumb(origUrl string) string {
 	splitted := strings.Split(origUrl, "/")
 	if len(splitted) < 8 {
-		return origUrl
+		return strings.Trim(origUrl, `"'`)
 	}
 	/* Derpibooru's URLs are slightly more complex than Imgur ones.
 	 * 5th element in the url is either 'view', which means a full size image,
