@@ -196,6 +196,20 @@ func (db Database) GetThreads(surl []string, limit, offset int) ([]Thread, error
 	return threads, err
 }
 
+// GetTags returns the list of specified tags
+func (db Database) GetTags(tagnames []string, limit, offset int) ([]Tag, error) {
+	var tags []Tag
+	query := db.database.C("tags").Find(bson.M{"name": bson.M{"$in": tagnames}})
+	if offset > 0 {
+		query = query.Skip(offset)
+	}
+	if limit > 0 {
+		query = query.Limit(limit)
+	}
+	err := query.All(&tags)
+	return tags, err
+}
+
 func (db Database) GetThreadById(id bson.ObjectId) (Thread, error) {
 	var thread Thread
 	err := db.database.C("threads").FindId(id).One(&thread)

@@ -222,7 +222,7 @@ func getHiddenElems(req *http.Request) (threads, tags []string) {
 				continue
 			}
 			if s[0] == '#' {
-				tags = append(tags, s)
+				tags = append(tags, s[1:])
 			} else {
 				threads = append(threads, s)
 			}

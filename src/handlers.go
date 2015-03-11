@@ -445,9 +445,10 @@ func httpManageHidden(rw http.ResponseWriter, req *http.Request) {
 		pageOffset = 0
 	}
 
-	hThreads, _ := getHiddenElems(req)
+	hThreads, hTags := getHiddenElems(req)
 
-	threads, err := db.GetThreads(hThreads, siteInfo.ThreadsPerPage, pageOffset)
+	// Get hidden threads
+	threads, err := db.GetThreads(hThreads, siteInfo.HomeThreadsNum, pageOffset)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -481,12 +482,49 @@ func httpManageHidden(rw http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	send(rw, req, "hidden", "Hidden threads", struct {
+	// Get hidden tags
+	tags, err := db.GetTags(hTags, siteInfo.HomeTagsNum, pageOffset)
+	if err != nil {
+		sendError(rw, 500, err.Error())
+		return
+	}
+
+	tagdata := make([]TagData, len(tags))
+
+	for i := range tags {
+		thread, err := db.GetThreadById(tags[i].LastThread)
+		if err != nil {
+			sendError(rw, 500, err.Error())
+			return
+		}
+		count, err := db.PostCount(&thread)
+		if err != nil {
+			sendError(rw, 500, err.Error())
+			return
+		}
+
+		tagdata[i] = TagData{
+			Name:          html.EscapeString(tags[i].Name),
+			LastUpdate:    tags[i].LastUpdate,
+			StrLastUpdate: strdate(tags[i].LastUpdate),
+			LastThread: ThreadInfo{
+				Thread:      thread,
+				LastMessage: count - 1,
+				Page:        (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
+			},
+		}
+		if tagdata[i].LastThread.Page < 1 {
+			tagdata[i].LastThread.Page = 1
+		}
+	}
+	send(rw, req, "hidden", "Hidden elements", struct {
 		Last        []ThreadInfo
+		Tags        []TagData
 		CurrentPage int
 		More        bool
 	}{
 		tinfos,
+		tagdata,
 		pageInt,
 		len(tinfos) == siteInfo.ThreadsPerPage,
 	})

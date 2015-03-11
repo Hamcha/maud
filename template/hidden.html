@@ -32,5 +32,20 @@
 </article>
 {{/Thread}}
 {{/Last}}
+<hr />
+<article class="hidden2">
+    All hidden tags
+    &nbsp;&nbsp;
+    <a href="{{BasePath}}hidden" class="button" onclick="unhideAllTags()">Unhide all</a>
+</article>
+{{#Tags}}
+<article class="tag-item thread">
+    <h3 class="tag-name"><a href="{{BasePath}}tag/{{Name}}" class="nolink">{{{Name}}}</a></h3>
+    <div>Last updated thread: {{#LastThread}}{{#Thread}}<a href="{{BasePath}}thread/{{ShortUrl}}/page/{{Page}}#p{{LastMessage}}" class="thread-title">{{Title}}</a>{{/Thread}}{{/LastThread}} (<span class="date" data-udate="{{LastUpdate}}">{{StrLastUpdate}}</span>)</div>
+    <div class="right">
+        <a class="noborder hide" href="" onclick="toggleHide('#{{Name}}')">Hide</a>
+    </div>
+</article>
+{{/Tags}}
 <div class="pages" data-current="{{CurrentPage}}" data-max="nomax" data-more="{{#More}}yes{{/More}}{{^More}}no{{/More}}"></div>
 {{/Data}}

@@ -6,8 +6,7 @@ unless Cookies.enabled
 # Wrapper for the cookie used for hiding.
 # This cookie's value has the form: 'surl1&surl2&#tag1&#tag2&etc'
 class Hidden
-	sep: '&'
-	constructor: (@value) -> @splitted = @value.split @sep
+	constructor: (@value, @sep = '&') -> @splitted = @value.split @sep
 	tags: -> return (x for x in @splitted when x[0] is '#')
 	threads: -> return (x for x in @splitted when x[0] isnt '#')
 	remove: (what...) ->
@@ -41,18 +40,16 @@ class Hidden
 		else
 			Cookies.set 'crHidden', @value, { expires: Infinity }
 
-window.newCrHidden = ->
-	cookie = Cookies.set 'crHidden', ""
-	return new Hidden ""
-
 window.killCrHidden = -> Cookies.expire 'crHidden'
 
 crHidden = undefined
 # find out if the cookies is set and, if so, create a Hidden object
 # wrapping its value.
 cookie = Cookies.get 'crHidden'
-if cookie?
-	crHidden = new Hidden cookie
+crHidden = new Hidden cookie if cookie?
+
+# ensure we don't carry around a stale empty cookie
+killCrHidden() if crHidden?.isEmpty()
 
 # Setup Safe mode button
 if crHidden?.get '#nfsw'
@@ -65,20 +62,28 @@ if crHidden?.get '#nfsw'
 else
 	safeButton.style.boxShadow = "0 0 0 1px darkred inset"
 	safeButton.onclick = ->
-		crHidden = newCrHidden() unless crHidden?
-		crHidden.add '#nfsw'
+		if crHidden?
+			crHidden.add '#nfsw'
+		else
+			crHidden = new Hidden '#nsfw'
+			crHidden.update()
 		location.reload true
 		return
 
-toggleHideThread = (url) ->
-	# check if this url is already hidden: if so,
+toggleHide = (elem) ->
+	# check if this element is already hidden: if so,
 	# unhide it, else hide it.
-	if crHidden?.get url
-		crHidden.remove url
+	if crHidden?.get elem
+		crHidden.remove elem
 	else
-		crHidden = newCrHidden() unless crHidden?
-		crHidden.add url
+		if crHidden?
+			crHidden.add elem
+		else
+			crHidden = new Hidden elem
+			crHidden.update()
+		location.reload true
+		return
 
-window.toggleHideThread = toggleHideThread
+window.toggleHide = toggleHide
 window.unhideAllThreads = -> crHidden.clearThreads()
 window.unhideAllTags = -> crHidden.clearTags()
