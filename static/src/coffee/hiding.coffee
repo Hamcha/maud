@@ -52,7 +52,7 @@ crHidden = new Hidden cookie if cookie?
 killCrHidden() if crHidden?.isEmpty()
 
 # Setup Safe mode button
-if crHidden?.get '#nfsw'
+if crHidden?.get "#nsfw"
 	safeButton.innerHTML = "EXIT SAFE MODE"
 	safeButton.style.boxShadow = "0 0 0 1px green inset"
 	safeButton.onclick = ->
