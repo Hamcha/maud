@@ -4,12 +4,13 @@ window.stripPage = (url) ->
 	idx = url.indexOf "/page/"
 	return if idx < 0 then url else url.substring 0, idx
 
+###
 window.setFilter = (tags) ->
-	tagList = tags.join ":"
 	return false unless Cookies.enabled
+	tagList = tags.join ":"
 	props =
 		domain: '.' + window.domain.split(":")[0]
-		explires: Infinity
+		expires: Infinity
 	console.log props
 	Cookies.set "filter", tagList, props
 	return true
@@ -33,3 +34,4 @@ window.removeFilter = (toremove) ->
 		continue if tag in toremove
 		newtags.push tag
 	window.setFilter newtags
+###

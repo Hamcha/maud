@@ -163,14 +163,6 @@ func postTooLong(content string) bool {
 	return siteInfo.MaxPostLength > 0 && utf8.RuneCountInString(content) > siteInfo.MaxPostLength
 }
 
-func filterFromCookie(req *http.Request) []string {
-	cookie, err := req.Cookie("filter")
-	if err != nil {
-		return nil
-	}
-	return strings.Split(cookie.String(), ":")
-}
-
 func isLightVersion(req *http.Request) bool {
 	return len(siteInfo.LightVersionDomain) > 0 && req.Host == siteInfo.LightVersionDomain
 }
@@ -214,44 +206,45 @@ func strdate(unixtime int64) string {
 }
 
 // getHiddenElems checks if the request contains a cookie 'crHidden'
-// and parses its value, returning a slice with shorturls of hidden threads.
+// and parses its value, returning a slice with hidden threads and
+// hidden tags.
 // If no cookie exists, or its value is invalid, err != nil is returned.
-func getHiddenElems(req *http.Request) ([]string, error) {
+func getHiddenElems(req *http.Request) ([]string, []string, error) {
 	if cookie, err := req.Cookie("crHidden"); err == nil {
-		// cookie value has the format: "url1 url2 url3 ..."
+		// cookie value has the format: "url1&url2&tag1&..."
 		val, err := url.QueryUnescape(cookie.Value)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
-		threads := strings.Split(val, " ")
-		return threads, err
+		splitted := strings.Split(val, "&")
+		threads := make([]string, 0)
+		tags := make([]string, 0)
+		for _, s := range splitted {
+			if len(s) < 1 {
+				continue
+			}
+			if s[0] == '#' {
+				tags = append(tags, s)
+			} else {
+				threads = append(threads, s)
+			}
+		}
+		return threads, tags, err
 	} else {
-		return nil, err
+		// cookie not present
+		return nil, nil, err
 	}
 }
 
-func retreiveThreads(n, offset int, req *http.Request, filter []string) ([]ThreadInfo, error) {
-	// check if some threads have been hidden by the user
-	hiddenThreads, err := getHiddenElems(req)
+func retreiveThreads(n, offset int, hThreads, hTags []string) ([]ThreadInfo, error) {
 
-	extra := 0
-	if err == nil {
-		extra = len(hiddenThreads)
-	}
-
-	threads, err := db.GetThreadList("", n+extra, offset, filter)
+	threads, err := db.GetThreadList("", n, offset, hThreads, hTags)
 	if err != nil {
 		return nil, err
 	}
 
 	tinfos := make([]ThreadInfo, 0, siteInfo.HomeThreadsNum)
-Outer:
 	for i, _ := range threads {
-		for _, hidden := range hiddenThreads {
-			if threads[i].ShortUrl == hidden {
-				continue Outer
-			}
-		}
 
 		count, err := db.PostCount(&threads[i])
 		if err != nil {
@@ -272,12 +265,8 @@ Outer:
 			},
 			Page: (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
 		})
-		j := len(tinfos) - 1
-		if tinfos[j].Page < 1 {
-			tinfos[j].Page = 1
-		}
-		if j == n-1 {
-			break
+		if tinfos[i].Page < 1 {
+			tinfos[i].Page = 1
 		}
 	}
 	return tinfos, err

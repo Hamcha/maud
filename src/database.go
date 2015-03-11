@@ -113,7 +113,7 @@ func (db Database) ReplyThread(thread *Thread, user User, content string) (int, 
 // a tag matching it (i.e. thread.tag ~ /tag/i); else, return all
 // threads with at least 1 tag matching at least 1 of the words in
 // the `tag` string. Separator is "#"
-func (db Database) GetThreadList(tag string, limit, offset int, filter []string) (threads []Thread, err error) {
+func (db Database) GetThreadList(tag string, limit, offset int, hThreads, hTags []string) (threads []Thread, err error) {
 	var filterByTag bson.M
 	tag, err = url.QueryUnescape(tag)
 	if err != nil {
@@ -143,8 +143,20 @@ func (db Database) GetThreadList(tag string, limit, offset int, filter []string)
 	} else {
 		filterByTag = nil
 	}
-	if filter != nil {
-		cond := bson.M{"tags": bson.M{"$nin": filter}}
+	// intersect query with hidden threads/tags
+	var cond bson.M
+	if hThreads != nil && len(hThreads) > 0 {
+		cond = bson.M{"shorturl": bson.M{"$nin": hThreads}}
+	}
+	if hTags != nil && len(hTags) > 0 {
+		cond2 := bson.M{"tags": bson.M{"$nin": hTags}}
+		if cond != nil {
+			cond = bson.M{"$and": []bson.M{cond, cond2}}
+		} else {
+			cond = cond2
+		}
+	}
+	if cond != nil {
 		if filterByTag != nil {
 			filterByTag = bson.M{"$and": []bson.M{filterByTag, cond}}
 		} else {
@@ -229,7 +241,7 @@ func (b ByThreads) Less(i, j int) bool { return b[i].Posts < b[j].Posts }
 func (db Database) GetPopularTags(limit, offset int, filter []string) ([]Tag, error) {
 	var result []Tag
 	var cond bson.M
-	if filter != nil {
+	if filter != nil && len(filter) > 0 {
 		condParts := make([]bson.M, 0)
 		for i := range filter {
 			condParts = append(condParts, bson.M{"name": filter[i]})

@@ -15,9 +15,8 @@ import (
 )
 
 func httpHome(rw http.ResponseWriter, req *http.Request) {
-	// TODO: incorporate this filter into crHidden cookie.
-	filter := filterFromCookie(req)
-	tags, err := db.GetPopularTags(siteInfo.HomeTagsNum, 0, filter)
+	hThreads, hTags, _ := getHiddenElems(req)
+	tags, err := db.GetPopularTags(siteInfo.HomeTagsNum, 0, hTags)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -52,7 +51,7 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	tinfos, err := retreiveThreads(siteInfo.HomeThreadsNum, 0, req, filter)
+	tinfos, err := retreiveThreads(siteInfo.HomeThreadsNum, 0, hThreads, hTags)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -84,7 +83,8 @@ func httpAllThreads(rw http.ResponseWriter, req *http.Request) {
 		pageOffset = 0
 	}
 
-	tinfos, err := retreiveThreads(siteInfo.ThreadsPerPage, pageOffset, req, filterFromCookie(req))
+	hThreads, hTags, _ := getHiddenElems(req)
+	tinfos, err := retreiveThreads(siteInfo.ThreadsPerPage, pageOffset, hThreads, hTags)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -122,7 +122,8 @@ func httpAllTags(rw http.ResponseWriter, req *http.Request) {
 		pageOffset = 0
 	}
 
-	tags, err := db.GetPopularTags(siteInfo.TagsPerPage, pageOffset, filterFromCookie(req))
+	_, hTags, _ := getHiddenElems(req)
+	tags, err := db.GetPopularTags(siteInfo.TagsPerPage, pageOffset, hTags)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -275,7 +276,8 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 		pageOffset = 0
 	}
 
-	threads, err := db.GetThreadList(tagName, siteInfo.TagResultsPerPage, pageOffset, filterFromCookie(req))
+	hThreads, hTags, _ := getHiddenElems(req)
+	threads, err := db.GetThreadList(tagName, siteInfo.TagResultsPerPage, pageOffset, hThreads, hTags)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -443,9 +445,9 @@ func httpManageHidden(rw http.ResponseWriter, req *http.Request) {
 		pageOffset = 0
 	}
 
-	hiddenThreads, err := getHiddenElems(req)
+	hThreads, _, err := getHiddenElems(req)
 
-	threads, err := db.GetThreads(hiddenThreads, siteInfo.ThreadsPerPage, pageOffset)
+	threads, err := db.GetThreads(hThreads, siteInfo.ThreadsPerPage, pageOffset)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return

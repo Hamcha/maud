@@ -361,7 +361,12 @@ func apiGetRaw(rw http.ResponseWriter, req *http.Request) {
 // POST params: tag
 func apiTagList(rw http.ResponseWriter, req *http.Request) {
 	tag := req.PostFormValue("tag")
-	tags, err := db.GetMatchingTags(tag, 0, 0, filterFromCookie(req))
+	_, hTags, err := getHiddenElems(req)
+	if err != nil {
+		sendError(rw, 500, err.Error())
+		return
+	}
+	tags, err := db.GetMatchingTags(tag, 0, 0, hTags)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
