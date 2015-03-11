@@ -208,24 +208,26 @@ func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 	// update tags if post is OP and 'tags' was passed
-	tags := parseTags(req.PostFormValue("tags"))
-	if post.Id == thread.ThreadPost && len(tags) > 0 {
-		oldtags := make(map[string]bool, len(thread.Tags))
-		for _, tag := range thread.Tags {
-			oldtags[tag] = true
-		}
-		err = db.SetThreadTags(thread.Id, tags)
-		for _, tag := range tags {
-			if oldtags[tag] {
-				delete(oldtags, tag)
-				continue // no need to inc/dec tag
+	if post.Id == thread.ThreadPost {
+		tags := parseTags(req.PostFormValue("tags"))
+		if len(tags) > 0 {
+			oldtags := make(map[string]bool, len(thread.Tags))
+			for _, tag := range thread.Tags {
+				oldtags[tag] = true
 			}
-			// increment new tag
-			db.IncTag(tag, thread.Id)
-		}
-		// decrement any tag which was removed
-		for tag := range oldtags {
-			db.DecTag(tag)
+			err = db.SetThreadTags(thread.Id, tags)
+			for _, tag := range tags {
+				if oldtags[tag] {
+					delete(oldtags, tag)
+					continue // no need to inc/dec tag
+				}
+				// increment new tag
+				db.IncTag(tag, thread.Id)
+			}
+			// decrement any tag which was removed
+			for tag := range oldtags {
+				db.DecTag(tag)
+			}
 		}
 	}
 
@@ -264,16 +266,19 @@ func apiDeletePost(rw http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		return
 	}
-	// if post has no tripcode associated, refuse to delete
-	if !isAdmin && len(post.Author.Tripcode) < 1 {
-		sendError(rw, 403, "Forbidden")
-		return
-	}
-	// check tripcode
-	trip := req.PostFormValue("tripcode")
-	if !isAdmin && tripcode(trip) != post.Author.Tripcode {
-		sendError(rw, 401, "Invalid tripcode")
-		return
+
+	if !isAdmin {
+		// if post has no tripcode associated, refuse to delete
+		if len(post.Author.Tripcode) < 1 {
+			sendError(rw, 403, "Forbidden")
+			return
+		}
+		// check tripcode
+		trip := req.PostFormValue("tripcode")
+		if tripcode(trip) != post.Author.Tripcode {
+			sendError(rw, 401, "Invalid tripcode")
+			return
+		}
 	}
 
 	// are we purging or deleting?
@@ -334,6 +339,7 @@ func apiTagSearch(rw http.ResponseWriter, req *http.Request) {
 }
 
 // apiGetRaw: retreive the raw content of a post.
+// Refuse to do so if post is deleted and user is not an admin.
 // POST params: none
 func apiGetRaw(rw http.ResponseWriter, req *http.Request) {
 	isAdmin, _ := isAdmin(req)
