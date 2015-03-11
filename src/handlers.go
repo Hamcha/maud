@@ -15,7 +15,7 @@ import (
 )
 
 func httpHome(rw http.ResponseWriter, req *http.Request) {
-	hThreads, hTags, _ := getHiddenElems(req)
+	hThreads, hTags := getHiddenElems(req)
 	tags, err := db.GetPopularTags(siteInfo.HomeTagsNum, 0, hTags)
 	if err != nil {
 		sendError(rw, 500, err.Error())
@@ -83,7 +83,7 @@ func httpAllThreads(rw http.ResponseWriter, req *http.Request) {
 		pageOffset = 0
 	}
 
-	hThreads, hTags, _ := getHiddenElems(req)
+	hThreads, hTags := getHiddenElems(req)
 	tinfos, err := retreiveThreads(siteInfo.ThreadsPerPage, pageOffset, hThreads, hTags)
 	if err != nil {
 		sendError(rw, 500, err.Error())
@@ -122,7 +122,7 @@ func httpAllTags(rw http.ResponseWriter, req *http.Request) {
 		pageOffset = 0
 	}
 
-	_, hTags, _ := getHiddenElems(req)
+	_, hTags := getHiddenElems(req)
 	tags, err := db.GetPopularTags(siteInfo.TagsPerPage, pageOffset, hTags)
 	if err != nil {
 		sendError(rw, 500, err.Error())
@@ -276,7 +276,7 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 		pageOffset = 0
 	}
 
-	hThreads, hTags, _ := getHiddenElems(req)
+	hThreads, hTags := getHiddenElems(req)
 	threads, err := db.GetThreadList(tagName, siteInfo.TagResultsPerPage, pageOffset, hThreads, hTags)
 	if err != nil {
 		sendError(rw, 500, err.Error())
@@ -445,7 +445,7 @@ func httpManageHidden(rw http.ResponseWriter, req *http.Request) {
 		pageOffset = 0
 	}
 
-	hThreads, _, err := getHiddenElems(req)
+	hThreads, _ := getHiddenElems(req)
 
 	threads, err := db.GetThreads(hThreads, siteInfo.ThreadsPerPage, pageOffset)
 	if err != nil {

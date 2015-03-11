@@ -53,6 +53,7 @@ func parseContent(content, ctype string) string {
 }
 
 func parseTags(tags string) []string {
+	tags = strings.Replace(tags, "&", "", -1)
 	if len(tags) < 1 {
 		return nil
 	}
@@ -208,17 +209,14 @@ func strdate(unixtime int64) string {
 // getHiddenElems checks if the request contains a cookie 'crHidden'
 // and parses its value, returning a slice with hidden threads and
 // hidden tags.
-// If no cookie exists, or its value is invalid, err != nil is returned.
-func getHiddenElems(req *http.Request) ([]string, []string, error) {
+func getHiddenElems(req *http.Request) (threads, tags []string) {
 	if cookie, err := req.Cookie("crHidden"); err == nil {
 		// cookie value has the format: "url1&url2&tag1&..."
 		val, err := url.QueryUnescape(cookie.Value)
 		if err != nil {
-			return nil, nil, err
+			return
 		}
 		splitted := strings.Split(val, "&")
-		threads := make([]string, 0)
-		tags := make([]string, 0)
 		for _, s := range splitted {
 			if len(s) < 1 {
 				continue
@@ -229,15 +227,14 @@ func getHiddenElems(req *http.Request) ([]string, []string, error) {
 				threads = append(threads, s)
 			}
 		}
-		return threads, tags, err
+		return
 	} else {
 		// cookie not present
-		return nil, nil, err
+		return
 	}
 }
 
 func retreiveThreads(n, offset int, hThreads, hTags []string) ([]ThreadInfo, error) {
-
 	threads, err := db.GetThreadList("", n, offset, hThreads, hTags)
 	if err != nil {
 		return nil, err
