@@ -173,6 +173,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 	threadUrl := vars["thread"]
 	thread, err := db.GetThread(threadUrl)
 	isAdmin, _ := isAdmin(req)
+	requiresCaptcha := req.Header.Get("Captcha-required") == "true"
 
 	if err != nil {
 		if err.Error() == "not found" {
@@ -240,6 +241,14 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		postsInfo = postsInfo[1:]
 	}
 
+	var captchaData CaptchaData
+	if requiresCaptcha {
+		captchaData, err = randomCaptcha()
+		if err != nil {
+			sendError(rw, 500, err.Error())
+			return
+		}
+	}
 	send(rw, req, "thread", thread.Title, struct {
 		Thread     Thread
 		ThreadPost PostInfo
@@ -247,6 +256,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		Page       int
 		MaxPages   int
 		HasOP      bool
+		Captcha    CaptchaData
 	}{
 		thread,
 		threadPost,
@@ -254,6 +264,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		pageInt,
 		(postCount + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
 		pageInt == 1,
+		captchaData,
 	})
 }
 
@@ -376,7 +387,20 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 }
 
 func httpNewThread(rw http.ResponseWriter, req *http.Request) {
-	send(rw, req, "newthread", "New thread", nil)
+	var captchaData CaptchaData
+	var err error
+	if req.Header.Get("Captcha-required") == "true" {
+		captchaData, err = randomCaptcha()
+		if err != nil {
+			sendError(rw, 500, err.Error())
+			return
+		}
+	}
+	send(rw, req, "newthread", "New thread", struct {
+		Captcha CaptchaData
+	}{
+		captchaData,
+	})
 }
 
 func httpStiki(rw http.ResponseWriter, req *http.Request) {

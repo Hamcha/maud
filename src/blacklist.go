@@ -13,6 +13,7 @@ type Blacklist struct {
 	IP        string
 	UserAgent string
 	Reason    string
+	Action    string // "ban": shows 423, "captcha": asks for captcha on reply/new thread
 
 	IPRegexp *regexp.Regexp
 	UARegexp *regexp.Regexp
@@ -39,7 +40,9 @@ func initBL() {
 	}
 }
 
-func checkBlacklist(req *http.Request) (bool, string) {
+// checkBlacklists finds out if a request comes from a blacklisted IP.
+// Returns (isBanned, banReason, banAction).
+func checkBlacklist(req *http.Request) (bool, string, string) {
 	userAgent := req.UserAgent()
 	var ip string
 	if iphead, ok := req.Header["X-Forwarded-For"]; ok {
@@ -58,9 +61,9 @@ func checkBlacklist(req *http.Request) (bool, string) {
 		}
 
 		if matches {
-			return true, blacklists[i].Reason
+			return true, blacklists[i].Reason, blacklists[i].Action
 		}
 	}
 
-	return false, ""
+	return false, "", ""
 }

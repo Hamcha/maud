@@ -14,6 +14,23 @@ import (
 // apiNewThread: creates a new thread with its OP.
 // POST params: title, text, [nickname, tags]
 func apiNewThread(rw http.ResponseWriter, req *http.Request) {
+	// check if this IP is blacklisted
+	if isBanned, banReason, blAction := checkBlacklist(req); isBanned {
+		switch blAction {
+		case "ban":
+			sendError(rw, 423, banReason)
+			return
+		case "captcha":
+			// require captcha parameter
+			postUserCaptcha := strings.Replace(req.PostFormValue("captcha"), " ", "", -1)
+			postUserCaptcha = strings.ToLower(postUserCaptcha)
+			postRealCaptcha := req.PostFormValue("captchaanswer")
+			if postUserCaptcha != postRealCaptcha {
+				sendError(rw, 401, "Incorrect captcha.")
+				return
+			}
+		}
+	}
 	postTitle := req.PostFormValue("title")
 	postNickname := req.PostFormValue("nickname")
 	postContent := strings.TrimSpace(req.PostFormValue("text"))
@@ -70,6 +87,23 @@ func apiNewThread(rw http.ResponseWriter, req *http.Request) {
 // to save the tripcode for further use.
 // POST params: text, [nickname]
 func apiReply(rw http.ResponseWriter, req *http.Request) {
+	// check if this IP is blacklisted
+	if isBanned, banReason, blAction := checkBlacklist(req); isBanned {
+		switch blAction {
+		case "ban":
+			sendError(rw, 423, banReason)
+			return
+		case "captcha":
+			// require captcha parameter
+			postUserCaptcha := strings.Replace(req.PostFormValue("captcha"), " ", "", -1)
+			postUserCaptcha = strings.ToLower(postUserCaptcha)
+			postRealCaptcha := req.PostFormValue("captchaanswer")
+			if postUserCaptcha != postRealCaptcha {
+				sendError(rw, 401, "Incorrect captcha.")
+				return
+			}
+		}
+	}
 	vars := mux.Vars(req)
 	threadUrl := vars["thread"]
 	thread, err := db.GetThread(threadUrl)
