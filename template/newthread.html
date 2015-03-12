@@ -23,6 +23,12 @@
         </div>
 
         <textarea class="full small" name="text" required placeholder="Thread text (BBCode / Markdown)"></textarea>
+        {{#Data}}{{#Captcha}}
+        <span style="display: inline-block; margin: 5px">Enter the name of this pony: </span>
+        <img src="{{ImgPath}}" height="250px" alt="captcha" title="Is this your best pony too?"/>
+        <input class="full verysmall" name="captcha" type="text" placeholder="Who is that pony?"/>
+        <input name="captchaanswer" type="hidden" value="{{Name}}"/>
+        {{/Captcha}}{{/Data}}
         <center>
             <div class="chars-count" data-maxlen="{{#Info}}{{MaxPostLength}}{{/Info}}"></div>
             <input type="submit" value="Create thread" />
