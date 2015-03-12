@@ -13,8 +13,9 @@ type AdminConfig struct {
 }
 
 type CaptchaData struct {
-	ImgPath string
-	Name    string
+	ImgPath  string
+	Question string
+	Answer   string
 }
 
 type Counter struct {

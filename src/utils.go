@@ -7,7 +7,6 @@ import (
 	"encoding/base64"
 	"encoding/binary"
 	"errors"
-	"io/ioutil"
 	mathrand "math/rand"
 	"net/http"
 	"net/url"
@@ -272,15 +271,8 @@ func retreiveThreads(n, offset int, hThreads, hTags []string) ([]ThreadInfo, err
 }
 
 func randomCaptcha() (CaptchaData, error) {
-	files, err := ioutil.ReadDir(maudRoot + "/static/images/captcha/")
-	if err != nil {
-		return CaptchaData{}, err
+	if len(captchas) < 1 {
+		return CaptchaData{}, errors.New("Sorry, captchas weren't configured properly.")
 	}
-	img := files[mathrand.Intn(len(files))]
-	name := img.Name()
-	name = name[0:strings.LastIndex(name, ".")]
-	return CaptchaData{
-		ImgPath: "/static/images/captcha/" + img.Name(),
-		Name:    name,
-	}, nil
+	return captchas[mathrand.Intn(len(captchas))], nil
 }

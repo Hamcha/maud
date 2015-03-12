@@ -91,12 +91,12 @@
             <a onclick="quoteText(this)">&gt;</a>
         </div>
         <textarea class="full verysmall" name="text" required placeholder="Post content (Markdown, HTML and BBCode are supported)"></textarea>
-        {{#Captcha}}
-        <span style="display: inline-block; margin: 5px">Enter the name of this pony: </span>
-        <img src="{{ImgPath}}" height="250px" alt="captcha" title="Is this your best pony too?"/>
-        <input class="full verysmall" name="captcha" type="text" placeholder="Who is that pony?"/>
-        <input name="captchaanswer" type="hidden" value="{{Name}}"/>
-        {{/Captcha}}
+        {{#NeedsCaptcha}}{{#Captcha}}
+        <span style="display: inline-block; margin: 5px">{{Question}}&nbsp;</span>
+        <img src="{{ImgPath}}" height="250px" alt="captcha"/>
+        <input class="full verysmall" name="captcha" type="text" placeholder="{{Question}}"/>
+        <input name="captchaanswer" type="hidden" value="{{Answer}}"/>
+        {{/Captcha}}{{/NeedsCaptcha}}
         <div>
             <center>
                 <div class="chars-count" data-maxlen="{{#Info}}{{MaxPostLength}}{{/Info}}"></div>
