@@ -20,9 +20,10 @@ type Blacklist struct {
 }
 
 var blacklists map[string]Blacklist
+var captchas []CaptchaData
 
 func initBL() {
-	// Load Site info file
+	// Load Blacklist conf
 	rawconf, err := ioutil.ReadFile(maudRoot + "/blacklist.conf")
 	if err != nil {
 		log.Printf("[ WARNING ] %s/blacklist.conf not found. BL not initialized.\n", maudRoot)
@@ -37,6 +38,16 @@ func initBL() {
 		item.IPRegexp = regexp.MustCompile(blacklists[i].IP)
 		item.UARegexp = regexp.MustCompile(blacklists[i].UserAgent)
 		blacklists[i] = item
+	}
+	// Load Captcha conf
+	rawconf, err = ioutil.ReadFile(maudRoot + "/captcha.conf")
+	if err != nil {
+		log.Printf("[ WARNING %s/captcha.conf not found. Captchas not initialized.\n", maudRoot)
+		return
+	}
+	err = json.Unmarshal(rawconf, &captchas)
+	if err != nil {
+		panic(err)
 	}
 }
 

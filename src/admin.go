@@ -42,14 +42,18 @@ func wrapAdmin(handler http.HandlerFunc, usePath bool) http.HandlerFunc {
 
 func wrapBlacklist(handler http.HandlerFunc) http.HandlerFunc {
 	return func(rw http.ResponseWriter, req *http.Request) {
-		if isBanned, banReason, blAction := checkBlacklist(req); isBanned && blAction == "ban" {
-			sendError(rw, 423, banReason)
-		} else {
-			if blAction == "captcha" {
+		isBanned, banReason, blAction := checkBlacklist(req)
+		if isBanned {
+			switch blAction {
+			case "ban":
+				sendError(rw, 423, banReason)
+				return
+			case "captcha":
 				req.Header.Add("Captcha-required", "true")
 			}
-			handler(rw, req)
 		}
+		handler(rw, req)
+		req.Header.Del("Captcha-required")
 	}
 }
 
