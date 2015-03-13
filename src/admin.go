@@ -53,7 +53,6 @@ func wrapBlacklist(handler http.HandlerFunc) http.HandlerFunc {
 			}
 		}
 		handler(rw, req)
-		req.Header.Del("Captcha-required")
 	}
 }
 
