@@ -4,6 +4,7 @@ import (
 	"errors"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"html"
 	"net/url"
 	"sort"
 	"strings"
@@ -116,6 +117,7 @@ func (db Database) ReplyThread(thread *Thread, user User, content string) (int, 
 func (db Database) GetThreadList(tag string, limit, offset int, hThreads, hTags []string) (threads []Thread, err error) {
 	var filterByTag bson.M
 	tag, err = url.QueryUnescape(tag)
+	tag = html.UnescapeString(tag)
 	if err != nil {
 		return
 	}

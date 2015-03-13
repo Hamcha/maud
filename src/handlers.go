@@ -4,7 +4,6 @@ import (
 	"../mustache"
 	"fmt"
 	"github.com/gorilla/mux"
-	"html"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
@@ -37,7 +36,7 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 		}
 
 		tagdata[i] = TagData{
-			Name:          html.EscapeString(tags[i].Name),
+			Name:          htmlFullEscape(tags[i].Name),
 			LastUpdate:    tags[i].LastUpdate,
 			StrLastUpdate: strdate(tags[i].LastUpdate),
 			LastThread: ThreadInfo{
@@ -143,7 +142,7 @@ func httpAllTags(rw http.ResponseWriter, req *http.Request) {
 		}
 
 		tagdata[i] = TagData{
-			Name:          html.EscapeString(tags[i].Name),
+			Name:          htmlFullEscape(tags[i].Name),
 			LastUpdate:    tags[i].LastUpdate,
 			StrLastUpdate: strdate(tags[i].LastUpdate),
 			LastThread: ThreadInfo{
@@ -209,7 +208,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 
 	// Escape tags
 	for t := range thread.Tags {
-		thread.Tags[t] = html.EscapeString(thread.Tags[t])
+		thread.Tags[t] = htmlFullEscape(thread.Tags[t])
 	}
 
 	// Parse posts
@@ -335,6 +334,10 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 		}
 		short, isbroken := shortify(content)
 
+		// Escape tags
+		for t := range v.Tags {
+			v.Tags[t] = htmlFullEscape(v.Tags[t])
+		}
 		threadlist[i] = ThreadData{
 			ShortUrl:     v.ShortUrl,
 			Title:        v.Title,
@@ -530,7 +533,7 @@ func httpManageHidden(rw http.ResponseWriter, req *http.Request) {
 		}
 
 		tagdata[i] = TagData{
-			Name:          html.EscapeString(tags[i].Name),
+			Name:          htmlFullEscape(tags[i].Name),
 			LastUpdate:    tags[i].LastUpdate,
 			StrLastUpdate: strdate(tags[i].LastUpdate),
 			LastThread: ThreadInfo{
