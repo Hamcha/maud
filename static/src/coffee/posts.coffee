@@ -124,7 +124,6 @@ cancelForm = (id) ->
 showPreview = (where) ->
 	form = document.getElementById where
 	text = document.querySelector("##{where} textarea[name='text']").value
-	#nick = document.querySelector("##{where} input[name='nickname']").value
 	unless text
 		return if form.firstChild.className == 'errmsg'
 		errmsg = document.createElement 'p'
