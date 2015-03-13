@@ -72,9 +72,9 @@ imgsetup imgbtn for imgbtn in lightimagebtn
 toggle = document.getElementById "tagsearchbtn"
 toggle?.onclick = ->
 	toggle.outerHTML = """
-    <form id="tagsearch-form" class="ac_wrapper" style="display: inline-block" method="POST" action="#{basepath}tagsearch">
-      <input class="ac_input" type="text" name="tags" id="tagsearch" placeholder="Filter by tag" required title="Insert tags (each starting with '#')" autocomplete="off" />
-      <input type="submit" value="Search" />
+    <form id="tagsearch-form" class="ac_wrapper" style="display: inline-block" method="POST" action="#{basepath}tagsearch" onsubmit="this.querySelector('#tagsearch').value = escapeHTML(this.querySelector('#tagsearch').value); return true">
+        <input class="ac_input" type="text" name="tags" id="tagsearch" placeholder="Filter by tag" required title="Insert tags (each starting with '#')" autocomplete="off" />
+        <input type="submit" value="Search" />
     </form>
 	"""
 	box = document.getElementById "tagsearch"

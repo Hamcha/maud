@@ -7,6 +7,7 @@ import (
 	"encoding/base64"
 	"encoding/binary"
 	"errors"
+	"html"
 	mathrand "math/rand"
 	"net/http"
 	"net/url"
@@ -54,6 +55,7 @@ func parseContent(content, ctype string) string {
 }
 
 func parseTags(tags string) []string {
+	// Strip disallowed characters
 	tags = strings.Replace(tags, "&", "", -1)
 	if len(tags) < 1 {
 		return nil
@@ -275,4 +277,9 @@ func randomCaptcha() (CaptchaData, error) {
 		return CaptchaData{}, errors.New("Sorry, captchas weren't configured properly.")
 	}
 	return captchas[mathrand.Intn(len(captchas))], nil
+}
+
+// html.EscapeString does NOT escape slash by itself; this function does.
+func htmlFullEscape(str string) string {
+	return strings.Replace(html.EscapeString(str), "/", "&sol;", -1)
 }
