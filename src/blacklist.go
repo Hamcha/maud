@@ -13,15 +13,17 @@ type Blacklist struct {
 	IP        string
 	UserAgent string
 	Reason    string
+	Action    string // "ban": shows 423, "captcha": asks for captcha on reply/new thread
 
 	IPRegexp *regexp.Regexp
 	UARegexp *regexp.Regexp
 }
 
 var blacklists map[string]Blacklist
+var captchas []CaptchaData
 
 func initBL() {
-	// Load Site info file
+	// Load Blacklist conf
 	rawconf, err := ioutil.ReadFile(maudRoot + "/blacklist.conf")
 	if err != nil {
 		log.Printf("[ WARNING ] %s/blacklist.conf not found. BL not initialized.\n", maudRoot)
@@ -37,9 +39,21 @@ func initBL() {
 		item.UARegexp = regexp.MustCompile(blacklists[i].UserAgent)
 		blacklists[i] = item
 	}
+	// Load Captcha conf
+	rawconf, err = ioutil.ReadFile(maudRoot + "/captcha.conf")
+	if err != nil {
+		log.Printf("[ WARNING %s/captcha.conf not found. Captchas not initialized.\n", maudRoot)
+		return
+	}
+	err = json.Unmarshal(rawconf, &captchas)
+	if err != nil {
+		panic(err)
+	}
 }
 
-func checkBlacklist(req *http.Request) (bool, string) {
+// checkBlacklists finds out if a request comes from a blacklisted IP.
+// Returns (isBanned, banReason, banAction).
+func checkBlacklist(req *http.Request) (bool, string, string) {
 	userAgent := req.UserAgent()
 	var ip string
 	if iphead, ok := req.Header["X-Forwarded-For"]; ok {
@@ -58,9 +72,9 @@ func checkBlacklist(req *http.Request) (bool, string) {
 		}
 
 		if matches {
-			return true, blacklists[i].Reason
+			return true, blacklists[i].Reason, blacklists[i].Action
 		}
 	}
 
-	return false, ""
+	return false, "", ""
 }

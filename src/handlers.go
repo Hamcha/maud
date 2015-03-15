@@ -4,7 +4,6 @@ import (
 	"../mustache"
 	"fmt"
 	"github.com/gorilla/mux"
-	"html"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
@@ -15,9 +14,8 @@ import (
 )
 
 func httpHome(rw http.ResponseWriter, req *http.Request) {
-	// TODO: incorporate this filter into crHidden cookie.
-	filter := filterFromCookie(req)
-	tags, err := db.GetPopularTags(siteInfo.HomeTagsNum, 0, filter)
+	hThreads, hTags := getHiddenElems(req)
+	tags, err := db.GetPopularTags(siteInfo.HomeTagsNum, 0, hTags)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -38,7 +36,7 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 		}
 
 		tagdata[i] = TagData{
-			Name:          html.EscapeString(tags[i].Name),
+			Name:          htmlFullEscape(tags[i].Name),
 			LastUpdate:    tags[i].LastUpdate,
 			StrLastUpdate: strdate(tags[i].LastUpdate),
 			LastThread: ThreadInfo{
@@ -52,7 +50,7 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	tinfos, err := retreiveThreads(siteInfo.HomeThreadsNum, 0, req, filter)
+	tinfos, err := retreiveThreads(siteInfo.HomeThreadsNum, 0, hThreads, hTags)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -84,7 +82,8 @@ func httpAllThreads(rw http.ResponseWriter, req *http.Request) {
 		pageOffset = 0
 	}
 
-	tinfos, err := retreiveThreads(siteInfo.ThreadsPerPage, pageOffset, req, filterFromCookie(req))
+	hThreads, hTags := getHiddenElems(req)
+	tinfos, err := retreiveThreads(siteInfo.ThreadsPerPage, pageOffset, hThreads, hTags)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -122,7 +121,8 @@ func httpAllTags(rw http.ResponseWriter, req *http.Request) {
 		pageOffset = 0
 	}
 
-	tags, err := db.GetPopularTags(siteInfo.TagsPerPage, pageOffset, filterFromCookie(req))
+	_, hTags := getHiddenElems(req)
+	tags, err := db.GetPopularTags(siteInfo.TagsPerPage, pageOffset, hTags)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -142,7 +142,7 @@ func httpAllTags(rw http.ResponseWriter, req *http.Request) {
 		}
 
 		tagdata[i] = TagData{
-			Name:          html.EscapeString(tags[i].Name),
+			Name:          htmlFullEscape(tags[i].Name),
 			LastUpdate:    tags[i].LastUpdate,
 			StrLastUpdate: strdate(tags[i].LastUpdate),
 			LastThread: ThreadInfo{
@@ -172,6 +172,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 	threadUrl := vars["thread"]
 	thread, err := db.GetThread(threadUrl)
 	isAdmin, _ := isAdmin(req)
+	requiresCaptcha := req.Header.Get("Captcha-required") == "true"
 
 	if err != nil {
 		if err.Error() == "not found" {
@@ -207,7 +208,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 
 	// Escape tags
 	for t := range thread.Tags {
-		thread.Tags[t] = html.EscapeString(thread.Tags[t])
+		thread.Tags[t] = htmlFullEscape(thread.Tags[t])
 	}
 
 	// Parse posts
@@ -239,13 +240,23 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		postsInfo = postsInfo[1:]
 	}
 
+	var captchaData CaptchaData
+	if requiresCaptcha {
+		captchaData, err = randomCaptcha()
+		if err != nil {
+			sendError(rw, 500, err.Error())
+			return
+		}
+	}
 	send(rw, req, "thread", thread.Title, struct {
-		Thread     Thread
-		ThreadPost PostInfo
-		Posts      []PostInfo
-		Page       int
-		MaxPages   int
-		HasOP      bool
+		Thread       Thread
+		ThreadPost   PostInfo
+		Posts        []PostInfo
+		Page         int
+		MaxPages     int
+		HasOP        bool
+		NeedsCaptcha bool
+		Captcha      CaptchaData
 	}{
 		thread,
 		threadPost,
@@ -253,6 +264,8 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		pageInt,
 		(postCount + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
 		pageInt == 1,
+		requiresCaptcha,
+		captchaData,
 	})
 }
 
@@ -275,7 +288,8 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 		pageOffset = 0
 	}
 
-	threads, err := db.GetThreadList(tagName, siteInfo.TagResultsPerPage, pageOffset, filterFromCookie(req))
+	hThreads, hTags := getHiddenElems(req)
+	threads, err := db.GetThreadList(tagName, siteInfo.TagResultsPerPage, pageOffset, hThreads, hTags)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -320,6 +334,10 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 		}
 		short, isbroken := shortify(content)
 
+		// Escape tags
+		for t := range v.Tags {
+			v.Tags[t] = htmlFullEscape(v.Tags[t])
+		}
 		threadlist[i] = ThreadData{
 			ShortUrl:     v.ShortUrl,
 			Title:        v.Title,
@@ -374,7 +392,20 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 }
 
 func httpNewThread(rw http.ResponseWriter, req *http.Request) {
-	send(rw, req, "newthread", "New thread", nil)
+	if req.Header.Get("Captcha-required") == "true" {
+		captchaData, err := randomCaptcha()
+		if err != nil {
+			sendError(rw, 500, err.Error())
+			return
+		}
+		send(rw, req, "newthread", "New thread", struct {
+			Captcha CaptchaData
+		}{
+			captchaData,
+		})
+	} else {
+		send(rw, req, "newthread", "New thread", nil)
+	}
 }
 
 func httpStiki(rw http.ResponseWriter, req *http.Request) {
@@ -443,9 +474,10 @@ func httpManageHidden(rw http.ResponseWriter, req *http.Request) {
 		pageOffset = 0
 	}
 
-	hiddenThreads, err := getHiddenElems(req)
+	hThreads, hTags := getHiddenElems(req)
 
-	threads, err := db.GetThreads(hiddenThreads, siteInfo.ThreadsPerPage, pageOffset)
+	// Get hidden threads
+	threads, err := db.GetThreads(hThreads, siteInfo.HomeThreadsNum, pageOffset)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
@@ -479,12 +511,49 @@ func httpManageHidden(rw http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	send(rw, req, "hidden", "Hidden threads", struct {
+	// Get hidden tags
+	tags, err := db.GetTags(hTags, siteInfo.HomeTagsNum, pageOffset)
+	if err != nil {
+		sendError(rw, 500, err.Error())
+		return
+	}
+
+	tagdata := make([]TagData, len(tags))
+
+	for i := range tags {
+		thread, err := db.GetThreadById(tags[i].LastThread)
+		if err != nil {
+			sendError(rw, 500, err.Error())
+			return
+		}
+		count, err := db.PostCount(&thread)
+		if err != nil {
+			sendError(rw, 500, err.Error())
+			return
+		}
+
+		tagdata[i] = TagData{
+			Name:          htmlFullEscape(tags[i].Name),
+			LastUpdate:    tags[i].LastUpdate,
+			StrLastUpdate: strdate(tags[i].LastUpdate),
+			LastThread: ThreadInfo{
+				Thread:      thread,
+				LastMessage: count - 1,
+				Page:        (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
+			},
+		}
+		if tagdata[i].LastThread.Page < 1 {
+			tagdata[i].LastThread.Page = 1
+		}
+	}
+	send(rw, req, "hidden", "Hidden elements", struct {
 		Last        []ThreadInfo
+		Tags        []TagData
 		CurrentPage int
 		More        bool
 	}{
 		tinfos,
+		tagdata,
 		pageInt,
 		len(tinfos) == siteInfo.ThreadsPerPage,
 	})

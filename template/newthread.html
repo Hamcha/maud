@@ -3,7 +3,7 @@
     <form id="reply-form" class="ac_wrapper" method="POST" action="{{BasePath}}new">
         <input class="full small" type="text" name="nickname" placeholder="Nickname#Tripcode (optional)" autofocus />
         <input class="full" type="text" name="title" placeholder="Thread title" required />
-        <input class="full small ac_input" type="text" name="tags" placeholder="Tags (separated by #)" autocomplete="off"/>
+        <input class="full small ac_input" type="text" name="tags" placeholder="Tags (separated by #; '&' is illegal.)" autocomplete="off"/>
 
         <!-- Editor buttons -->
         <div id="editorRight">
@@ -23,10 +23,16 @@
         </div>
 
         <textarea class="full small" name="text" required placeholder="Thread text (BBCode / Markdown)"></textarea>
+        {{#Data}}{{#Captcha}}
+        <span style="display: inline-block; margin: 5px">{{Question}}&nbsp;</span>
+        <img src="{{ImgPath}}" height="250px" alt="captcha"/>
+        <input class="full verysmall" name="captcha" type="text" placeholder="{{Question}}"/>
+        <input name="captchaanswer" type="hidden" value="{{Answer}}"/>
+        {{/Captcha}}{{/Data}}
         <center>
             <div class="chars-count" data-maxlen="{{#Info}}{{MaxPostLength}}{{/Info}}"></div>
             <input type="submit" value="Create thread" />
-            <input type="button" class="button" onclick="showPreview()" value="Preview" />
+            <input type="button" class="button" onclick="showPreview('reply-form')" value="Preview" />
         </center>
     </form>
 </section>

@@ -14,6 +14,23 @@ import (
 // apiNewThread: creates a new thread with its OP.
 // POST params: title, text, [nickname, tags]
 func apiNewThread(rw http.ResponseWriter, req *http.Request) {
+	// check if this IP is blacklisted
+	if isBanned, banReason, blAction := checkBlacklist(req); isBanned {
+		switch blAction {
+		case "ban":
+			sendError(rw, 423, banReason)
+			return
+		case "captcha":
+			// require captcha parameter
+			postUserCaptcha := strings.Replace(req.PostFormValue("captcha"), " ", "", -1)
+			postUserCaptcha = strings.ToLower(postUserCaptcha)
+			postRealCaptcha := req.PostFormValue("captchaanswer")
+			if postUserCaptcha != postRealCaptcha {
+				sendError(rw, 401, "Incorrect captcha.")
+				return
+			}
+		}
+	}
 	postTitle := req.PostFormValue("title")
 	postNickname := req.PostFormValue("nickname")
 	postContent := strings.TrimSpace(req.PostFormValue("text"))
@@ -70,6 +87,23 @@ func apiNewThread(rw http.ResponseWriter, req *http.Request) {
 // to save the tripcode for further use.
 // POST params: text, [nickname]
 func apiReply(rw http.ResponseWriter, req *http.Request) {
+	// check if this IP is blacklisted
+	if isBanned, banReason, blAction := checkBlacklist(req); isBanned {
+		switch blAction {
+		case "ban":
+			sendError(rw, 423, banReason)
+			return
+		case "captcha":
+			// require captcha parameter
+			postUserCaptcha := strings.Replace(req.PostFormValue("captcha"), " ", "", -1)
+			postUserCaptcha = strings.ToLower(postUserCaptcha)
+			postRealCaptcha := req.PostFormValue("captchaanswer")
+			if postUserCaptcha != postRealCaptcha {
+				sendError(rw, 401, "Incorrect captcha.")
+				return
+			}
+		}
+	}
 	vars := mux.Vars(req)
 	threadUrl := vars["thread"]
 	thread, err := db.GetThread(threadUrl)
@@ -208,24 +242,26 @@ func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 	// update tags if post is OP and 'tags' was passed
-	tags := parseTags(req.PostFormValue("tags"))
-	if post.Id == thread.ThreadPost && len(tags) > 0 {
-		oldtags := make(map[string]bool, len(thread.Tags))
-		for _, tag := range thread.Tags {
-			oldtags[tag] = true
-		}
-		err = db.SetThreadTags(thread.Id, tags)
-		for _, tag := range tags {
-			if oldtags[tag] {
-				delete(oldtags, tag)
-				continue // no need to inc/dec tag
+	if post.Id == thread.ThreadPost {
+		tags := parseTags(req.PostFormValue("tags"))
+		if len(tags) > 0 {
+			oldtags := make(map[string]bool, len(thread.Tags))
+			for _, tag := range thread.Tags {
+				oldtags[tag] = true
 			}
-			// increment new tag
-			db.IncTag(tag, thread.Id)
-		}
-		// decrement any tag which was removed
-		for tag := range oldtags {
-			db.DecTag(tag)
+			err = db.SetThreadTags(thread.Id, tags)
+			for _, tag := range tags {
+				if oldtags[tag] {
+					delete(oldtags, tag)
+					continue // no need to inc/dec tag
+				}
+				// increment new tag
+				db.IncTag(tag, thread.Id)
+			}
+			// decrement any tag which was removed
+			for tag := range oldtags {
+				db.DecTag(tag)
+			}
 		}
 	}
 
@@ -264,16 +300,19 @@ func apiDeletePost(rw http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		return
 	}
-	// if post has no tripcode associated, refuse to delete
-	if !isAdmin && len(post.Author.Tripcode) < 1 {
-		sendError(rw, 403, "Forbidden")
-		return
-	}
-	// check tripcode
-	trip := req.PostFormValue("tripcode")
-	if !isAdmin && tripcode(trip) != post.Author.Tripcode {
-		sendError(rw, 401, "Invalid tripcode")
-		return
+
+	if !isAdmin {
+		// if post has no tripcode associated, refuse to delete
+		if len(post.Author.Tripcode) < 1 {
+			sendError(rw, 403, "Forbidden")
+			return
+		}
+		// check tripcode
+		trip := req.PostFormValue("tripcode")
+		if tripcode(trip) != post.Author.Tripcode {
+			sendError(rw, 401, "Invalid tripcode")
+			return
+		}
 	}
 
 	// are we purging or deleting?
@@ -334,6 +373,7 @@ func apiTagSearch(rw http.ResponseWriter, req *http.Request) {
 }
 
 // apiGetRaw: retreive the raw content of a post.
+// Refuse to do so if post is deleted and user is not an admin.
 // POST params: none
 func apiGetRaw(rw http.ResponseWriter, req *http.Request) {
 	isAdmin, _ := isAdmin(req)
@@ -355,7 +395,8 @@ func apiGetRaw(rw http.ResponseWriter, req *http.Request) {
 // POST params: tag
 func apiTagList(rw http.ResponseWriter, req *http.Request) {
 	tag := req.PostFormValue("tag")
-	tags, err := db.GetMatchingTags(tag, 0, 0, filterFromCookie(req))
+	_, hTags := getHiddenElems(req)
+	tags, err := db.GetMatchingTags(tag, 0, 0, hTags)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return

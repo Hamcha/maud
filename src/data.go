@@ -12,6 +12,12 @@ type AdminConfig struct {
 	Admins       map[string]string
 }
 
+type CaptchaData struct {
+	ImgPath  string
+	Question string
+	Answer   string
+}
+
 type Counter struct {
 	Name string
 	Seq  int64
