@@ -65,6 +65,10 @@ func parseTags(tags string) []string {
 	for i := range list {
 		// Spaces begone
 		list[i] = strings.ToLower(strings.TrimSpace(list[i]))
+		// limit tag length
+		if len(list[i]) > 31 {
+			list[i] = list[i][0:31]
+		}
 	}
 	list = removeDuplicates(list)
 	return list
