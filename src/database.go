@@ -366,10 +366,10 @@ func (db Database) PurgePost(post Post) (error, bool) {
 	if err != nil {
 		return err, false
 	}
+	if thread.ThreadPost == post.Id {
+		return db.PurgeThread(&thread), true
+	}
 	if thread.LastReply == post.Id {
-		if thread.ThreadPost == post.Id {
-			return db.PurgeThread(&thread), true
-		}
 		// Get the new last post
 		posts, err := db.GetPosts(&thread, 1, int(thread.Messages)-2)
 		if err != nil {
