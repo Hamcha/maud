@@ -56,10 +56,23 @@ func (b *BBCodeFormatter) Init() {
 		if idx > 0 {
 			con = con[idx+3:]
 		}
-		return "<iframe width=\"560\" height=\"315\" src=\"//www.youtube.com/embed/" + url.QueryEscape(con) + "\" frameborder=\"0\" allowfullscreen></iframe>"
+		return `<iframe width="560" height="315" src="//www.youtube.com/embed/` + url.QueryEscape(con) + `" frameborder="0" allowfullscreen></iframe>`
 	}
 	b.bbElements["html"] = func(_, con string) string {
 		return strings.Replace(con, "\n", "", -1)
+	}
+	b.bbElements["video"] = func(_, con string) string {
+		idx := strings.LastIndex(con, ".")
+		ext := con[idx+1:]
+		switch ext {
+		case "webm":
+			return `<video height="315" src="` + con + `" controls>[Your browser is unable to play this video]</video>`
+		case "ogg": fallthrough
+		case "ogv": fallthrough
+		case "mp4":
+			return `<video height="315" controls><source src="` + con + `" type="video/` + ext + `"/>[Your browser is unable to play this video]</video`
+		}
+		return "<gray>Unsupported video type: " + ext + "</gray>"
 	}
 }
 
