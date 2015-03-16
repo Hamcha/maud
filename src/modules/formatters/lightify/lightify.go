@@ -16,17 +16,18 @@ type LightifyFormatter struct {
 	imgRgx    *regexp.Regexp
 	derpiRgx  *regexp.Regexp
 	iframeRgx *regexp.Regexp
+	videoRgx  *regexp.Regexp
 }
 
 func (f *LightifyFormatter) Init() {
 	f.imgRgx = regexp.MustCompile(`(?:<a [^>]+>)?<img .*src=("[^"]+"|'[^']+'|[^'"][^\s]+).*>(?:</a>)?`)
 	f.derpiRgx = regexp.MustCompile(`(?:img[0-9]\.)?derpicdn\.net`)
 	f.iframeRgx = regexp.MustCompile(`<iframe .*src=("[^"]+"|'[^']+'|[^'"][^\s]+).*>`)
+	f.videoRgx = regexp.MustCompile(`<video .*src=("[^"]+"|'[^']+'|[^'"][^\s]+).*</video>`)
 }
 
-// Lightify takes a string containing HTML and converts embedded images and iframes
-// to hyperlink to those resources. Images from Imgur or Derpibooru get converted
-// into thumbnails linking to the full size resource.
+// Format thumbnailifies all images from Imgur or Derpibooru
+// and returns the other content unaltered
 func (f *LightifyFormatter) Format(content string) string {
 	for _, match := range f.imgRgx.FindAllStringSubmatch(content, -1) {
 		url := match[1]
@@ -41,7 +42,8 @@ func (f *LightifyFormatter) Format(content string) string {
 	return content
 }
 
-// ReplaceTags replaces all <img> and <iframe> tags with hyperlinks to those resources.
+// ReplaceTags replaces all <img> and <iframe> tags (except for thumbnails)
+// with clickable links to get those resources.
 func (f *LightifyFormatter) ReplaceTags(data modules.PostMutatorData) {
 	content := *data.Content
 	for _, match := range f.imgRgx.FindAllStringSubmatch(content, -1) {
@@ -57,6 +59,7 @@ func (f *LightifyFormatter) ReplaceTags(data modules.PostMutatorData) {
 		}
 	}
 	*data.Content = f.iframeRgx.ReplaceAllString(content, "<a target=\"_blank\" href=$1>[Click to open embedded content]</a>")
+	*data.Content = f.videoRgx.ReplaceAllString(content, "<a target=\"_blank\" href=$1>[Click to open embedded video]</a>")
 }
 
 //// Unexported ////

@@ -66,11 +66,13 @@ func (b *BBCodeFormatter) Init() {
 		ext := con[idx+1:]
 		switch ext {
 		case "webm":
-			return `<video height="315" src="` + con + `" controls>[Your browser is unable to play this video]</video>`
-		case "ogg": fallthrough
-		case "ogv": fallthrough
+			return `<video height="250px" src="` + con + `" controls>[Your browser is unable to play this video]</video>`
+		case "ogg":
+			fallthrough
+		case "ogv":
+			fallthrough
 		case "mp4":
-			return `<video height="315" controls><source src="` + con + `" type="video/` + ext + `"/>[Your browser is unable to play this video]</video`
+			return `<video height="250px" controls><source src="` + con + `" type="video/` + ext + `"/>[Your browser is unable to play this video]</video>`
 		}
 		return "<gray>Unsupported video type: " + ext + "</gray>"
 	}

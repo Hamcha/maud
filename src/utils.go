@@ -172,7 +172,7 @@ func postTooLong(content string) bool {
 }
 
 func isLightVersion(req *http.Request) bool {
-	return len(siteInfo.LightVersionDomain) > 0 && req.Host == siteInfo.LightVersionDomain
+	return true //len(siteInfo.LightVersionDomain) > 0 && req.Host == siteInfo.LightVersionDomain
 }
 
 func index(str string, offset int, del uint8) int {
