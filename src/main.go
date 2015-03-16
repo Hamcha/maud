@@ -20,7 +20,7 @@ var db Database
 var maudRoot string
 
 func setupHandlers(router *mux.Router, isAdmin, isSubdir bool) {
-	GET := router.Methods("GET").Subrouter()
+	GET := router.Methods("GET", "HEAD").Subrouter()
 	POST := router.Methods("POST").Subrouter()
 
 	SetHandler(GET, "/", httpHome, isAdmin, isSubdir)
