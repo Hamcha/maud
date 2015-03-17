@@ -384,10 +384,12 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 		ThreadList  []ThreadData
 		CurrentPage int
 		More        bool
+		Empty       bool
 	}{
 		threadlist,
 		pageInt,
 		len(threadlist) == siteInfo.TagResultsPerPage,
+		len(threadlist) == 0,
 	})
 }
 
@@ -428,10 +430,12 @@ func httpTextSearch(rw http.ResponseWriter, req *http.Request) {
 		Posts       []PostSearchInfo
 		CurrentPage int
 		More        bool
+		Empty       bool
 	}{
 		posts,
 		pageInt,
 		len(posts) == siteInfo.TagResultsPerPage,
+		len(posts) == 0,
 	})
 }
 

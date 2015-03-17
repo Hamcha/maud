@@ -468,14 +468,20 @@ func (db Database) GetMatchingTags(word string, limit, offset int, filter []stri
 // Search returns a list of thread/posts pairs that match a given text query
 // It also takes into account the user's hiding preferences
 func (db Database) Search(text string, limit, offset int, threadFilters []string, tagFilters []string) ([]PostSearchInfo, error) {
-	matching := bson.M{"$text": bson.M{"$search": text}}
+	conditions := make([]bson.M, 2)
+	conditions[0] = bson.M{"$text": bson.M{"$search": text}}
+	conditions[1] = bson.M{"$or": []bson.M{
+		bson.M{"contenttype": bson.M{"$ne": "deleted"}},
+		bson.M{"contenttype": bson.M{"$ne": "admin-deleted"}},
+	}}
+
 	if len(threadFilters) > 0 {
 		//todo filter thread
 	}
 	if len(tagFilters) > 0 {
 		//todo filter tags
 	}
-	query := db.database.C("posts").Find(matching).Sort("-date")
+	query := db.database.C("posts").Find(bson.M{"$and": conditions}).Sort("-date")
 	if offset > 0 {
 		query = query.Skip(offset)
 	}

@@ -5,11 +5,15 @@
     <a href="{{BasePath}}stiki" class="button">Stiki</a>
     <a href="{{BasePath}}hidden" class="button">Hidden</a>
 </nav>
+<hr />
 {{#Data}}
+{{#Empty}}
+<section><center><h1>... nothing, really.</h1></center></section>
+{{/Empty}}
+{{^Empty}}
 <div class="pages" data-current="{{CurrentPage}}" data-max="nomax" data-more="{{#More}}yes{{/More}}{{^More}}no{{/More}}"></div>
 {{#Posts}}
 {{#Thread}}
-<hr />
 <article class="home-thread">
     <h2 class="thread-title"><a href="{{BasePath}}thread/{{ShortUrl}}" class="noborder">{{Title}}</a></h2>
 </article>
@@ -29,5 +33,5 @@
 </article>
 {{/Post}}
 {{/Posts}}
-<div class="pages" data-current="{{CurrentPage}}" data-max="nomax" data-more="{{#More}}yes{{/More}}{{^More}}no{{/More}}"></div>
+<div class="pages" data-current="{{CurrentPage}}" data-max="nomax" data-more="{{#More}}yes{{/More}}{{^More}}no{{/More}}"></div>{{/Empty}}
 {{/Data}}
