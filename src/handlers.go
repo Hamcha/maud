@@ -401,7 +401,7 @@ func httpTextSearch(rw http.ResponseWriter, req *http.Request) {
 	var pageInt int
 	var pageOffset int
 	var err error
-	if page, ok := req.PostFormValue("page"); ok {
+	if page := req.PostFormValue("page"); len(page) > 0 {
 		pageInt, err = strconv.Atoi(page)
 		if err != nil {
 			sendError(rw, 400, "Invalid page number")
@@ -413,20 +413,19 @@ func httpTextSearch(rw http.ResponseWriter, req *http.Request) {
 		pageOffset = 0
 	}
 
-	basepath := "/"
-	if ok, val := isAdmin(req); ok {
-		basepath = val.BasePath
-	}
-
 	hThreads, hTags := getHiddenElems(req)
-	posts, err := db.Search(text, siteInfo.TagResultsPerPage, offset, hThreads, hTags)
+	posts, err := db.Search(text, siteInfo.TagResultsPerPage, pageOffset, hThreads, hTags)
 	if err != nil {
 		sendError(rw, 500, err.Error())
 		return
 	}
 
+	for i := range posts {
+		posts[i].Post.Content = parseContent(posts[i].Post.Content, posts[i].Post.ContentType)
+	}
+
 	send(rw, req, "textsearch", "Posts containing \""+text+"\"", struct {
-		PostList    []PostSearchInfo
+		Posts       []PostSearchInfo
 		CurrentPage int
 		More        bool
 	}{

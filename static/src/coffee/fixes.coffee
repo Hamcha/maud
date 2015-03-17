@@ -84,7 +84,7 @@ toggle?.onclick = ->
 fulltext = document.getElementById "fulltextbtn"
 fulltext?.onclick = () ->
 	fulltext.outerHTML = """
-    <form style="display: inline-block" method="POST" action="#{basepath}textsearch">
+    <form style="display: inline-block" method="POST" action="#{basepath}search">
       <input type="text" name="text" id="textsearch" placeholder="Search terms here" required title="Insert your search query here" />
       <input type="submit" value="Search" />
     </form>
