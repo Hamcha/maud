@@ -398,16 +398,31 @@ func httpTextSearch(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	var pageInt int
+	var pageOffset int
+	var err error
+	if page, ok := req.PostFormValue("page"); ok {
+		pageInt, err = strconv.Atoi(page)
+		if err != nil {
+			sendError(rw, 400, "Invalid page number")
+			return
+		}
+		pageOffset = (pageInt - 1) * siteInfo.TagResultsPerPage
+	} else {
+		pageInt = 1
+		pageOffset = 0
+	}
+
 	basepath := "/"
 	if ok, val := isAdmin(req); ok {
 		basepath = val.BasePath
 	}
 
-	posts := db.Search(text, filterFromCookie(req))
-
-	type PostSearchInfo struct {
-		Post   Post
-		Thread Thread
+	hThreads, hTags := getHiddenElems(req)
+	posts, err := db.Search(text, siteInfo.TagResultsPerPage, offset, hThreads, hTags)
+	if err != nil {
+		sendError(rw, 500, err.Error())
+		return
 	}
 
 	send(rw, req, "textsearch", "Posts containing \""+text+"\"", struct {
@@ -415,9 +430,9 @@ func httpTextSearch(rw http.ResponseWriter, req *http.Request) {
 		CurrentPage int
 		More        bool
 	}{
-		threadlist,
+		posts,
 		pageInt,
-		len(threadlist) == siteInfo.TagResultsPerPage,
+		len(posts) == siteInfo.TagResultsPerPage,
 	})
 }
 

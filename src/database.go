@@ -464,3 +464,9 @@ func (db Database) GetMatchingTags(word string, limit, offset int, filter []stri
 	err := query.All(&tags)
 	return tags, err
 }
+
+// Search returns a list of thread/posts pairs that match a given text query
+// It also takes into account the user's hiding preferences
+func (db Database) Search(text string, limit, offset int, threadFilters []string, tagFilters []string) ([]PostSearchInfo, error) {
+	return [], errors.New("Not implemented")
+}

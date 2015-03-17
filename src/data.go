@@ -100,3 +100,8 @@ type User struct {
 	Tripcode       string
 	HiddenTripcode bool
 }
+
+type PostSearchInfo struct {
+	Post   Post
+	Thread Thread
+}
