@@ -42,7 +42,7 @@ func (b *BBCodeFormatter) Init() {
 		if !strings.HasPrefix(par, "http://") && !strings.HasPrefix(par, "https://") {
 			par = "http://" + par
 		}
-		idx := strings.IndexRune(con, '?')
+		idx := strings.IndexRune(par, '?')
 		if idx > 0 {
 			par = par[0:idx] + queryescape(par[idx:])
 		}
