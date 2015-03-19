@@ -21,7 +21,7 @@ else
 		date = thread.querySelector('span.date').dataset.udate
 		# compare with locally saved date, if any
 		surl = thread.querySelector('a').pathname.split('/')[2]
-		lview = window.localStorage.getItem("lview_#{surl}")
+		lview = window.localStorage.getItem "lview_#{surl}"
 		if lview? and lview == date
 			# no updates since latest visit
 			thread.querySelector('.thread-name').style.opacity = 0.7
