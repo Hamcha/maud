@@ -1,6 +1,6 @@
 return unless window.localStorage?
 
-if window.location.pathname[1...7] == 'thread'
+if window.location.pathname[1...8] == 'thread/'
 	# When a thread is visited, save the latest post date is localStorage.
 	# First, ensure this is the last page of the thread. If not, don't
 	# mark this thread as 'visited', since latest replies are not being
@@ -9,6 +9,9 @@ if window.location.pathname[1...7] == 'thread'
 	return unless pages.dataset.current == pages.dataset.max
 	# grab latest post
 	posts = document.getElementById('replies').querySelectorAll 'article.post'
+	# if no replies, pick op
+	if posts.length < 1
+		posts = [document.getElementById('thread')]
 	latest = posts[posts.length-1]
 	date = latest.querySelector('a.date').dataset.udate
 	if date?
