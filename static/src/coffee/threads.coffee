@@ -27,4 +27,4 @@ else
 		lview = window.localStorage.getItem "lview_#{surl}"
 		if lview? and lview == date
 			# no updates since latest visit
-			thread.querySelector('.thread-name').style.opacity = 0.7
+			thread.style.opacity = 0.7
