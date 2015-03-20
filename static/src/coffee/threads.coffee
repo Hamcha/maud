@@ -4,27 +4,36 @@ if window.location.pathname[1...8] == 'thread/'
 	# When a thread is visited, save the latest post date is localStorage.
 	# First, ensure this is the last page of the thread. If not, don't
 	# mark this thread as 'visited', since latest replies are not being
-	# actually seen.
+	# actually seen. Also save number of replies, and make the thread link
+	# point to the latest read post instead of last one.
 	pages = document.querySelector 'div.pages'
 	return unless pages.dataset.current == pages.dataset.max
 	# grab latest post
 	posts = document.getElementById('replies').querySelectorAll 'article.post'
+	nreplies = posts.length
 	# if no replies, pick op
 	if posts.length < 1
-		posts = [document.getElementById('thread')]
+		posts = [document.getElementById 'thread']
+		nreplies = 0
 	latest = posts[posts.length-1]
 	date = latest.querySelector('a.date').dataset.udate
 	if date?
 		surl = window.location.pathname.split('/')[2]
-		window.localStorage.setItem "lview_#{surl}", date
+		window.localStorage.setItem "lview_#{surl}", "#{date}##{nreplies}"
 else
 	# In home: for each thread, check if already viewed or not
-	window.fromList(document.querySelectorAll 'article.thread').map (thread) ->
+	window.fromList(document.querySelectorAll 'article.thread-item').map (thread) ->
 		# get last-modified date
 		date = thread.querySelector('span.date').dataset.udate
 		# compare with locally saved date, if any
-		surl = thread.querySelector('a').pathname.split('/')[2]
-		lview = window.localStorage.getItem "lview_#{surl}"
+		lreplyAnchor = thread.querySelector 'a.last-reply'
+		surl = lreplyAnchor.pathname.split('/')[2]
+		item = window.localStorage.getItem "lview_#{surl}"
+		return unless item?
+		[lview, lpost] = item.split '#'
 		if lview? and lview == date
 			# no updates since latest visit
-			thread.style.opacity = 0.7
+			thread.className += " seen"
+		else if lpost?
+			# make the last reply link to point to the latest seen post
+			lreplyAnchor.hash = if lpost is 0 then "#thread" else "#p#{lpost}"
