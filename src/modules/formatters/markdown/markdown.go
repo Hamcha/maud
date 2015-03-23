@@ -31,7 +31,7 @@ type MarkdownFormatter struct {
 func (m *MarkdownFormatter) Init() {
 	m.mdElements = map[*regexp.Regexp]func(*regexp.Regexp, string) string{
 		regexp.MustCompile(`(?U)(^|\\\\|[^\\])\*\*(.*[^\\])\*\*`):   mdConvertTag("b"),
-		regexp.MustCompile(`(?U)(^|\\\\|[^\\])\*(.*[^\\])\*`):       mdConvertTag("i"),
+		regexp.MustCompile(`(?U)(^|\\\\|[^\\\*])\*(.*[^\\])\*`):     mdConvertTag("i"),
 		regexp.MustCompile(`(?U)(^|\\\\|[^\\])!\[(.*)\]\((.*)\)`):   mdConvertImg,
 		regexp.MustCompile(`(?U)(^|\\\\|[^\\!])\[(.*)\]\((.*)\)`):   mdConvertTagParam("a", "href"),
 		regexp.MustCompile("(?U)(^|\\\\\\\\|[^\\\\])`(.*[^\\\\])`"): mdConvertTag("code"),
