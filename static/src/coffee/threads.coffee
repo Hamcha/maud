@@ -1,5 +1,15 @@
 return unless window.localStorage?
 
+window.Threads =
+	markAllRead: ->
+		window.fromList(document.querySelectorAll 'article.thread-item').map (thread) ->
+			date = thread.querySelector('span.date').dataset.udate
+			lreplyAnchor = thread.querySelector 'a.last-reply'
+			[surl, _, lpage] = lreplyAnchor.pathname.split('/')[2..4]
+			lpost = lreplyAnchor.hash
+			lpage = '1' unless lpage?
+			window.localStorage.setItem "lview_#{surl}", "#{date}##{lpost}##{lpage}"
+
 return unless SiteOptions.dehighlight or SiteOptions.jumptolastread
 
 if window.location.pathname[1...8] == 'thread/'
