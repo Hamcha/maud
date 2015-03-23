@@ -4,69 +4,69 @@
 
 /* General Template */
 body {
-    background: url(../images/bg.png) #333;
-    font-family: "Source Sans Pro", sans-serif; font-weight: 300;
-    color: #fff; margin: 0; padding: 0;
+	background: url(../images/bg.png) #333;
+	font-family: "Source Sans Pro", sans-serif; font-weight: 300;
+	color: #fff; margin: 0; padding: 0;
 }
 
 header, footer, h1, h2, h3, h4 { font-family: "Raleway", sans-serif; }
 
 #container {
-    text-align: left;
-    width: 98%;
-    max-width: 650px;
-    margin: 0 auto;
+	text-align: left;
+	width: 98%;
+	max-width: 650px;
+	margin: 0 auto;
 }
 
 nav, section, article {
-    background: rgba(0,0,0,0.5);
-    padding: 5px; margin: 2px 0;
+	background: rgba(0,0,0,0.5);
+	padding: 5px; margin: 2px 0;
 }
 
 header {
-    background: #000;
-    font-size: 2em;
-    height: 150px;
-    background-color: #000, #000;
-    background-image: url(/static/images/headerbg.png), url(/static/images/maud.gif);
-    background-repeat: no-repeat;
-    background-position: left, right;
+	background: #000;
+	font-size: 2em;
+	height: 150px;
+	background-color: #000, #000;
+	background-image: url(/static/images/headerbg.png), url(/static/images/maud.gif);
+	background-repeat: no-repeat;
+	background-position: left, right;
 
-    a[href], a[href]:visited {
-        color: #fff; border: 0;
-        font-weight: 200;
-    }
+	a[href], a[href]:visited {
+		color: #fff; border: 0;
+		font-weight: 200;
+	}
 }
 
 nav.upper {
-    display: block;
-    padding: 0; font-size: 0.9em;
-    background: none; margin-top: 5px;
-    a[href], a[href]:visited {
-        background: rgba(0,0,0,0.5);
-        display: inline-block;
-        color: #fff; border: 0; text-transform: uppercase;
-        padding: 3px; font-weight: 300;
-        @include transition-property(all);
-        @include transition-duration(0.2s);
-        &:hover {
-            background-color: #fff;
-            color: #000;
-        }
-    }
+	display: block;
+	padding: 0; font-size: 0.9em;
+	background: none; margin-top: 5px;
+	a[href], a[href]:visited {
+		background: rgba(0,0,0,0.5);
+		display: inline-block;
+		color: #fff; border: 0; text-transform: uppercase;
+		padding: 3px; font-weight: 300;
+		@include transition-property(all);
+		@include transition-duration(0.2s);
+		&:hover {
+			background-color: #fff;
+			color: #000;
+		}
+	}
 }
 
 img.head { width: 100%; max-width: 410px; margin-top: 10px; }
 
 footer {
-    margin: 10px;
-    text-align: center;
-    font-size: 0.85rem;
+	margin: 10px;
+	text-align: center;
+	font-size: 0.85rem;
 }
 
 hr {
-    background: transparent;
-    padding: 3px; margin: 2px 0; border: 0;
+	background: transparent;
+	padding: 3px; margin: 2px 0; border: 0;
 }
 
 ol { margin: 0; }
@@ -78,18 +78,18 @@ a[href].noborder { border: 0 };
 button, input[type="submit"], input[type="button"],
 a.button, a.button:visited, a.article, a.article:visited,
 a[href].button, a[href].button:visited {
-    font-family: "Source Sans Pro", sans-serif;
-    text-decoration: none; background-color: transparent;
-    border: 1px solid #ccc; color: #fff;
-    padding: 3px 5px; margin: 0; margin-right: 3px;
-    display: inline-block; cursor: pointer;
-    font-size: 1.2em; font-weight: 300;
-    @include transition-property(all);
-    @include transition-duration(0.2s);
-    &:hover {
-        background-color: #fff;
-        color: #000;
-    }
+	font-family: "Source Sans Pro", sans-serif;
+	text-decoration: none; background-color: transparent;
+	border: 1px solid #ccc; color: #fff;
+	padding: 3px 5px; margin: 0; margin-right: 3px;
+	display: inline-block; cursor: pointer;
+	font-size: 1.2em; font-weight: 300;
+	@include transition-property(all);
+	@include transition-duration(0.2s);
+	&:hover {
+		background-color: #fff;
+		color: #000;
+	}
 }
 
 a[href].article, a[href].article:visited {
@@ -105,24 +105,24 @@ a[href].article, a[href].article:visited {
 }
 
 a[href], a[href]:visited {
-    color: #fff; text-decoration: none; border-bottom: 1px dotted #ccc;
+	color: #fff; text-decoration: none; border-bottom: 1px dotted #ccc;
 }
 
 .pages {
-    text-align: center;
-    padding: 0.5em;
+	text-align: center;
+	padding: 0.5em;
 
-    b {
-        display: inline-block;
-        padding: 0px 5px;
-    }
+	b {
+		display: inline-block;
+		padding: 0px 5px;
+	}
 
-    a, a:visited {
-        display: inline-block;
-        padding: 0px 5px;
-        border: 1px solid #aaa;
-        &:hover { border-color: #ccc; }
-    }
+	a, a:visited {
+		display: inline-block;
+		padding: 0px 5px;
+		border: 1px solid #aaa;
+		&:hover { border-color: #ccc; }
+	}
 }
 
 
@@ -131,65 +131,65 @@ a.nolink { border: 0; }
 /* Tag search */
 
 #tagsearch {
-    font-size: 1.2em;
-    background: transparent;
-    border: 1px solid #aaa;
-    font-weight: 300;
-    padding: 3px 5px;
-    margin: 0;
-    font-family: "Source Sans Pro", sans-serif;
-    color: #fff;
-    &:focus {
-        border-color: #fff;
-        background-color: rgba(255,255,255,0.3);
-        outline: none;
-    }
+	font-size: 1.2em;
+	background: transparent;
+	border: 1px solid #aaa;
+	font-weight: 300;
+	padding: 3px 5px;
+	margin: 0;
+	font-family: "Source Sans Pro", sans-serif;
+	color: #fff;
+	&:focus {
+		border-color: #fff;
+		background-color: rgba(255,255,255,0.3);
+		outline: none;
+	}
 }
 
 .home-thread, .thread { padding: 5px 5px; }
 
 .hidden {
-    padding: 3px 5px;
-    font-size: 0.9em;
+	padding: 3px 5px;
+	font-size: 0.9em;
 }
 .hidden-link {
-    opacity: 0.8;
-    cursor: pointer;
-    &:hover { opacity: 1; }
+	opacity: 0.8;
+	cursor: pointer;
+	&:hover { opacity: 1; }
 }
 
 .last-update {
-    font-family: "Raleway", sans-serif;
-    font-size: 0.9em;
-    font-weight: 200;
+	font-family: "Raleway", sans-serif;
+	font-size: 0.9em;
+	font-weight: 200;
 }
 
 /* Thread view */
 
 .post, .thread {
-    position: relative;
+	position: relative;
 }
 
 .right {
-    position: absolute; right: 0; top: 0;
-    text-align: right;  padding: 0.5em;
+	position: absolute; right: 0; top: 0;
+	text-align: right;  padding: 0.5em;
 
-    .edit, .delete {
-        opacity: 0.5;
-        @include transition-property(all);
-        @include transition-duration(0.2s);
-        &:hover { opacity: 1; }
-    }
+	.edit, .delete {
+		opacity: 0.5;
+		@include transition-property(all);
+		@include transition-duration(0.2s);
+		&:hover { opacity: 1; }
+	}
 }
 
 .thread-title {
-    margin: 5px; padding: 0;
-    font-weight: 400;
+	margin: 5px; padding: 0;
+	font-weight: 400;
 }
 .thread-author, .post-author {
-    margin: 0; padding: 5px; padding-top: 0;
-    font-weight: 400;
-    font-size: 0.9rem;
+	margin: 0; padding: 5px; padding-top: 0;
+	font-weight: 400;
+	font-size: 0.9rem;
 }
 
 article.post-selected { background-color: rgba(0,0,0,.7); }
@@ -209,7 +209,7 @@ h2 { font-size: 1.3em; margin: 0; padding: 0; }
 .thread-content, .post-content { margin: 5px; padding: 0; color: #eee; }
 
 .anon {
-    font-weight: normal; color: #ccc;
+	font-weight: normal; color: #ccc;
 }
 
 .thread-content img, .post-content img, iframe { max-width: 100%; max-height: 320px; }
@@ -218,19 +218,19 @@ h2 { font-size: 1.3em; margin: 0; padding: 0; }
 
 .type blockquote { margin: 0; padding: 0; }
 .type blockquote p, .purpletext,{
-    color: #cae;
+	color: #cae;
 }
 a[href].postIdQuote, a[href].postIdQuote:visited {
-    color: #c8f;
-    border: 0;
+	color: #c8f;
+	border: 0;
 }
 a[href].postIdQuote:hover {
-    color: #fcf;
+	color: #fcf;
 }
 
 span.spoiler, span.spoiler a[href], span.spoiler a[href]:visited {
-    background-color: #555; color: #555;
-    &:hover { color: inherit; background-color: inherit; }
+	background-color: #555; color: #555;
+	&:hover { color: inherit; background-color: inherit; }
 }
 
 #post-preview {
@@ -245,13 +245,13 @@ span.spoiler, span.spoiler a[href], span.spoiler a[href]:visited {
 }
 
 a.toggleImage, a.toggleIframe {
-    cursor: pointer;
-    border-bottom: 1px dotted #ccc;
+	cursor: pointer;
+	border-bottom: 1px dotted #ccc;
 }
 
 /* Homepage */
 
-.tag-item, .thread-item { 
+.tag-item, .thread-item {
 	font-size: 0.9em;
 	padding: 10px;
 	&.seen {
@@ -264,16 +264,16 @@ a.toggleImage, a.toggleIframe {
 /* Forms */
 
 .full {
-    display: block; width: 96%; margin: 5px auto;
-    font-family: "Source Sans Pro", sans-serif;
-    font-size: 1.3rem; font-weight: 300; color: #eee;
-    border: 1px solid #666; background-color: transparent;
-    padding: 5px; outline: 0;
-    @include transition-property(border-color);
-    @include transition-duration(0.2s);
-    &:focus {
-        border-color: #ccc;
-    }
+	display: block; width: 96%; margin: 5px auto;
+	font-family: "Source Sans Pro", sans-serif;
+	font-size: 1.3rem; font-weight: 300; color: #eee;
+	border: 1px solid #666; background-color: transparent;
+	padding: 5px; outline: 0;
+	@include transition-property(border-color);
+	@include transition-duration(0.2s);
+	&:focus {
+		border-color: #ccc;
+	}
 }
 
 textarea.full { margin: 6px auto; min-height: 200px; overflow: auto; }
@@ -286,25 +286,25 @@ input.short { max-width: 150px; }
 input.inline { display: inline-block; padding: 3px; margin-right: 5px; }
 
 #editorButtons, #editorRight {
-    &.small {
-        font-size: 0.9em;
-        margin: 0 6px;
-    }
+	&.small {
+		font-size: 0.9em;
+		margin: 0 6px;
+	}
 
-    margin: 0 7px;
-    a, a[href] {
-        @extend a[href].button;
-        border-color: #666;
-        font-size: 1em;
-        min-width: 1em;
-        text-align: center;
-        margin-top: 5px;
-    }
+	margin: 0 7px;
+	a, a[href] {
+		@extend a[href].button;
+		border-color: #666;
+		font-size: 1em;
+		min-width: 1em;
+		text-align: center;
+		margin-top: 5px;
+	}
 }
 
 #editorRight {
-    &.small { margin: 0 4px; }
-    float: right; margin: 0 4px;
+	&.small { margin: 0 4px; }
+	float: right; margin: 0 4px;
 }
 
 /* Errors */
@@ -319,26 +319,26 @@ header p { display: inline-block; font-size: 2em; font-weight: 900; margin: 0.4e
 }
 
 .chars-count {
-    font-size: 1.1em; font-weight: 300;
+	font-size: 1.1em; font-weight: 300;
 }
 
 /* Autocomplete */
 .ac_wrapper {
-    position: relative;
+	position: relative;
 }
 
 ul.ac_list {
-    background-color: rgba(0, 0, 0, 0.85);
-    list-style: none;
-    padding: 5px;
-    position: absolute;
-    margin: 0;
-    li {
-        &:hover {
-            background-color: #fff;
-            color: #000;
-        }
-    }
+	background-color: rgba(0, 0, 0, 0.85);
+	list-style: none;
+	padding: 5px;
+	position: absolute;
+	margin: 0;
+	li {
+		&:hover {
+			background-color: #fff;
+			color: #000;
+		}
+	}
 }
 
 /* Options dialog */
@@ -350,25 +350,38 @@ ul.ac_list {
 	width: 100%;
 	height: 50%;
 	text-align: center;
+	font-size: 1.4em;
 	z-index: 1000;
 	div {
-		width: 300px;
+		max-width: 500px;
 		margin: 100px auto;
 		padding: 15px;
-		background-color: rgba(0, 0, 0, 0.92);
+		background-color: rgba(0, 0, 0, 0.9);
 		form {
 			margin: 15px 0;
 		}
 		label {
-			display: inline-block;
-			width: 260px;
+			display: block;
 			text-align: left;
-			margin-left: 3px;
+			padding: 0.4em;
+			margin-top: 4px;
 		}
 		input[type="checkbox"] {
+			display: none;
+			& + label {
+				border: 2px solid darkred;
+				@include transition-property(border-color);
+				@include transition-duration(0.2s);
+				cursor: pointer;
+				&:hover {
+					border-color: #fff;
+				}
+			}
 			&:checked {
 				& + label {
 					font-weight: bold;
+					border-color: green;
+					&:before { content: "✓ "; }
 				}
 			}
 		}
