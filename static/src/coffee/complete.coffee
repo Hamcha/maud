@@ -48,7 +48,7 @@ updateAutocompleteList = (list, txt, data) ->
 	list.innerHTML =
 		(for el in data
 			if el[0..txt.length-1] == txt
-				"<a class='noborder' href='#' onclick='updateTags(" +
+				"<a class='noborder' href='#' onclick='AC.updateTags(" +
 				"\"#{list.parentNode.id}\", \"#{el}\", " +
 				"\"#{list.id}\")'><li>#{el}</li></a>"
 		).join("\n").trim()
