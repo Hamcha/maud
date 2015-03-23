@@ -18,10 +18,12 @@ if window.location.pathname[1...8] == 'thread/'
 		posts = [document.getElementById 'thread']
 		nreplies = 0
 	latest = posts[posts.length-1]
+	# page of latest post
+	page = pages.dataset.current ? "1"
 	date = latest.querySelector('a.date').dataset.udate
 	if date?
 		surl = window.location.pathname.split('/')[2]
-		window.localStorage.setItem "lview_#{surl}", "#{date}##{nreplies}"
+		window.localStorage.setItem "lview_#{surl}", "#{date}##{nreplies}##{page}"
 else
 	# In home: for each thread, check if already viewed or not
 	window.fromList(document.querySelectorAll 'article.thread-item').map (thread) ->
@@ -29,10 +31,11 @@ else
 		date = thread.querySelector('span.date').dataset.udate
 		# compare with locally saved date, if any
 		lreplyAnchor = thread.querySelector 'a.last-reply'
-		surl = lreplyAnchor.pathname.split('/')[2]
+		splpath = lreplyAnchor.pathname.split '/'
+		surl = splpath[2]
 		item = window.localStorage.getItem "lview_#{surl}"
 		return unless item?
-		[lview, lpost] = item.split '#'
+		[lview, lpost, lpage] = item.split '#'
 		if lview? and lview == date
 			# no updates since latest visit
 			if SiteOptions.dehighlight
@@ -40,4 +43,7 @@ else
 		else if lpost?
 			# make the last reply link to point to the latest seen post
 			if SiteOptions.jumptolastread
+				if splpath.length > 3 and lpage?
+					# pathname contains /page/n
+					lreplyAnchor.pathname = splpath[0..2].join('/') + "/page/#{lpage}"
 				lreplyAnchor.hash = if lpost is 0 then "#thread" else "#p#{lpost}"
