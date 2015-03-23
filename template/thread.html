@@ -27,10 +27,10 @@
     <div class="right">
         {{#Modified}}<span class="lastedit" data-udate="{{LastModified}}">edited {{StrLastModified}}</span>{{/Modified}}
         <div id="p0_btn" class="postactions" {{^Editable}}style='display: none'{{/Editable}} />
-            <a href="#thread" class="edit nolink" onclick="editPost(0)">
+            <a href="#thread" class="edit nolink" onclick="Posts.editPost(0)">
                 <img src="/static/images/edit.svg" style="height: 20px;" />
             </a>
-            <a href="#thread" class="delete nolink" onclick="deletePost(0)">
+            <a href="#thread" class="delete nolink" onclick="Posts.deletePost(0)">
                 <img src="/static/images/delete.svg" style="height: 18px;" />
             </a>
         </div>
@@ -54,10 +54,10 @@
     <div class="right">
         {{#Modified}}<span class="lastedit" data-udate="{{LastModified}}">edited {{StrLastModified}}</span>{{/Modified}}
         <div id="p{{PostId}}_btn" class="postactions" {{^Editable}}style='display: none'{{/Editable}} />
-            <a href="#p{{PostId}}" class="edit nolink" onclick="editPost({{PostId}})">
+            <a href="#p{{PostId}}" class="edit nolink" onclick="Posts.editPost({{PostId}})">
                 <img src="/static/images/edit.svg" style="height: 20px;" />
             </a>
-            <a href="#p{{PostId}}" class="delete nolink" onclick="deletePost({{PostId}})">
+            <a href="#p{{PostId}}" class="delete nolink" onclick="Posts.deletePost({{PostId}})">
                 <img src="/static/images/delete.svg" style="height: 18px;" />
             </a>
         </div>
@@ -70,7 +70,7 @@
 <div class="pages" data-current="{{Page}}" data-max="{{MaxPages}}"></div>
 <hr />
 <section class="form"><a name="reply" class="noborder"></a>
-<form id="reply-form" onsubmit="return replyPreSubmit(this, '{{#Thread}}{{ShortUrl}}', {{Messages}}{{/Thread}})" method="POST" action="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/reply">
+<form id="reply-form" onsubmit="return Posts.replyPreSubmit(this, '{{#Thread}}{{ShortUrl}}', {{Messages}}{{/Thread}})" method="POST" action="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/reply">
         <input class="full verysmall" type="text" name="nickname" placeholder="Nickname#Tripcode (optional)" />
         <input type="hidden" name="htrip" value="" />
 
@@ -79,17 +79,17 @@
             <a target="_blank" href="/stiki/formatting">?</a>
         </div>
         <div id="editorButtons" class="small">
-            <a onclick="editorAdd(this, 'b')"><b>B</b></a>
-            <a onclick="editorAdd(this, 'i')"><i>i</i></a>
-            <a onclick="editorAdd(this, 'u')"><u>u</u></a>
-            <a onclick="editorAdd(this, 'strike')"><strike>strike</strike></a>
-            <a onclick="editorAdd(this, 'img')">img</a>
-            <a onclick="editorAdd(this, 'url')"><span style="border-bottom: 1px dotted #fff">url</span></a>
-            <a onclick="editorAdd(this, 'spoiler')">spoiler</a>
-            <a onclick="editorAdd(this, 'youtube')">youtube</a>
-            <a onclick="editorAdd(this, 'html')">html</a>
-            <a onclick="editorAdd(this, 'video')">video</a>
-            <a onclick="quoteText(this)">&gt;</a>
+            <a onclick="Editor.add(this, 'b')"><b>B</b></a>
+            <a onclick="Editor.add(this, 'i')"><i>i</i></a>
+            <a onclick="Editor.add(this, 'u')"><u>u</u></a>
+            <a onclick="Editor.add(this, 'strike')"><strike>strike</strike></a>
+            <a onclick="Editor.add(this, 'img')">img</a>
+            <a onclick="Editor.add(this, 'url')"><span style="border-bottom: 1px dotted #fff">url</span></a>
+            <a onclick="Editor.add(this, 'spoiler')">spoiler</a>
+            <a onclick="Editor.add(this, 'youtube')">youtube</a>
+            <a onclick="Editor.add(this, 'html')">html</a>
+            <a onclick="Editor.add(this, 'video')">video</a>
+            <a onclick="Editor.quoteText(this)">&gt;</a>
         </div>
         <textarea class="full verysmall" name="text" required placeholder="Post content (Markdown, HTML and BBCode are supported)"></textarea>
         {{#NeedsCaptcha}}{{#Captcha}}
@@ -102,7 +102,7 @@
             <center>
                 <div class="chars-count" data-maxlen="{{#Info}}{{MaxPostLength}}{{/Info}}"></div>
                 <input type="submit" value="Reply" />
-                <input type="button" class="button" onclick="showPreview('reply-form')" value="Preview" />
+                <input type="button" class="button" onclick="Posts.showPreview('reply-form')" value="Preview" />
             </center>
         </div>
     </form>

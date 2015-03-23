@@ -175,9 +175,11 @@ quotePostId = (id) ->
 	window.location.href = '#reply'
 	text.focus()
 
-window.editPost = editPost
-window.deletePost = deletePost
-window.cancelForm = cancelForm
-window.showPreview = showPreview
-window.replyPreSubmit = replyPreSubmit
-window.quotePostId = quotePostId
+# expose functions
+window.Posts =
+	editPost: editPost
+	deletePost: deletePost
+	cancelForm: cancelForm
+	showPreview: showPreview
+	replyPreSubmit: replyPreSubmit
+	quotePostId: quotePostId

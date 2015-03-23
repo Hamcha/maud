@@ -10,17 +10,17 @@
             <a target="_blank" href="/stiki/formatting">?</a>
         </div>
         <div id="editorButtons">
-            <a onclick="editorAdd(this, 'b')"><b>B</b></a>
-            <a onclick="editorAdd(this, 'i')"><i>i</i></a>
-            <a onclick="editorAdd(this, 'u')"><u>u</u></a>
-            <a onclick="editorAdd(this, 'strike')"><strike>strike</strike></a>
-            <a onclick="editorAdd(this, 'img')">img</a>
-            <a onclick="editorAdd(this, 'url')"><span style="border-bottom: 1px dotted #fff">url</span></a>
-            <a onclick="editorAdd(this, 'spoiler')">spoiler</a>
-            <a onclick="editorAdd(this, 'youtube')">youtube</a>
-            <a onclick="editorAdd(this, 'html')">html</a>
-            <a onclick="editorAdd(this, 'video')">video</a>
-            <a onclick="quoteText(this)">&gt;</a>
+            <a onclick="Editor.add(this, 'b')"><b>B</b></a>
+            <a onclick="Editor.add(this, 'i')"><i>i</i></a>
+            <a onclick="Editor.add(this, 'u')"><u>u</u></a>
+            <a onclick="Editor.add(this, 'strike')"><strike>strike</strike></a>
+            <a onclick="Editor.add(this, 'img')">img</a>
+            <a onclick="Editor.add(this, 'url')"><span style="border-bottom: 1px dotted #fff">url</span></a>
+            <a onclick="Editor.add(this, 'spoiler')">spoiler</a>
+            <a onclick="Editor.add(this, 'youtube')">youtube</a>
+            <a onclick="Editor.add(this, 'html')">html</a>
+            <a onclick="Editor.add(this, 'video')">video</a>
+            <a onclick="Editor.quoteText(this)">&gt;</a>
         </div>
 
         <textarea class="full small" name="text" required placeholder="Thread text (BBCode / Markdown)"></textarea>
@@ -33,13 +33,15 @@
         <center>
             <div class="chars-count" data-maxlen="{{#Info}}{{MaxPostLength}}{{/Info}}"></div>
             <input type="submit" value="Create thread" />
-            <input type="button" class="button" onclick="showPreview('reply-form')" value="Preview" />
+            <input type="button" class="button" onclick="Posts.showPreview('reply-form')" value="Preview" />
         </center>
     </form>
 </section>
 <script src="/static/js/editor.js"></script>
 <script>
 window.onload = function () {
-    toggleAutocomplete(document.querySelector('#reply-form .ac_input'), '/taglist');
+    if (AC) {
+        AC.toggleAutocomplete(document.querySelector('#reply-form .ac_input'), '/taglist');
+    }
 }
 </script>

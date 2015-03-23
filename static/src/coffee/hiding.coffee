@@ -40,7 +40,7 @@ class Hidden
 		else
 			Cookies.set 'crHidden', @value, { expires: Infinity }
 
-window.killCrHidden = -> Cookies.expire 'crHidden'
+	@expire: -> Cookies.expire 'crHidden'
 
 crHidden = undefined
 # find out if the cookies is set and, if so, create a Hidden object
@@ -49,7 +49,7 @@ cookie = Cookies.get 'crHidden'
 crHidden = new Hidden cookie if cookie?
 
 # ensure we don't carry around a stale empty cookie
-killCrHidden() if crHidden?.isEmpty()
+Hidden.expire() if crHidden?.isEmpty()
 
 # Setup Safe mode button
 if crHidden?.get "#nsfw"
@@ -84,6 +84,7 @@ toggleHide = (elem) ->
 		location.reload true
 		return
 
-window.toggleHide = toggleHide
-window.unhideAllThreads = -> crHidden.clearThreads()
-window.unhideAllTags = -> crHidden.clearTags()
+window.Hiding =
+	toggleHide: toggleHide
+	unhideAllThreads: -> crHidden.clearThreads()
+	unhideAllTags: -> crHidden.clearTags()

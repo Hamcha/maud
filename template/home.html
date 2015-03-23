@@ -14,7 +14,7 @@
 <article class="thread-item thread">
     <h3 class="thread-name"><a href="{{BasePath}}thread/{{ShortUrl}}" class="nolink">{{Title}}</a></h3>
     <div>Last reply:
-        <a class='last-reply' href="{{BasePath}}thread/{{ShortUrl}}/page/{{Page}}#p{{LastMessage}}">
+        <a class="last-reply" href="{{BasePath}}thread/{{ShortUrl}}/page/{{Page}}#p{{LastMessage}}">
             {{#LastPost}}{{#Data}}
             {{#Author}}
             <span class="nickname">{{Nickname}}</span>
@@ -25,7 +25,7 @@
         </a>
     </div>
     <div class="right">
-        <a class="noborder hide" href="" onclick="toggleHide('{{ShortUrl}}')">Hide</a>
+        <a class="noborder hide" href="" onclick="Hiding.toggleHide('{{ShortUrl}}')">Hide</a>
     </div>
 </article>
 {{/Thread}}
@@ -40,7 +40,7 @@
     <h3 class="tag-name"><a href="{{BasePath}}tag/{{Name}}" class="nolink">{{{Name}}}</a></h3>
     <div>Last updated thread: {{#LastThread}}{{#Thread}}<a href="{{BasePath}}thread/{{ShortUrl}}/page/{{Page}}#p{{LastMessage}}" class="thread-title">{{Title}}</a>{{/Thread}}{{/LastThread}} (<span class="date" data-udate="{{LastUpdate}}">{{StrLastUpdate}}</span>)</div>
     <div class="right">
-        <a class="noborder hide" href="" onclick="toggleHide('#{{Name}}')">Hide</a>
+        <a class="noborder hide" href="" onclick="Hiding.toggleHide('#{{Name}}')">Hide</a>
     </div>
 </article>
 {{/Tags}}

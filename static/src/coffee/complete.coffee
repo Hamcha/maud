@@ -28,8 +28,6 @@ toggleAutocomplete = (elem, url, opts) ->
 	ul.style.visibility = 'hidden'
 	ul.style.zIndex = 10
 	ul.id = 'ac_list'
-	insertAfter = (newNode, node) ->
-		node.parentNode.insertBefore(newNode, node.nextSibling)
 	insertAfter ul, elem
 	elem.onkeyup = (e) ->
 		curTag =
@@ -50,22 +48,24 @@ updateAutocompleteList = (list, txt, data) ->
 	list.innerHTML =
 		(for el in data
 			if el[0..txt.length-1] == txt
-				"<a class='noborder' href='#' onclick='acUpdateTags(" +
+				"<a class='noborder' href='#' onclick='updateTags(" +
 				"\"#{list.parentNode.id}\", \"#{el}\", " +
 				"\"#{list.id}\")'><li>#{el}</li></a>"
 		).join("\n").trim()
 
 
-window.toggleAutocomplete = toggleAutocomplete
+# expose AutoComplete functions
+window.AC =
+	toggleAutocomplete: toggleAutocomplete
 
-window.acUpdateTags = (formId, tag, listId) ->
-	# input to append the tags to
-	el = document.getElementById(formId).querySelector '.ac_input'
-	v = el.value
-	if v.lastIndexOf(sep) > 0
-		el.value = v[0..v.lastIndexOf(sep)-1] + "#{sep}#{tag} #"
-	else
-		el.value = "#{sep}#{tag} #"
-	el.selectionStart = el.value.length
-	el.focus()
-	document.getElementById(listId).style.visibility = 'hidden'
+	updateTags: (formId, tag, listId) ->
+		# input to append the tags to
+		el = document.getElementById(formId).querySelector '.ac_input'
+		v = el.value
+		if v.lastIndexOf(sep) > 0
+			el.value = v[0..v.lastIndexOf(sep)-1] + "#{sep}#{tag} #"
+		else
+			el.value = "#{sep}#{tag} #"
+		el.selectionStart = el.value.length
+		el.focus()
+		document.getElementById(listId).style.visibility = 'hidden'

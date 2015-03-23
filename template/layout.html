@@ -50,10 +50,25 @@
             <a href="//{{#Info}}{{FullVersionDomain}}{{/Info}}{{UrlPath}}" style="box-shadow: 0 0 0 1px green inset;">EXIT LIGHT VERSION</a>
     {{/IsLight}}
             <a id="safeBtn" href="#">SAFE MODE</a>
+            <a href="#overlay" style="box-shadow: 0 0 0 1px #777 inset;" onclick='showOptions()'>SITE OPTIONS</a>
+            <div id="overlay">
+                <div>
+                    <h2>Site options</h2>
+                    <form action="javascript:void(0)" onchange="OptionUtils.setOptions(this)">
+                        <input name="option" type="checkbox" id="dehighlight"/>
+                        <label for="dehighlight">De-highlight already viewed threads</label>
+                        <br/>
+                        <input name="option" type="checkbox" id="jumptolastread">
+                        <label for="jumptolastread">Make 'last reply' link point to latest read post</label>
+                    </form>
+                    <a href="#overlay" onclick='OptionUtils.showOptions()'>Exit</a>
+                </div>
+            </div>
     </nav></footer>
     <script src="/static/lib/qwest.min.js"></script>
     <script src="/static/lib/cookies.min.js"></script>
     <script src="/static/js/utils.js"></script>
+    <script src="/static/js/options.js"></script>
     <script src="/static/js/fixes.js"></script>
     <script src="/static/js/dates.js"></script>
     <script src="/static/js/anon.js"></script>

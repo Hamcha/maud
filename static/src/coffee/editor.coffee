@@ -9,8 +9,6 @@ editorAdd = (elem, tag) ->
 	txt.selectionEnd = txt.selectionStart + selectionLen
 	txt.focus()
 
-window.editorAdd = editorAdd
-
 quoteText = (elem) ->
 	txt = elem.parentElement.parentElement.text
 	if txt.selectionStart == txt.selectionEnd
@@ -23,4 +21,6 @@ quoteText = (elem) ->
 	txt.selectionStart = txt.selectionEnd = txt.value.length + 1
 	txt.focus()
 
-window.quoteText = quoteText
+window.Editor =
+	add: editorAdd
+	quoteText: quoteText

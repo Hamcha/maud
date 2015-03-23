@@ -1,5 +1,8 @@
 window.fromList = (x) -> Array.prototype.slice.call x
 
+window.insertAfter = (newNode, node) ->
+	node.parentNode.insertBefore(newNode, node.nextSibling)
+
 window.stripPage = (url) ->
 	idx = url.indexOf "/page/"
 	return if idx < 0 then url else url.substring 0, idx

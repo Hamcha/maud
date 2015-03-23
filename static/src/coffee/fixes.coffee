@@ -78,7 +78,7 @@ toggle?.onclick = ->
     </form>
 	"""
 	box = document.getElementById "tagsearch"
-	toggleAutocomplete box, "#{basepath}taglist"
+	AC.toggleAutocomplete box, "#{basepath}taglist"
 	box.focus()
 
 # Unhide post actions to admins
