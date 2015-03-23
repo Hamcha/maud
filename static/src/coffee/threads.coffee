@@ -1,5 +1,7 @@
 return unless window.localStorage?
 
+return unless SiteOptions.dehighlight or SiteOptions.jumptolastread
+
 if window.location.pathname[1...8] == 'thread/'
 	# When a thread is visited, save the latest post date is localStorage.
 	# First, ensure this is the last page of the thread. If not, don't
@@ -33,7 +35,9 @@ else
 		[lview, lpost] = item.split '#'
 		if lview? and lview == date
 			# no updates since latest visit
-			thread.className += " seen"
+			if SiteOptions.dehighlight
+				thread.className += " seen"
 		else if lpost?
 			# make the last reply link to point to the latest seen post
-			lreplyAnchor.hash = if lpost is 0 then "#thread" else "#p#{lpost}"
+			if SiteOptions.jumptolastread
+				lreplyAnchor.hash = if lpost is 0 then "#thread" else "#p#{lpost}"
