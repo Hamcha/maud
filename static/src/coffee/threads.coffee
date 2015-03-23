@@ -34,8 +34,8 @@ if window.location.pathname[1...8] == 'thread/'
 	if date?
 		surl = window.location.pathname.split('/')[2]
 		window.localStorage.setItem "lview_#{surl}", "#{date}##{nreplies}##{page}"
-else
-	# In home: for each thread, check if already viewed or not
+else if window.location.pathname == '/' or window.location.pathname[1...8] == 'threads'
+	# In home/all-threads: for each thread, check if already viewed or not
 	window.fromList(document.querySelectorAll 'article.thread-item').map (thread) ->
 		# get last-modified date
 		date = thread.querySelector('span.date').dataset.udate
