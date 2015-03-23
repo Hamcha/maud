@@ -22,3 +22,6 @@ window.OptionUtils =
 opts = window.localStorage?.getItem 'crOptions'
 return unless opts?
 window.SiteOptions = JSON.parse opts
+fromList(document.getElementsByName 'option').map (opt) ->
+	return unless opt.id?
+	opt.checked = window.SiteOptions[opt.id]
