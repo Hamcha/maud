@@ -10,7 +10,7 @@ window.Threads =
 			lpage = '1' unless lpage?
 			window.localStorage.setItem "lview_#{surl}", "#{date}##{lpost}##{lpage}"
 
-return unless SiteOptions.dehighlight or SiteOptions.jumptolastread
+return unless SiteOptions?.dehighlight or SiteOptions?.jumptolastread
 
 if window.location.pathname[1...8] == 'thread/'
 	# When a thread is visited, save the latest post date is localStorage.
