@@ -8,7 +8,7 @@ window.OptionUtils =
 			insertAfter warn, div.querySelector('h2')
 			div.querySelector('form').innerHTML = ""
 
-	setOptions: (form) ->
+	reloadOptions: ->
 		return unless window.localStorage?
 		opts = {}
 		fromList(document.getElementsByName 'option').map (opt) ->
@@ -20,8 +20,11 @@ window.OptionUtils =
 
 # Load options
 opts = window.localStorage?.getItem 'crOptions'
-return unless opts?
-window.SiteOptions = JSON.parse opts
-fromList(document.getElementsByName 'option').map (opt) ->
-	return unless opt.id?
-	opt.checked = window.SiteOptions[opt.id]
+if opts?
+	window.SiteOptions = JSON.parse opts
+	fromList(document.getElementsByName 'option').map (opt) ->
+		return unless opt.id?
+		opt.checked = window.SiteOptions[opt.id]
+else
+	# likely the first time visiting the site
+	window.SiteOptions = OptionUtils.reloadOptions()
