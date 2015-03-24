@@ -7,6 +7,11 @@ window.Threads =
 			lreplyAnchor = thread.querySelector 'a.last-reply'
 			[surl, _, lpage] = lreplyAnchor.pathname.split('/')[2..4]
 			lpost = lreplyAnchor.hash
+			if lpost.length < 3
+				# shouldn't happen, but for insurance we put post = 0
+				lpost = 0
+			else
+				lpost = lpost[2..] # strip the initial "#p"
 			lpage = '1' unless lpage?
 			window.localStorage.setItem "lview_#{surl}", "#{date}##{lpost}##{lpage}"
 
