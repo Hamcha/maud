@@ -70,7 +70,7 @@ editPost = (id) ->
         #{tagsbar}
         <center>
           <div class="chars-count" data-maxlen="#{maxlen}"></div>
-          <input type="Submit" value="Edit post"/><button type="button" onclick="cancelForm(#{id});">Cancel</button>
+          <input type="Submit" value="Edit post"/><button type="button" onclick="Posts.cancelForm(#{id});">Cancel</button>
           <input type="button" class="button" onclick="Posts.showPreview('edit#{id}')" value="Preview" />
         </center>
   </form>
@@ -110,7 +110,7 @@ deletePost = (id) ->
           <span style="color: #ccc; display: inline-block; width: auto; font-size: 0.9em;">deleting ##{id}</span>
         </div>
         <center>
-          <button name="deletetype" value="soft" type="submit">Delete</button>#{purge}<button type="button" onclick="cancelForm(#{id});">Cancel</button>
+          <button name="deletetype" value="soft" type="submit">Delete</button>#{purge}<button type="button" onclick="Posts.cancelForm(#{id});">Cancel</button>
         </center>
   </form>
 </section>"""

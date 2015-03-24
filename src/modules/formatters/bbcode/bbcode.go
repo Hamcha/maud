@@ -61,18 +61,27 @@ func (b *BBCodeFormatter) Init() {
 	b.bbElements["html"] = func(_, con string) string {
 		return strings.Replace(con, "\n", "", -1)
 	}
-	b.bbElements["video"] = func(_, con string) string {
+	/* [video] tag accepts an optional parameter which can control
+	 * the <video> params:
+	 *   - nocontrols / -ctrl: disable controls on video
+	 *   - autoplay / aplay: make this video autoplay
+	 *   - mute / muted: mute this video
+	 *   - gif / giflike: autoplay + mute + nocontrols
+	 */
+	b.bbElements["video"] = func(par, con string) string {
 		idx := strings.LastIndex(con, ".")
 		ext := con[idx+1:]
+		var opts string
+		if len(par) > 0 && par == "gif" {
+			opts = "autoplay muted loop"
+		} else {
+			opts = "controls"
+		}
 		switch ext {
 		case "webm":
-			return `<video height="250px" src="` + con + `" controls>[Your browser is unable to play this video]</video>`
-		case "ogg":
-			fallthrough
-		case "ogv":
-			fallthrough
-		case "mp4":
-			return `<video height="250px" controls><source src="` + con + `" type="video/` + ext + `"/>[Your browser is unable to play this video]</video>`
+			return `<video height="250px" src="` + con + `" ` + opts + `>[Your browser is unable to play this video]</video>`
+		case "ogg", "ogv", "mp4":
+			return `<video height="250px" ` + opts + `><source src="` + con + `" type="video/` + ext + `"/>[Your browser is unable to play this video]</video>`
 		}
 		return "<gray>Unsupported video type: " + ext + "</gray>"
 	}
