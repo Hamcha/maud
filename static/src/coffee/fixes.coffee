@@ -49,32 +49,28 @@ makePageLists = ->
 				# m = max number of buttons to output (at least 7)
 				# we leave 70px for the "PAGE" text and account 30px per button.
 				m = Math.max 7, Math.floor((width - 70) / 30)
+				console.log m
 				if max <= m
 					# output all page buttons
 					insPage i for i in [1..max]
 				else
-					switch
-						when page < 4
-							insPage i for i in [1..page+1]
-							insDots()
-							insPage max
-						when page > max - 2
-							insPage 1
-							insDots()
-							insPage i for i in [page-1..max]
+					left = page - 1
+					right = max - page
+					a = Math.floor((m-5)/2)
+					lrem = Math.max 0, a - left
+					rrem = Math.max 0, a - right
+					if left <= a + rrem
+						insPage i for i in [1..page]
+					else
+						insPage 1
+						insDots()
+						insPage i for i in [page-a-rrem..page]
+					if page < max
+						if right <= a + lrem
+							insPage i for i in [page+1..max]
 						else
-							insPage 1
-							a = Math.floor((m-5)/2)
-							if page - a <= 2
-								insPage i for i in [2..page]
-							else
-								insDots()
-								insPage i for i in [page-a..page]
-							if page + a >= max - 1
-								insPage i for i in [page+1..max-1]
-							else
-								insPage i for i in [page+1..page+a]
-								insDots()
+							insPage i for i in [page+1..page+a+lrem]
+							insDots()
 							insPage max
 				pageDiv.innerHTML = pageHTML
 makePageLists()
