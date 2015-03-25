@@ -49,7 +49,6 @@ makePageLists = ->
 				# m = max number of buttons to output (at least 7)
 				# we leave 70px for the "PAGE" text and account 30px per button.
 				m = Math.max 7, Math.floor((width - 70) / 30)
-				console.log m
 				if max <= m
 					# output all page buttons
 					insPage i for i in [1..max]
