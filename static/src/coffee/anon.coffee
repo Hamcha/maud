@@ -1,6 +1,6 @@
 anons = ["Rock", "Boulder", "Pebble", "Mineral", "Stone"]
 
-randomAnon = () -> anons[Math.floor(Math.random()*anons.length)]
+randomAnon = -> anons[Math.floor(Math.random()*anons.length)]
 
 fromList(document.querySelectorAll ".thread-author,.post-author").map (elem) ->
 	anon = elem.querySelector ".anon"

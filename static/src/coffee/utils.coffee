@@ -15,3 +15,11 @@ window.escapeHTML = (str) ->
 		.replace(/>/g, "&gt;")
 		.replace(/"/g, "&quot;")
 		.replace(/'/g, "&#039;")
+
+window.getViewport = ->
+	e = window
+	a = 'inner'
+	unless 'innerWidth' in window
+		a = 'client'
+		e = document.documentElement || document.body
+	return { width: e["#{a}Width"], height: e["#{a}Height"] }

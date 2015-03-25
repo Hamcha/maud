@@ -21,27 +21,64 @@ fromList(document.querySelectorAll ".type blockquote p").map (e) ->
 	e.innerHTML = "> " + e.innerHTML.split("\n").join "<br />> "
 
 # Make page lists
-pageDivs = document.querySelectorAll ".pages"
-for pageDiv in pageDivs
-	page = parseInt pageDiv.dataset.current
-	baseurl = stripPage location.pathname
-	maxstr = pageDiv.dataset.max
-	more = pageDiv.dataset.more
-	# Do Next/Previous only when we don't know the number of pages
-	if maxstr == "nomax"
-		pageHTML = ""
-		if page > 1
-			pageHTML += "<a href=\"#{baseurl}/page/#{page - 1}\">&laquo; Back</a> "
-		pageHTML += "<b>#{page}</b>"
-		if more == "yes"
-			pageHTML += " <a href=\"#{baseurl}/page/#{page + 1}\">Next &raquo;</a>"
-		pageDiv.innerHTML = pageHTML
-	else
-		max = parseInt maxstr
-		if max > 1
-			pageHTML = "PAGE &nbsp;"
-			pageHTML += (if page == n then "<b>#{n}</b> " else "<a href=\"#{baseurl}/page/#{n}\">#{n}</a> ") for n in [1..max]
+makePageLists = ->
+	pageDivs = document.querySelectorAll ".pages"
+	for pageDiv in pageDivs
+		page = parseInt pageDiv.dataset.current
+		baseurl = stripPage location.pathname
+		maxstr = pageDiv.dataset.max
+		more = pageDiv.dataset.more
+		# Do Next/Previous only when we don't know the number of pages
+		if maxstr == "nomax"
+			pageHTML = ""
+			if page > 1
+				pageHTML += "<a href=\"#{baseurl}/page/#{page - 1}\">&laquo; Back</a> "
+			pageHTML += "<b>#{page}</b>"
+			if more == "yes"
+				pageHTML += " <a href=\"#{baseurl}/page/#{page + 1}\">Next &raquo;</a>"
 			pageDiv.innerHTML = pageHTML
+		else
+			max = parseInt maxstr
+			if max > 1
+				pageHTML = "PAGE &nbsp;"
+				# make the pages fit the window width
+				width = getViewport().width
+				insPage = (i) ->
+					pageHTML += (if page == i then "<b>#{i}</b> " else "<a href=\"#{baseurl}/page/#{i}\">#{i}</a> ")
+				insDots = -> pageHTML += "..."
+				# m = max number of buttons to output (at least 7)
+				# we leave 70px for the "PAGE" text and account 30px per button.
+				m = Math.max 7, Math.floor((width - 70) / 30)
+				if max <= m
+					# output all page buttons
+					insPage i for i in [1..max]
+				else
+					switch
+						when page < 4
+							insPage i for i in [1..page+1]
+							insDots()
+							insPage max
+						when page > max - 2
+							insPage 1
+							insDots()
+							insPage i for i in [page-1..max]
+						else
+							insPage 1
+							a = Math.floor((m-5)/2)
+							if page - a <= 2
+								insPage i for i in [2..page]
+							else
+								insDots()
+								insPage i for i in [page-a..page]
+							if page + a >= max - 1
+								insPage i for i in [page+1..max-1]
+							else
+								insPage i for i in [page+1..page+a]
+								insDots()
+							insPage max
+				pageDiv.innerHTML = pageHTML
+makePageLists()
+window.onresize = makePageLists
 
 # Count remaining characters in a post
 charsCount = (id) ->
