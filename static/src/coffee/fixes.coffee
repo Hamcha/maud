@@ -32,10 +32,10 @@ makePageLists = ->
 		if maxstr == "nomax"
 			pageHTML = ""
 			if page > 1
-				pageHTML += "<a href=\"#{baseurl}/page/#{page - 1}\">&laquo; Back</a> "
+				pageHTML += "<a href=\"#{baseurl}/page/#{page - 1}\" rel=\"prev\">&laquo; Back</a> "
 			pageHTML += "<b>#{page}</b>"
 			if more == "yes"
-				pageHTML += " <a href=\"#{baseurl}/page/#{page + 1}\">Next &raquo;</a>"
+				pageHTML += " <a href=\"#{baseurl}/page/#{page + 1}\" rel=\"next\">Next &raquo;</a>"
 			pageDiv.innerHTML = pageHTML
 		else
 			max = parseInt maxstr

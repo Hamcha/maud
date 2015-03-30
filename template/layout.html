@@ -38,16 +38,16 @@
 </head>
 <body>
     <div id="container">
-        <header><a href="{{BasePath}}"><img class="head" src="/static/images/header.png" alt="header" /></a></header>
+        <header><a href="{{BasePath}}"><img class="head" src="/static/images/header.png" alt="header"/></a></header>
         <main>{{{content}}}</main>
     </div>
     <footer>{{{Footer}}}<br />
     <nav class="upper">
     {{^IsLight}}
-            <a href="//{{#Info}}{{LightVersionDomain}}{{/Info}}{{UrlPath}}" style="box-shadow: 0 0 0 1px darkred inset;">LIGHT VERSION</a>
+            <a href="//{{#Info}}{{LightVersionDomain}}{{/Info}}{{UrlPath}}" style="box-shadow: 0 0 0 1px darkred inset;" rel="alternate">LIGHT VERSION</a>
     {{/IsLight}}
     {{#IsLight}}
-            <a href="//{{#Info}}{{FullVersionDomain}}{{/Info}}{{UrlPath}}" style="box-shadow: 0 0 0 1px green inset;">EXIT LIGHT VERSION</a>
+            <a href="//{{#Info}}{{FullVersionDomain}}{{/Info}}{{UrlPath}}" style="box-shadow: 0 0 0 1px green inset;" rel="alternate">EXIT LIGHT VERSION</a>
     {{/IsLight}}
             <a id="safeBtn" href="#">SAFE MODE</a>
             <a href="#overlay" style="box-shadow: 0 0 0 1px #777 inset;" onclick='OptionUtils.showOptions()'>SITE OPTIONS</a>

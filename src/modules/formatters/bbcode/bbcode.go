@@ -46,7 +46,7 @@ func (b *BBCodeFormatter) Init() {
 		if idx > 0 {
 			par = par[0:idx] + queryescape(par[idx:])
 		}
-		return "<a href=\"" + par + "\">" + con + "</a>"
+		return "<a href=\"" + par + "\" rel=\"nofollow\">" + con + "</a>"
 	}
 	b.bbElements["spoiler"] = func(_, con string) string {
 		return "<span class=\"spoiler\">" + con + "</span>"
