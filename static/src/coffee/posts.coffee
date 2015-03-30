@@ -94,7 +94,8 @@ deletePost = (id) ->
 	tripcodebar = ""
 	if !window.adminMode
 		purge = ""
-		if typeof nickspan.firstChild is 'object' # hidden tripcode
+		if nickspan.firstChild instanceof HTMLSpanElement
+			# hidden tripcode
 			htrip = JSON.parse(window.localStorage?.getItem 'crLatestPost')?.htrip
 			tripcodebar = "<input type=\"hidden\" name=\"tripcode\" value=\"#{htrip}\" required />"
 		else  # visible tripcode
