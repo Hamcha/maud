@@ -29,7 +29,7 @@ func (b *BBCodeFormatter) Init() {
 		if idx > 0 {
 			con = con[0:idx] + queryescape(con[idx:])
 		}
-		return "<a href=\"" + con + "\"><img src=\"" + con + "\" /></a>"
+		return "<a href=\"" + con + "\" rel=\"nofollow\"><img src=\"" + con + "\" /></a>"
 	}
 	b.bbElements["url"] = func(par, con string) string {
 		if len(par) < 1 {
