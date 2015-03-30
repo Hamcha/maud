@@ -22,7 +22,7 @@ func (b *BBCodeFormatter) Init() {
 	b.bbElements["b"] = bbToHTML("b")
 	b.bbElements["i"] = bbToHTML("i")
 	b.bbElements["u"] = bbToHTML("u")
-	b.bbElements["strike"] = bbToHTML("s")
+	b.bbElements["s"] = bbToHTML("s")
 	// Other BBcode tags
 	b.bbElements["img"] = func(_, con string) string {
 		idx := strings.IndexRune(con, '?')

@@ -57,7 +57,7 @@ editPost = (id) ->
             <a onclick="Editor.add(this, 'b')"><b>B</b></a>
             <a onclick="Editor.add(this, 'i')"><i>i</i></a>
             <a onclick="Editor.add(this, 'u')"><u>u</u></a>
-            <a onclick="Editor.add(this, 'strike')"><strike>strike</strike></a>
+            <a onclick="Editor.add(this, 's')"><s>s</s></a>
             <a onclick="Editor.add(this, 'img')">img</a>
             <a onclick="Editor.add(this, 'url')"><span style="border-bottom: 1px dotted #fff">url</span></a>
             <a onclick="Editor.add(this, 'spoiler')">spoiler</a>

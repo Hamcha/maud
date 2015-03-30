@@ -12,16 +12,20 @@ func PostPolicy() *bluemonday.Policy {
 
 	// Basic markup
 	p.AllowElements("h1", "h2", "h3", "h4", "h5", "h6")
-	p.AllowElements("b", "i", "pre", "small", "strike", "tt", "u")
-	p.AllowElements("blockquote", "cite")
+	p.AllowElements("b", "em", "i", "pre", "s", "small", "u")
+	p.AllowElements("blockquote", "cite", "q")
 	p.AllowElements("br", "div", "hr", "p", "span", "wbr")
 
 	// Links
 	p.AllowAttrs("href").OnElements("a")
 
 	// Extra markup
-	p.AllowElements("abbr", "acronym", "cite", "code", "dfn", "em",
-		"figcaption", "mark", "s", "samp", "strong", "sub", "sup", "var")
+	p.AllowElements("abbr", "acronym", "bdi", "cite", "code", "dd", "del",
+		"dfn", "dl", "dt", "figcaption", "figure", "ins", "kbd", "mark",
+		"meter", "ol", "progress", "q", "s", "samp", "strong", "sub",
+		"sup", "time", "ul", "var")
+
+	p.AllowAttrs("value", "min", "max").OnElements("meter", "progress")
 
 	// Structures
 	p.AllowLists()
