@@ -30,11 +30,11 @@
         <input class="full verysmall" name="captcha" type="text" placeholder="{{Question}}"/>
         <input name="captchaanswer" type="hidden" value="{{Answer}}"/>
         {{/Captcha}}{{/Data}}
-        <center>
+        <div class="center">
             <div class="chars-count" data-maxlen="{{#Info}}{{MaxPostLength}}{{/Info}}"></div>
             <input type="submit" value="Create thread" />
             <input type="button" class="button" onclick="Posts.showPreview('reply-form')" value="Preview" />
-        </center>
+        </div>
     </form>
 </section>
 <script src="/static/js/editor.js"></script>

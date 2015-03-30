@@ -43,37 +43,37 @@ editPost = (id) ->
 	original[id] = post.innerHTML
 	post.innerHTML = """
 <section id="#{id}" class="form"><a name="edit" class="nolink"></a>
-  <form id="edit#{id}" method="POST" action="#{window.stripPage(location.pathname) + "/post/" + id + "/edit"}">
+    <form id="edit#{id}" method="POST" action="#{window.stripPage(location.pathname) + "/post/" + id + "/edit"}">
         <div>
-          <span class="full verysmall nickname" style="display: inline-block; border: 0; width: auto">#{nick}</span>
-          #{tripcodebar}
-          <span style="color: #ccc; display: inline-block; width: auto; font-size: 0.9em;">editing #{idname}</span>
+            <span class="full verysmall nickname" style="display: inline-block; border: 0; width: auto">#{nick}</span>
+            #{tripcodebar}
+            <span style="color: #ccc; display: inline-block; width: auto; font-size: 0.9em;">editing #{idname}</span>
         </div>
         <!-- Editor buttons -->
         <div id="editorRight" class="small">
-                <a target="_blank" href="/stiki/formatting" rel="help">?</a>
+            <a target="_blank" href="/stiki/formatting" rel="help">?</a>
         </div>
         <div id="editorButtons" class="small">
-                <a onclick="Editor.add(this, 'b')"><b>B</b></a>
-                <a onclick="Editor.add(this, 'i')"><i>i</i></a>
-                <a onclick="Editor.add(this, 'u')"><u>u</u></a>
-                <a onclick="Editor.add(this, 'strike')"><strike>strike</strike></a>
-                <a onclick="Editor.add(this, 'img')">img</a>
-                <a onclick="Editor.add(this, 'url')"><span style="border-bottom: 1px dotted #fff">url</span></a>
-                <a onclick="Editor.add(this, 'spoiler')">spoiler</a>
-                <a onclick="Editor.add(this, 'youtube')">youtube</a>
-                <a onclick="Editor.add(this, 'html')">html</a>
-                <a onclick="Editor.add(this, 'video')">video</a>
-                <a onclick="Editor.quoteText(this)">&gt;</a>
+            <a onclick="Editor.add(this, 'b')"><b>B</b></a>
+            <a onclick="Editor.add(this, 'i')"><i>i</i></a>
+            <a onclick="Editor.add(this, 'u')"><u>u</u></a>
+            <a onclick="Editor.add(this, 'strike')"><strike>strike</strike></a>
+            <a onclick="Editor.add(this, 'img')">img</a>
+            <a onclick="Editor.add(this, 'url')"><span style="border-bottom: 1px dotted #fff">url</span></a>
+            <a onclick="Editor.add(this, 'spoiler')">spoiler</a>
+            <a onclick="Editor.add(this, 'youtube')">youtube</a>
+            <a onclick="Editor.add(this, 'html')">html</a>
+            <a onclick="Editor.add(this, 'video')">video</a>
+            <a onclick="Editor.quoteText(this)">&gt;</a>
         </div>
         <textarea class="full small editor" name="text" required placeholder="Retreiving content..."></textarea>
         #{tagsbar}
-        <center>
-          <div class="chars-count" data-maxlen="#{maxlen}"></div>
-          <input type="Submit" value="Edit post"/><button type="button" onclick="Posts.cancelForm(#{id});">Cancel</button>
-          <input type="button" class="button" onclick="Posts.showPreview('edit#{id}')" value="Preview" />
-        </center>
-  </form>
+        <div class="center">
+            <div class="chars-count" data-maxlen="#{maxlen}"></div>
+            <input type="Submit" value="Edit post"/><button type="button" onclick="Posts.cancelForm(#{id});">Cancel</button>
+            <input type="button" class="button" onclick="Posts.showPreview('edit#{id}')" value="Preview" />
+        </div>
+    </form>
 </section>"""
 	charsCount "edit#{id}"
 	return
@@ -104,15 +104,15 @@ deletePost = (id) ->
 		purge = '<button name="deletetype" value="purge" type="submit">Purge</button>'
 	post.innerHTML = """
 <section id="#{id}" class="form"><a name="delete" class="noborder"></a>
-  <form method="POST" action="#{window.stripPage(location.pathname) + "/post/" + id + "/delete"}">
+    <form method="POST" action="#{window.stripPage(location.pathname) + "/post/" + id + "/delete"}">
         <div>
-          <span class="full verysmall nickname" style="display: inline-block; border: 0; width: auto">#{nick}</span>
-          #{tripcodebar}
-          <span style="color: #ccc; display: inline-block; width: auto; font-size: 0.9em;">deleting ##{id}</span>
+            <span class="full verysmall nickname" style="display: inline-block; border: 0; width: auto">#{nick}</span>
+            #{tripcodebar}
+            <span style="color: #ccc; display: inline-block; width: auto; font-size: 0.9em;">deleting ##{id}</span>
         </div>
-        <center>
-          <button name="deletetype" value="soft" type="submit">Delete</button>#{purge}<button type="button" onclick="Posts.cancelForm(#{id});">Cancel</button>
-        </center>
+        <div class="center">
+            <button name="deletetype" value="soft" type="submit">Delete</button>#{purge}<button type="button" onclick="Posts.cancelForm(#{id});">Cancel</button>
+        </div>
   </form>
 </section>"""
 	return
