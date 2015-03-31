@@ -6,14 +6,14 @@
 </nav>
 <hr />
 <article class="hidden2">
-    Recently updated threads, ordered by latest reply.
+    <marquee>Recently updated threads, ordered by latest reply.</marquee>
 </article>
 {{#Data}}
 {{#Last}}
 {{#Thread}}
 <article class="thread-item thread">
-    <h3 class="thread-name"><a href="{{BasePath}}thread/{{ShortUrl}}" class="nolink">{{Title}}</a></h3>
-    <div>Last reply: 
+    <h3 class="thread-name" style="margin-bottom: 4px;"><a href="{{BasePath}}thread/{{ShortUrl}}" class="nolink">{{Title}}</a></h3>
+    <div>Last reply:
         <a href="{{BasePath}}thread/{{ShortUrl}}/page/{{Page}}#p{{LastMessage}}">
             {{#LastPost}}{{#Data}}
             {{#Author}}
@@ -33,11 +33,11 @@
 <a href='{{BasePath}}threads' class="article"><article>View all</article></a>
 <hr />
 <article class="hidden2">
-    Most popular tags, ordered by popularity.
+    <marquee>Most popular tags, ordered by popularity.</marquee>
 </article>
 {{#Tags}}
 <article class="tag-item thread">
-    <h3 class="tag-name"><a href="{{BasePath}}tag/{{Name}}" class="nolink">{{{Name}}}</a></h3>
+    <h3 class="tag-name" style="margin-bottom: 4px;"><a href="{{BasePath}}tag/{{Name}}" class="nolink">{{{Name}}}</a></h3>
     <div>Last updated thread: {{#LastThread}}{{#Thread}}<a href="{{BasePath}}thread/{{ShortUrl}}/page/{{Page}}#p{{LastMessage}}" class="thread-title">{{Title}}</a>{{/Thread}}{{/LastThread}} (<span class="date" data-udate="{{LastUpdate}}">{{StrLastUpdate}}</span>)</div>
     <div class="right">
         <a class="noborder hide" href="" onclick="toggleHide('#{{Name}}')">Hide</a>

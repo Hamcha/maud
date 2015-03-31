@@ -1,4 +1,7 @@
-anons = ["Rock", "Boulder", "Pebble", "Mineral", "Stone"]
+anons = ["Sweety (CIS Female - she/her/her)", "Gold87 (Genderfluid - xir/xis/xim)",
+         "DarkAngel (Non-binary Foxkin - fix/fis/fim)", "Mohammed Avdol (CIS Male - he/his/him)",
+         "KeroroFan97 (Trans Male - he/his/him)", "PeanutButterEater (Agender - ki/kis/kim)",
+         "Grafenecolorato (Trans Female - she/her/her)", "BBB (Bigender - any pronoun)"]
 
 randomAnon = () -> anons[Math.floor(Math.random()*anons.length)]
 

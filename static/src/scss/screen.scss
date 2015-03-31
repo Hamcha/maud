@@ -5,7 +5,7 @@
 /* General Template */
 body {
     background: url(../images/bg.png) #333;
-    font-family: "Source Sans Pro", sans-serif; font-weight: 300;
+    font-family: "Comic Sans MS", sans-serif; font-weight: 300;
     color: #fff; margin: 0; padding: 0;
 }
 
@@ -80,7 +80,7 @@ a.button, a.button:visited, a.article, a.article:visited,
 a[href].button, a[href].button:visited {
     font-family: "Source Sans Pro", sans-serif;
     text-decoration: none; background-color: transparent;
-    border: 1px solid #ccc; color: #fff;
+    border: 1px solid #894d6f; color: #fff;
     padding: 3px 5px; margin: 0; margin-right: 3px;
     display: inline-block; cursor: pointer;
     font-size: 1.2em; font-weight: 300;
@@ -185,6 +185,7 @@ a.nolink { border: 0; }
 .thread-title {
     margin: 5px; padding: 0;
     font-weight: 400;
+    color: #ff67a7;
 }
 .thread-author, .post-author {
     margin: 0; padding: 5px; padding-top: 0;
@@ -252,7 +253,10 @@ a.toggleImage, a.toggleIframe {
 /* Homepage */
 
 .tag-item, .thread-item { font-size: 0.9em; padding: 10px; }
-.tag-name, .thread-name { text-transform: capitalize; padding: 0; margin: 0; }
+.tag-name, .thread-name {
+    text-transform: capitalize; padding: 0; margin: 0;
+    a[href], a[href]:visited { color: #ff67a7; }
+}
 .hide { opacity: 0.6; &:hover { opacity: 1; } }
 
 /* Forms */
