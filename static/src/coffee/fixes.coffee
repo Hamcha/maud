@@ -121,7 +121,6 @@ if window.adminMode
 fromList(document.querySelectorAll('.postIdQuote')).map (e) ->
 	e.onmouseover = ->
 		refId = "p#{e.innerHTML[10..]}"
-		console.log refId
-		document.getElementById(refId).classList.add 'highlighted'
+		document.getElementById(refId)?.classList?.add 'highlighted'
 	e.onmouseout = ->
-		document.querySelector('.post.highlighted').classList.remove 'highlighted'
+		document.querySelector('.post.highlighted')?.classList?.remove 'highlighted'
