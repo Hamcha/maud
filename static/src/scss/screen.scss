@@ -169,6 +169,9 @@ a.nolink { border: 0; }
 
 .post, .thread {
 	position: relative;
+	&.highlighted {
+		background-color: rgba(100,100,100,.4);
+	}
 }
 
 .right {

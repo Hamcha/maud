@@ -116,3 +116,12 @@ toggle?.onclick = ->
 # Unhide post actions to admins
 if window.adminMode
 	con.style.display = "inline-block" for con in document.querySelectorAll ".postactions"
+
+# Setup onclick event for postIdQuote
+fromList(document.querySelectorAll('.postIdQuote')).map (e) ->
+	e.onmouseover = ->
+		refId = "p#{e.innerHTML[10..]}"
+		console.log refId
+		document.getElementById(refId).classList.add 'highlighted'
+	e.onmouseout = ->
+		document.querySelector('.post.highlighted').classList.remove 'highlighted'
