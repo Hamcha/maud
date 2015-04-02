@@ -12,12 +12,12 @@ import (
 	"strings"
 )
 
-var siteInfo SiteInfo
-var adminConf AdminConfig
-var db Database
-
-// absolute path to Maud root directory
-var maudRoot string
+var (
+	adminConf AdminConfig
+	db        Database
+	maudRoot  string
+	siteInfo  SiteInfo
+)
 
 func setupHandlers(router *mux.Router, isAdmin, isSubdir bool) {
 	GET := router.Methods("GET", "HEAD").Subrouter()

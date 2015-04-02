@@ -1,6 +1,7 @@
 maud
 static/css
 static/js
+static/build.js
 .sass-cache
 node_modules
 info.json
