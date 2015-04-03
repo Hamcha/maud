@@ -1,6 +1,7 @@
 package main
 
 import (
+	"./data"
 	"bytes"
 	"crypto/rand"
 	"crypto/sha256"
@@ -147,13 +148,13 @@ func shortify(content string) (string, bool) {
 	return PostPolicy().Sanitize(short), true
 }
 
-func threadPostOrErr(rw http.ResponseWriter, threadId, postIdStr string) (Thread, Post, error) {
+func threadPostOrErr(rw http.ResponseWriter, threadId, postIdStr string) (data.Thread, data.Post, error) {
 	thread, err := db.GetThread(threadId)
 	// retreive post
 	postId, err := strconv.Atoi(postIdStr)
 	if err != nil {
 		sendError(rw, 400, err.Error())
-		return thread, Post{}, err
+		return thread, data.Post{}, err
 	}
 	posts, err := db.GetPosts(&thread, 1, postId)
 	if err != nil {
@@ -241,13 +242,13 @@ func getHiddenElems(req *http.Request) (threads, tags []string) {
 	}
 }
 
-func retreiveThreads(n, offset int, hThreads, hTags []string) ([]ThreadInfo, error) {
+func retreiveThreads(n, offset int, hThreads, hTags []string) ([]data.ThreadInfo, error) {
 	threads, err := db.GetThreadList("", n, offset, hThreads, hTags)
 	if err != nil {
 		return nil, err
 	}
 
-	tinfos := make([]ThreadInfo, 0, siteInfo.HomeThreadsNum)
+	tinfos := make([]data.ThreadInfo, 0, siteInfo.HomeThreadsNum)
 	for i, _ := range threads {
 
 		count, err := db.PostCount(&threads[i])
@@ -260,10 +261,10 @@ func retreiveThreads(n, offset int, hThreads, hTags []string) ([]ThreadInfo, err
 			return tinfos, err
 		}
 
-		tinfos = append(tinfos, ThreadInfo{
+		tinfos = append(tinfos, data.ThreadInfo{
 			Thread:      threads[i],
 			LastMessage: count - 1,
-			LastPost: PostInfo{
+			LastPost: data.PostInfo{
 				Data:    lastPost,
 				StrDate: strdate(lastPost.Date),
 			},
@@ -276,9 +277,9 @@ func retreiveThreads(n, offset int, hThreads, hTags []string) ([]ThreadInfo, err
 	return tinfos, err
 }
 
-func randomCaptcha() (CaptchaData, error) {
+func randomCaptcha() (data.CaptchaData, error) {
 	if len(captchas) < 1 {
-		return CaptchaData{}, errors.New("Sorry, captchas weren't configured properly.")
+		return data.CaptchaData{}, errors.New("Sorry, captchas weren't configured properly.")
 	}
 	return captchas[mathrand.Intn(len(captchas))], nil
 }

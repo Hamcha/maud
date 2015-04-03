@@ -30,7 +30,9 @@ func (f *LightifyFormatter) Init() {
 // and returns the other content unaltered
 func (f *LightifyFormatter) Format(content string) string {
 	for _, match := range f.imgRgx.FindAllStringSubmatch(content, -1) {
+		println("img: ", match[0])
 		url := match[1]
+		println("Format: matched ", url)
 		spl := strings.Split(url, "/")
 		switch {
 		case len(spl) > 2 && spl[2] == "i.imgur.com":
@@ -45,7 +47,7 @@ func (f *LightifyFormatter) Format(content string) string {
 // ReplaceTags replaces all <img> and <iframe> tags (except for thumbnails)
 // with clickable links to get those resources.
 func (f *LightifyFormatter) ReplaceTags(data modules.PostMutatorData) {
-	content := *data.Content
+	content := (*data.Post).Content
 	for _, match := range f.imgRgx.FindAllStringSubmatch(content, -1) {
 		url := match[1]
 		spl := strings.Split(url, "/")
@@ -59,7 +61,7 @@ func (f *LightifyFormatter) ReplaceTags(data modules.PostMutatorData) {
 		}
 	}
 	content = f.iframeRgx.ReplaceAllString(content, "<a target=\"_blank\" href=$1>[Click to open embedded content]</a>")
-	*data.Content = f.videoRgx.ReplaceAllString(content, "<a target=\"_blank\" href=$1>[Click to open embedded video]</a>")
+	(*data.Post).Content = f.videoRgx.ReplaceAllString(content, "<a target=\"_blank\" href=$1>[Click to open embedded video]</a>")
 }
 
 //// Unexported ////

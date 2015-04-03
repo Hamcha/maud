@@ -1,6 +1,7 @@
 package main
 
 import (
+	"./data"
 	// Formatters
 	"./modules"
 	"./modules/formatters/bbcode"
@@ -36,15 +37,16 @@ func InitFormatters() {
 	postmutators = append(postmutators, maudtext.Provide(siteInfo.PostsPerPage))
 }
 
-func applyPostMutator(m modules.PostMutator, thread *Thread, post *Post, req *http.Request) {
+func applyPostMutator(m modules.PostMutator, thread *data.Thread, post *data.Post, req *http.Request) {
 	if m.Condition(req) {
 		m.Mutator(postMutatorArgs(thread, post, req))
 	}
 }
 
-func postMutatorArgs(thread *Thread, post *Post, req *http.Request) modules.PostMutatorData {
+func postMutatorArgs(thread *data.Thread, post *data.Post, req *http.Request) modules.PostMutatorData {
 	return modules.PostMutatorData{
-		Content: &post.Content,
+		Thread:  thread,
+		Post:    post,
 		Request: req,
 	}
 }

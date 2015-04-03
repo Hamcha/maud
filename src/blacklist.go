@@ -1,6 +1,7 @@
 package main
 
 import (
+	"./data"
 	"encoding/json"
 	"io/ioutil"
 	"log"
@@ -20,7 +21,7 @@ type Blacklist struct {
 }
 
 var blacklists map[string]Blacklist
-var captchas []CaptchaData
+var captchas []data.CaptchaData
 
 func initBL() {
 	// Load Blacklist conf

@@ -1,4 +1,4 @@
-package main
+package data
 
 import (
 	"gopkg.in/mgo.v2/bson"

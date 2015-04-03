@@ -1,6 +1,7 @@
 package main
 
 import (
+	"./data"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
@@ -46,7 +47,7 @@ func apiNewThread(rw http.ResponseWriter, req *http.Request) {
 		hTrip = randomString(8)
 		tcode = tripcode(hTrip)
 	}
-	user := User{nickname, tcode, len(hTrip) > 0}
+	user := data.User{nickname, tcode, len(hTrip) > 0}
 	content := postContent
 	tags := parseTags(postTags)
 
@@ -138,7 +139,7 @@ func apiReply(rw http.ResponseWriter, req *http.Request) {
 		hTrip = randomString(8)
 		tcode = tripcode(hTrip)
 	}
-	user := User{nickname, tcode, len(hTrip) > 0}
+	user := data.User{nickname, tcode, len(hTrip) > 0}
 	content := postContent
 
 	if postTooLong(content) {
@@ -185,7 +186,7 @@ func apiPreview(rw http.ResponseWriter, req *http.Request) {
 	content := parseContent(postContent, "bbcode")
 
 	// Do a dummy post for mutators
-	var fakepost Post
+	var fakepost data.Post
 	fakepost.Content = content
 	for _, m := range postmutators {
 		applyPostMutator(m, nil, &fakepost, req)

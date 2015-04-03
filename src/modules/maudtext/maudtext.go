@@ -24,7 +24,7 @@ type MaudtextMutator struct {
 //   >> #postId
 //   > quote
 func (mt *MaudtextMutator) maudtext(data modules.PostMutatorData) {
-	lines := strings.Split(*data.Content, "\n")
+	lines := strings.Split((*data.Post).Content, "\n")
 	vars := mux.Vars(data.Request)
 	threadUrl, threadok := vars["thread"]
 
@@ -39,14 +39,15 @@ func (mt *MaudtextMutator) maudtext(data modules.PostMutatorData) {
 		if threadok && len(stripped) > 9 && stripped[0:9] == "&gt;&gt;#" {
 			if num, err := strconv.ParseInt(stripped[9:], 10, 32); err == nil {
 				// valid post quote
-				lines[idx] = "<a href=\"" + mt.getLink(int(num), threadUrl) + "\" class=\"postIdQuote\">&gt;&gt; #" + strconv.Itoa(int(num)) + "</a><br/>"
+				lines[idx] = "<a href=\"" + mt.getLink(int(num), threadUrl) +
+					"\" class=\"postIdQuote\">&gt;&gt; #" + strconv.Itoa(int(num)) + "</a><br/>"
 				continue
 			}
 		}
 		lines[idx] = "<span class=\"purpletext\">&gt; " + line[4:] + "</span>"
 	}
 
-	*data.Content = strings.Join(lines, "\n")
+	(*data.Post).Content = strings.Join(lines, "\n")
 }
 
 func (mt *MaudtextMutator) getLink(postNum int, threadUrl string) string {

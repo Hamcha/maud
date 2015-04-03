@@ -1,6 +1,7 @@
 package main
 
 import (
+	"./data"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -13,10 +14,10 @@ import (
 )
 
 var (
-	adminConf AdminConfig
+	adminConf data.AdminConfig
 	db        Database
 	maudRoot  string
-	siteInfo  SiteInfo
+	siteInfo  data.SiteInfo
 )
 
 func setupHandlers(router *mux.Router, isAdmin, isSubdir bool) {
