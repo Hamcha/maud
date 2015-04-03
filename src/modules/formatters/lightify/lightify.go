@@ -30,9 +30,7 @@ func (f *LightifyFormatter) Init() {
 // and returns the other content unaltered
 func (f *LightifyFormatter) Format(content string) string {
 	for _, match := range f.imgRgx.FindAllStringSubmatch(content, -1) {
-		println("img: ", match[0])
 		url := match[1]
-		println("Format: matched ", url)
 		spl := strings.Split(url, "/")
 		switch {
 		case len(spl) > 2 && spl[2] == "i.imgur.com":

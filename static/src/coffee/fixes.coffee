@@ -121,6 +121,25 @@ if window.adminMode
 fromList(document.querySelectorAll('.postIdQuote')).map (e) ->
 	e.onmouseover = ->
 		refId = "p#{e.innerHTML[10..]}"
-		document.getElementById(refId)?.classList?.add 'highlighted'
+		ref = document.getElementById refId
+		if ref?.classList?
+			if ref.getBoundingClientRect().y > 0
+				ref.classList.add 'highlighted'
+			else
+				quoted = e.parentNode.querySelector '.post.quoted'
+				unless quoted?
+					quoted = document.createElement 'article'
+					quoted.innerHTML = ref.innerHTML
+					quoted.className =  'post quoted'
+					quoted.style.top = "-#{ref.clientHeight-30}px"
+					e.parentNode.insertBefore quoted, e
+				quoted.style.display = 'block'
+
+			
 	e.onmouseout = ->
-		document.querySelector('.post.highlighted')?.classList?.remove 'highlighted'
+		post = document.querySelector '.post.highlighted'
+		if post?
+			post.classList.remove 'highlighted'
+		else
+			quoted = e.parentNode.querySelector '.post.quoted'
+			quoted?.style.display = ''

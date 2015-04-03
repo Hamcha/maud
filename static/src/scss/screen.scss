@@ -172,6 +172,14 @@ a.nolink { border: 0; }
 	&.highlighted {
 		background-color: rgba(100,100,100,.4);
 	}
+	&.quoted {
+		display: none;
+		position: absolute;
+		background-color: rgba(0,0,0,0.9);
+		left: 60px;
+		padding: 10px; margin: 2px 0;
+		z-index: 5;
+	}
 }
 
 .right {
