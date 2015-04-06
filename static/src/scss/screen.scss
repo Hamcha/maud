@@ -177,8 +177,9 @@ a.nolink { border: 0; }
 		position: absolute;
 		background-color: rgba(0,0,0,0.9);
 		left: 60px;
-		padding: 10px; margin: 2px 0;
+		padding: 5px; margin: 2px 0;
 		z-index: 5;
+		.right { display: none; }
 	}
 }
 
