@@ -119,7 +119,7 @@ if window.adminMode
 
 # Setup onclick event for postIdQuote
 fromList(document.querySelectorAll('.postIdQuote')).map (e) ->
-	e.onmouseover = ->
+	e.onmouseover = (ev) ->
 		refId = "p#{e.innerHTML[10..]}"
 		ref = document.getElementById refId
 		if ref?.classList?
@@ -131,8 +131,9 @@ fromList(document.querySelectorAll('.postIdQuote')).map (e) ->
 					quoted = document.createElement 'article'
 					quoted.innerHTML = ref.innerHTML
 					quoted.className =  'post quoted'
-					quoted.style.top = "-#{ref.clientHeight-30}px"
 					e.parentNode.insertBefore quoted, e
+				quoted.style.top = "#{Math.max 0, ev.clientY - ref.clientHeight}px"
+				quoted.style.left = "#{ev.clientX + 35}px"
 				quoted.style.display = 'block'
 
 			
