@@ -51,6 +51,9 @@ func (mt *MaudtextMutator) maudtext(data modules.PostMutatorData) {
 }
 
 func (mt *MaudtextMutator) getLink(postNum int, threadUrl string) string {
+	if postNum == 0 {
+		return "/thread/" + threadUrl + "/page/1#thread"
+	}
 	page := postNum/mt.postsPerPage + 1
 	return "/thread/" + threadUrl + "/page/" + strconv.Itoa(page) + "#p" + strconv.Itoa(postNum)
 }

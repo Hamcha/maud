@@ -120,18 +120,20 @@ if window.adminMode
 # Setup onclick event for postIdQuote
 fromList(document.querySelectorAll('.postIdQuote')).map (e) ->
 	e.onmouseover = (ev) ->
-		refId = "p#{e.innerHTML[10..]}"
+		postNum = e.innerHTML[10..]
+		refId = if postNum == '0' then 'thread' else "p#{postNum}"
 		ref = document.getElementById refId
 		if ref?.classList?
 			if ref.getBoundingClientRect().y > 0
 				ref.classList.add 'highlighted'
 			else
-				quoted = e.parentNode.querySelector '.post.quoted'
+				quoted = document.getElementById "#{refId}_quoted"
 				unless quoted?
 					quoted = document.createElement 'article'
 					quoted.innerHTML = ref.innerHTML
 					quoted.className =  'post quoted'
-					e.parentNode.insertBefore quoted, e
+					quoted.id = "#{refId}_quoted"
+					document.getElementById('quoted_posts').appendChild quoted
 				quoted.style.top = "#{Math.max 0, ev.clientY - ref.clientHeight}px"
 				quoted.style.left = "#{ev.clientX + 35}px"
 				quoted.style.display = 'block'
@@ -142,5 +144,7 @@ fromList(document.querySelectorAll('.postIdQuote')).map (e) ->
 		if post?
 			post.classList.remove 'highlighted'
 		else
-			quoted = e.parentNode.querySelector '.post.quoted'
-			quoted?.style.display = ''
+			postNum = e.innerHTML[10..]
+			refId = if postNum == '0' then 'thread_quoted' else "p#{postNum}_quoted"
+			post = document.getElementById refId
+			post?.style.display = ''

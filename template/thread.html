@@ -22,7 +22,7 @@
         <span class="nickname">{{#IsAnon}}<span class="anon">Rock</span>{{/IsAnon}}{{#Nickname}}{{Nickname}}{{/Nickname}}</span>
         <span class="tripcode">{{^HiddenTripcode}}{{Tripcode}}{{/HiddenTripcode}}</span>
         {{/Author}}
-        <a href="#thread" class="date" data-udate="{{Date}}">{{StrDate}}</a>
+        <a href="#thread" class="date" data-udate="{{Date}}">{{StrDate}}</a> <a class="postId" onclick="Posts.quotePostId(0)">#0</a>
     </h3>
     <div class="right">
         {{#Modified}}<span class="lastedit" data-udate="{{LastModified}}">edited {{StrLastModified}}</span>{{/Modified}}
@@ -68,6 +68,7 @@
 {{/Posts}}
 </div>
 <div class="pages" data-current="{{Page}}" data-max="{{MaxPages}}"></div>
+<div id="quoted_posts" class="post"></div>
 <hr />
 <section class="form"><a name="reply" class="noborder"></a>
 <form id="reply-form" onsubmit="return Posts.replyPreSubmit(this, '{{#Thread}}{{ShortUrl}}', {{Messages}}{{/Thread}})" method="POST" action="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/reply">
