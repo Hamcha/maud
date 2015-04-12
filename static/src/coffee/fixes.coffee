@@ -124,7 +124,7 @@ fromList(document.querySelectorAll('.postIdQuote')).map (e) ->
 		refId = if postNum == '0' then 'thread' else "p#{postNum}"
 		ref = document.getElementById refId
 		if ref?.classList?
-			if ref.getBoundingClientRect().y > 0
+			if ref.getBoundingClientRect().top > 0
 				ref.classList.add 'highlighted'
 			else
 				quoted = document.getElementById "#{refId}_quoted"
