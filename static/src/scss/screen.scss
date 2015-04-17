@@ -202,6 +202,7 @@ a.nolink { border: 0; }
 	margin: 5px; padding: 0;
 	font-weight: 400;
 }
+h2.thread-title { margin-right: 2em; }
 .thread-author, .post-author {
 	margin: 0; padding: 5px; padding-top: 0;
 	font-weight: 400;
@@ -210,7 +211,7 @@ a.nolink { border: 0; }
 
 article.post-selected { background-color: rgba(0,0,0,.7); }
 
-.post-author { padding: 0 5px; padding-top: 5px; }
+.post-author { padding: 0 5px; padding-top: 5px; margin-right: 2em; }
 
 .nickname { font-weight: 600; }
 .tripcode { color: #777; }
@@ -220,7 +221,7 @@ a.date, a.postId, a.date:visited, a.postId:visited { border: 0; cursor: pointer;
 .tags { font-size: 0.9em; opacity: 0.8; padding: 3px 5px 5px 5px; }
 .tag, .tag:visited { color: #ccc; border: 0; &:hover { color: #fff; } }
 
-h2 { font-size: 1.3em; margin: 0; padding: 0; }
+h2 { font-size: 1.3em; padding: 0; }
 .thread-content p, .post-content p { margin: 0; padding: 0 0 5px 0; }
 .thread-content, .post-content { margin: 5px; padding: 0; color: #eee; }
 
@@ -274,7 +275,7 @@ a.toggleImage, a.toggleIframe {
 		opacity: 0.7;
 	}
 }
-.tag-name, .thread-name { text-transform: capitalize; padding: 0; margin: 0; }
+.tag-name, .thread-name { text-transform: capitalize; padding: 0; margin: 0; margin-right: 3em; }
 .hide { opacity: 0.6; &:hover { opacity: 1; } }
 
 /* Forms */

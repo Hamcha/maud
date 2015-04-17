@@ -6,7 +6,7 @@
 </nav>
 <hr />
 <article class="hidden2 thread">
-    All threads, ordered by latest reply
+    <div style="margin-right: 6em;">All threads, ordered by latest reply</div>
     <a href='' class="noborder hide right" style="padding: 0.3em" onclick="Threads.markAllRead()">Mark all read</a>
 </article>
 {{#Data}}
@@ -14,7 +14,7 @@
 {{#Thread}}
 <article class="thread-item thread">
     <h3 class="thread-name"><a href="{{BasePath}}thread/{{ShortUrl}}" class="nolink">{{Title}}</a></h3>
-    <div>Last reply: 
+    <div>Last reply:
         <a class="last-reply" href="{{BasePath}}thread/{{ShortUrl}}/page/{{Page}}#p{{LastMessage}}">
             {{#LastPost}}{{#Data}}
             {{#Author}}
