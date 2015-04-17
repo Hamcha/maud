@@ -3,9 +3,13 @@ anons = ["Rock", "Boulder", "Pebble", "Mineral", "Stone"]
 randomAnon = -> anons[Math.floor(Math.random()*anons.length)]
 
 fromList(document.querySelectorAll ".thread-author,.post-author").map (elem) ->
-	anon = elem.querySelector ".anon"
-	return unless anon isnt null
-	anon.innerHTML = randomAnon()
+	if SiteOptions?.anonizeAll
+		anon = elem.querySelector ".nickname"
+		anon.innerHTML = "<span class='anon'>#{randomAnon()}</span>"
+		elem.querySelector(".tripcode").innerHTML = ''
+	else
+		anon = elem.querySelector ".anon"
+		anon?.innerHTML = randomAnon()
 
 # if 'crSetLatestPost' cookie is set, save hidden tripcode and delete the cookie
 saveHiddenTripcode = (thread, post, htrip) ->
