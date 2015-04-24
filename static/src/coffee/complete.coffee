@@ -9,6 +9,8 @@
 
 # tag separator
 sep = '#'
+# max amount of displayed tags
+limit = 10
 
 # autocomplete input from a JSON list (retreived via AJAX)
 # opts:
@@ -45,9 +47,10 @@ toggleAutocomplete = (elem, url, opts) ->
 		ul.style.visibility = if ul.innerHTML.length > 0 then 'visible' else 'hidden'
 
 updateAutocompleteList = (list, txt, data) ->
+	count = 0
 	list.innerHTML =
 		(for el in data
-			if el[0..txt.length-1] == txt
+			if el[0..txt.length-1] == txt and count++ < limit
 				"<a class='noborder' href='#' onclick='AC.updateTags(" +
 				"\"#{list.parentNode.id}\", \"#{el}\", " +
 				"\"#{list.id}\")'><li>#{el}</li></a>"
