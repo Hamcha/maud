@@ -51,9 +51,19 @@ updateAutocompleteList = (list, txt, data) ->
 	list.innerHTML =
 		(for el in data
 			if el[0..txt.length-1] == txt and count++ < limit
-				"<a class='noborder' href='#' onclick='AC.updateTags(" +
-				"\"#{list.parentNode.id}\", \"#{el}\", " +
-				"\"#{list.id}\")'><li>#{el}</li></a>"
+				utargs = """ "#{list.parentNode.id}","#{el}","#{list.id}" """
+				"""
+				<li title='#{el}' style='cursor:pointer' onclick='AC.prevent || AC.updateTags(#{utargs})'>
+				    <span>#{el}</span>
+				    <a href='#' class='noborder rightanchor' onclick='(function () {
+					       AC.updateTags(#{utargs});
+					       AC.prevent = true; // this is a quite ugly hack
+					       document.getElementById("#{list.parentNode.id}").submit();
+				       })()'>
+				           search &raquo;
+				    </a>
+				</li>
+				"""
 		).join("\n").trim()
 
 

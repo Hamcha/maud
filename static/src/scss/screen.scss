@@ -351,9 +351,26 @@ ul.ac_list {
 	position: absolute;
 	margin: 0;
 	li {
+		position: relative;
+		span {
+			margin-right: 3em;
+			display: block;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
 		&:hover {
 			background-color: #fff;
 			color: #000;
+		}
+		a.rightanchor {
+			position: absolute; 
+			right: 0; 
+			top: 0;
+			padding: 0.5;
+			text-align: right;
+			color: #ddd;
+			font-size: small;
 		}
 	}
 }
