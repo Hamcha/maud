@@ -101,17 +101,19 @@ imgsetup = (btn) ->
 imgsetup imgbtn for imgbtn in lightimagebtn
 
 # Tag search / Fulltext search buttons (in pages which have it)
-toggle = document.getElementById "tagsearchbtn"
-toggle?.onclick = ->
-	toggle.outerHTML = """
-    <form id="tagsearch-form" class="ac_wrapper" style="display: inline-block" method="POST" action="#{basepath}tagsearch" onsubmit="this.querySelector('#tagsearch').value = escapeHTML(this.querySelector('#tagsearch').value); return true">
-        <input class="ac_input" type="text" name="tags" id="tagsearch" placeholder="Filter by tag" required title="Insert tags (each starting with '#')" autocomplete="off" />
-        <input type="submit" value="Search" />
-    </form>
-	"""
-	box = document.getElementById "tagsearch"
-	AC.toggleAutocomplete box, "#{basepath}taglist"
-	box.focus()
+toggle = document.getElementById "tagsearch-form"
+if toggle?
+	toggle.outerHTML = '<a class="button" id="tagsearchbtn" rel="search">Tag search</a>'
+	toggle = document.getElementById "tagsearchbtn"
+	toggle.onclick = ->
+		toggle.outerHTML = """
+		    <form id="tagsearch-form" class="ac_wrapper" style="display: inline-block" method="POST" action="#{basepath}tagsearch" onsubmit="this.querySelector('#tagsearch').value = escapeHTML(this.querySelector('#tagsearch').value); return true">
+			<input class="ac_input" type="text" name="tags" id="tagsearch" placeholder="Filter by tag" required title="Insert tags (each starting with '#')" autocomplete="off" />
+			<input type="submit" value="Search" />
+		    </form>"""
+		box = document.getElementById "tagsearch"
+		AC.toggleAutocomplete box, "#{basepath}taglist"
+		box.focus()
 
 # Unhide post actions to admins
 if window.adminMode
