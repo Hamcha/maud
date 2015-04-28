@@ -150,12 +150,28 @@ func shortify(content string) (string, bool) {
 
 func threadPostOrErr(rw http.ResponseWriter, threadId, postIdStr string) (data.Thread, data.Post, error) {
 	thread, err := db.GetThread(threadId)
-	// retreive post
+	if err != nil {
+		sendError(rw, 404, "Thread not found")
+		return data.Thread{}, data.Post{}, err
+	}
+
+	// parse post ID
 	postId, err := strconv.Atoi(postIdStr)
 	if err != nil {
 		sendError(rw, 400, err.Error())
 		return thread, data.Post{}, err
 	}
+
+	// special case: OP
+	if postId == 0 {
+		post, err := db.GetPost(thread.ThreadPost)
+		if err != nil {
+			sendError(rw, 500, err.Error())
+			return thread, data.Post{}, err
+		}
+		return thread, post, err
+	}
+
 	posts, err := db.GetPosts(&thread, 1, postId)
 	if err != nil {
 		sendError(rw, 500, err.Error())

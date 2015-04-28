@@ -177,6 +177,16 @@ quotePostId = (id) ->
 	window.location.href = '#reply'
 	text.focus()
 
+# remove fallback and set onclick events
+fromList(document.getElementsByClassName 'postEditLink').map (e) ->
+	postId = e.dataset?.postid
+	console.log postId
+	return unless postId?
+	e.href = "#p#{postId}"
+	e.className ="edit nolink"
+	do (postId) ->
+		e.onclick = -> editPost parseInt(postId, 10)
+
 # expose functions
 window.Posts =
 	editPost: editPost

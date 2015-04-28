@@ -5,6 +5,9 @@
      2. Inside the wrapper, there must be an element with class 'ac_input'
         (most likely an input)
      3. Call toggleAutocomplete(the_ac_input_element, '/url_where_to_retreive_data'[, {opts}])
+  The ac_input element supports options given via data-*; currently implemented:
+     - data-ac_search: if "on", then the ac list will have the 'search»' quick link, which
+                       updates the form and submits it automatically.
 ###
 
 # tag separator
@@ -31,6 +34,7 @@ toggleAutocomplete = (elem, url, opts) ->
 	ul.style.zIndex = 10
 	ul.id = 'ac_list'
 	insertAfter ul, elem
+	search = if elem.dataset?.ac_search == 'on' then on else off
 	elem.onkeyup = (e) ->
 		curTag =
 			if elem.value.indexOf sep > 0
@@ -38,7 +42,7 @@ toggleAutocomplete = (elem, url, opts) ->
 			else
 				elem.value.trim()
 		if not opts?.minChars? or curTag.length >= opts.minChars
-			updateAutocompleteList ul, curTag, data
+			updateAutocompleteList ul, curTag, data, { search: search }
 		else
 			ul.innerHTML = ""
 		ul.style.width = "#{elem.offsetWidth}px"
@@ -46,8 +50,17 @@ toggleAutocomplete = (elem, url, opts) ->
 		ul.style.left = "#{elem.offsetLeft}px"
 		ul.style.visibility = if ul.innerHTML.length > 0 then 'visible' else 'hidden'
 
-updateAutocompleteList = (list, txt, data) ->
+updateAutocompleteList = (list, txt, data, opts = {}) ->
 	count = 0
+	searchanchor = if opts?.search is off then -> "" else (utargs) -> """
+		<a href='#' class='noborder rightanchor' onclick='(function () {
+		           AC.updateTags(#{utargs});
+		           AC.prevent = true; // this is a quite ugly hack
+		           document.getElementById("#{list.parentNode.id}").submit();
+		   })()'>
+		       search &raquo;
+		</a>
+	"""
 	list.innerHTML =
 		(for el in data
 			if el[0..txt.length-1] == txt and count++ < limit
@@ -55,13 +68,7 @@ updateAutocompleteList = (list, txt, data) ->
 				"""
 				<li title='#{el}' style='cursor:pointer' onclick='AC.prevent || AC.updateTags(#{utargs})'>
 				    <span>#{el}</span>
-				    <a href='#' class='noborder rightanchor' onclick='(function () {
-					       AC.updateTags(#{utargs});
-					       AC.prevent = true; // this is a quite ugly hack
-					       document.getElementById("#{list.parentNode.id}").submit();
-				       })()'>
-				           search &raquo;
-				    </a>
+				    #{searchanchor utargs}
 				</li>
 				"""
 		).join("\n").trim()

@@ -30,7 +30,7 @@
     <div class="right">
         {{#Modified}}<span class="lastedit" data-udate="{{LastModified}}">edited {{StrLastModified}}</span>{{/Modified}}
         <div id="p0_btn" class="postactions" {{^Editable}}style='display: none'{{/Editable}} />
-            <a href="#thread" class="edit nolink" onclick="Posts.editPost(0)">
+            <a class="postEditLink edit noborder" data-postid="0" href="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/post/{{PostId}}/edit">
                 <img src="/static/images/edit.svg" style="height: 20px;" />
             </a>
             <a href="#thread" class="delete nolink" onclick="Posts.deletePost(0)">
@@ -57,7 +57,7 @@
     <div class="right">
         {{#Modified}}<span class="lastedit" data-udate="{{LastModified}}">edited {{StrLastModified}}</span>{{/Modified}}
         <div id="p{{PostId}}_btn" class="postactions" {{^Editable}}style='display: none'{{/Editable}} />
-            <a href="#p{{PostId}}" class="edit nolink" onclick="Posts.editPost({{PostId}})">
+            <a class="postEditLink edit noborder" data-postid="{{PostId}}" href="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/post/{{PostId}}/edit">
                 <img src="/static/images/edit.svg" style="height: 20px;" />
             </a>
             <a href="#p{{PostId}}" class="delete nolink" onclick="Posts.deletePost({{PostId}})">

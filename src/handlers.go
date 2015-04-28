@@ -560,7 +560,94 @@ func httpManageHidden(rw http.ResponseWriter, req *http.Request) {
 	})
 }
 
-func send(rw http.ResponseWriter, req *http.Request, name string, title string, context interface{}) {
+// httpEditPost serves a page which allows editing posts even when JS is
+// disabled on the client. Unless the client is an admin, refuse to edit
+// deleted or anon posts.
+func httpEditPost(rw http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+	isAdmin, _ := isAdmin(req)
+
+	// Retreive post content
+	thread, post, err := threadPostOrErr(rw, vars["thread"], vars["post"])
+	if err != nil {
+		sendError(rw, 500, err.Error())
+		return
+	}
+
+	if !isAdmin {
+		if post.ContentType == "deleted" || post.ContentType == "admin-deleted" || len(post.Author.Nickname) < 1 {
+			sendError(rw, 403, "Forbidden")
+			return
+		}
+	}
+
+	isOp := post.Id == thread.ThreadPost
+	var tags string
+	if isOp {
+		tags = "#" + strings.Join(thread.Tags, " #")
+	}
+
+	println("post content: ", post.Content)
+
+	send(rw, req, "edit", "Edit post", struct {
+		Thread   string
+		Post     string
+		Nickname string
+		Content  string
+		IsOP     bool
+		IsAdmin  bool
+		Tags     string
+	}{
+		vars["thread"],
+		vars["post"],
+		post.Author.Nickname,
+		post.Content,
+		isOp,
+		isAdmin,
+		tags,
+	})
+}
+
+func httpDeletePost(rw http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+	isAdmin, _ := isAdmin(req)
+
+	// Retreive post content
+	thread, post, err := threadPostOrErr(rw, vars["thread"], vars["post"])
+	if err != nil {
+		sendError(rw, 500, err.Error())
+		return
+	}
+
+	if !isAdmin {
+		if post.ContentType == "deleted" || post.ContentType == "admin-deleted" || len(post.Author.Nickname) < 1 {
+			sendError(rw, 403, "Forbidden")
+			return
+		}
+	}
+
+	isOp := post.Id == thread.ThreadPost
+	var tags string
+	if isOp {
+		tags = "#" + strings.Join(thread.Tags, " #")
+	}
+
+	send(rw, req, "edit", "Edit post", struct {
+		Thread   string
+		Post     string
+		Nickname string
+		IsOP     bool
+		Tags     string
+	}{
+		vars["thread"],
+		vars["post"],
+		post.Author.Nickname,
+		isOp,
+		tags,
+	})
+}
+
+func send(rw http.ResponseWriter, req *http.Request, name, title string, context interface{}) {
 	if len(title) > 0 {
 		title = " ~ " + title
 	}
