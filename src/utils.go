@@ -179,7 +179,7 @@ func threadPostOrErr(rw http.ResponseWriter, threadId, postIdStr string) (data.T
 	}
 	if len(posts) < 1 {
 		sendError(rw, 404, "Post not found")
-		return thread, posts[0], errors.New("Post not found")
+		return thread, data.Post{}, errors.New("Post not found")
 	}
 	return thread, posts[0], nil
 }

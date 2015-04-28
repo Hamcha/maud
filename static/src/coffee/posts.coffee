@@ -180,17 +180,22 @@ quotePostId = (id) ->
 # remove fallback and set onclick events
 fromList(document.getElementsByClassName 'postEditLink').map (e) ->
 	postId = e.dataset?.postid
-	console.log postId
 	return unless postId?
 	e.href = "#p#{postId}"
 	e.className ="edit nolink"
 	do (postId) ->
 		e.onclick = -> editPost parseInt(postId, 10)
 
+fromList(document.getElementsByClassName 'postDeleteLink').map (e) ->
+	postId = e.dataset?.postid
+	return unless postId?
+	e.href = "#p#{postId}"
+	e.className ="delete nolink"
+	do (postId) ->
+		e.onclick = -> deletePost parseInt(postId, 10)
+
 # expose functions
 window.Posts =
-	editPost: editPost
-	deletePost: deletePost
 	cancelForm: cancelForm
 	showPreview: showPreview
 	replyPreSubmit: replyPreSubmit

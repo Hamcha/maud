@@ -570,7 +570,6 @@ func httpEditPost(rw http.ResponseWriter, req *http.Request) {
 	// Retreive post content
 	thread, post, err := threadPostOrErr(rw, vars["thread"], vars["post"])
 	if err != nil {
-		sendError(rw, 500, err.Error())
 		return
 	}
 
@@ -586,8 +585,6 @@ func httpEditPost(rw http.ResponseWriter, req *http.Request) {
 	if isOp {
 		tags = "#" + strings.Join(thread.Tags, " #")
 	}
-
-	println("post content: ", post.Content)
 
 	send(rw, req, "edit", "Edit post", struct {
 		Thread   string
@@ -613,9 +610,8 @@ func httpDeletePost(rw http.ResponseWriter, req *http.Request) {
 	isAdmin, _ := isAdmin(req)
 
 	// Retreive post content
-	thread, post, err := threadPostOrErr(rw, vars["thread"], vars["post"])
+	_, post, err := threadPostOrErr(rw, vars["thread"], vars["post"])
 	if err != nil {
-		sendError(rw, 500, err.Error())
 		return
 	}
 
@@ -626,24 +622,16 @@ func httpDeletePost(rw http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	isOp := post.Id == thread.ThreadPost
-	var tags string
-	if isOp {
-		tags = "#" + strings.Join(thread.Tags, " #")
-	}
-
-	send(rw, req, "edit", "Edit post", struct {
+	send(rw, req, "delete", "Delete post", struct {
 		Thread   string
 		Post     string
 		Nickname string
-		IsOP     bool
-		Tags     string
+		IsAdmin  bool
 	}{
 		vars["thread"],
 		vars["post"],
 		post.Author.Nickname,
-		isOp,
-		tags,
+		isAdmin,
 	})
 }
 

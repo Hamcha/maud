@@ -24,7 +24,7 @@ if window.location.pathname[1...8] == 'thread/'
 	# actually seen. Also save number of replies, and make the thread link
 	# point to the latest read post instead of last one.
 	pages = document.querySelector 'div.pages'
-	return unless pages.dataset.current == pages.dataset.max
+	return unless pages?.dataset? and (pages.dataset.current == pages.dataset.max)
 	# grab latest post
 	posts = document.getElementById('replies').querySelectorAll 'article.post'
 	nreplies = posts.length

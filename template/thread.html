@@ -33,7 +33,7 @@
             <a class="postEditLink edit noborder" data-postid="0" href="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/post/{{PostId}}/edit">
                 <img src="/static/images/edit.svg" style="height: 20px;" />
             </a>
-            <a href="#thread" class="delete nolink" onclick="Posts.deletePost(0)">
+            <a class="postDeleteLink delete noborder" data-postid="0" href="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/post/{{PostId}}/delete">
                 <img src="/static/images/delete.svg" style="height: 18px;" />
             </a>
         </div>
@@ -60,7 +60,7 @@
             <a class="postEditLink edit noborder" data-postid="{{PostId}}" href="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/post/{{PostId}}/edit">
                 <img src="/static/images/edit.svg" style="height: 20px;" />
             </a>
-            <a href="#p{{PostId}}" class="delete nolink" onclick="Posts.deletePost({{PostId}})">
+            <a class="postDeleteLink delete noborder" data-postid="{{PostId}}" href="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/post/{{PostId}}/delete">
                 <img src="/static/images/delete.svg" style="height: 18px;" />
             </a>
         </div>
