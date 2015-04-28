@@ -55,11 +55,11 @@ func (f *LightifyFormatter) ReplaceTags(data modules.PostMutatorData) {
 		case len(spl) > 2 && f.derpiRgx.MatchString(spl[2]):
 			continue
 		default:
-			content = strings.Replace(content, match[0], "<a class='toggleImage' data-url="+url+">[Click to view image]</a>", 1)
+			content = strings.Replace(content, match[0], "<a class='toggleImage' target='_blank' href="+url+">[Click to view image]</a>", 1)
 		}
 	}
-	content = f.iframeRgx.ReplaceAllString(content, "<a target=\"_blank\" href=$1>[Click to open embedded content]</a>")
-	(*data.Post).Content = f.videoRgx.ReplaceAllString(content, "<a target=\"_blank\" href=$1>[Click to open embedded video]</a>")
+	content = f.iframeRgx.ReplaceAllString(content, "<a target='_blank' href=$1>[Click to open embedded content]</a>")
+	(*data.Post).Content = f.videoRgx.ReplaceAllString(content, "<a target='_blank' href=$1>[Click to open embedded video]</a>")
 }
 
 //// Unexported ////

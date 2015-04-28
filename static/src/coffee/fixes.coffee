@@ -95,9 +95,11 @@ window.charsCount = charsCount
 # Setup toggle buttons in light mode
 lightimagebtn = document.querySelectorAll ".toggleImage"
 imgsetup = (btn) ->
-	btn.onclick = ->
-		url = btn.dataset.url
-		btn.outerHTML = "<a href=\"#{url}\"><img src=\"#{url}\" /></a>"
+	url = btn.href
+	do (url) ->
+		btn.removeAttribute 'href'
+		btn.onclick = ->
+			btn.outerHTML = "<a href=\"#{url}\"><img src=\"#{url}\" /></a>"
 imgsetup imgbtn for imgbtn in lightimagebtn
 
 # Tag search / Fulltext search buttons (in pages which have it)
@@ -119,7 +121,7 @@ if toggle?
 if window.adminMode
 	con.style.display = "inline-block" for con in document.querySelectorAll ".postactions"
 
-# Setup onclick event for postIdQuote
+# Setup onhover event for postIdQuote
 fromList(document.querySelectorAll('.postIdQuote')).map (e) ->
 	e.onmouseover = (ev) ->
 		postNum = e.innerHTML[10..]
