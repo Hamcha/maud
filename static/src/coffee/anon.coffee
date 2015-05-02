@@ -3,10 +3,10 @@ anons = ["Rock", "Boulder", "Pebble", "Mineral", "Stone"]
 randomAnon = -> anons[Math.floor(Math.random()*anons.length)]
 
 fromList(document.querySelectorAll ".nickname").map (elem) ->
-	nick = elem.innerHTML
+	nick = elem.firstElementChild
 	if nick instanceof HTMLSpanElement
 		nick.innerHTML = randomAnon()
-	else if nick.length > 0 and SiteOptions?.anonizeAll
+	else if elem.innerHTML.length > 0 and SiteOptions?.anonizeAll
 		elem.innerHTML =
 			if window.location.pathname[0...8] == '/thread/'
 				"<span class='anon'>#{randomAnon()}</span>"
