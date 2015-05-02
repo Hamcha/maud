@@ -19,11 +19,12 @@ import (
 )
 
 func parseNickname(nickname string) (string, string) {
+	nickname = strings.TrimSpace(nickname)
 	if len(nickname) < 1 {
 		return "", ""
 	}
 	nicks := strings.SplitN(nickname, "#", 2)
-	if len(nicks) > 1 {
+	if len(nicks) > 1 && len(nicks[0]) > 0 && len(nicks[1]) > 0 {
 		return nicks[0], tripcode(nicks[1])
 	}
 	return nickname, ""
