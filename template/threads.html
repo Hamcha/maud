@@ -28,11 +28,19 @@
             {{/Data}}{{/LastPost}}
         </a>
     </div>
-    <div class="right">
-        <a class="noborder hide" href="" onclick="Hiding.toggleHideThread('{{ShortUrl}}')">Hide</a>
-    </div>
+    <div class="right hiding" data-arg="{{ShortUrl}}"></div>
 </article>
 {{/Thread}}
 {{/Last}}
-<div class="pages" data-current="{{CurrentPage}}" data-max="nomax" data-more="{{#More}}yes{{/More}}{{^More}}no{{/More}}"></div>
+<div class="pages" data-max="nomax">
+{{#Pages}}
+    {{#HasPrev}}
+    <a href="{{BasePath}}threads/page/{{PrevPage}}" rel="prev">&laquo; Back</a>
+    {{/HasPrev}}
+    <b>{{Page}}</b>
+    {{#HasNext}}
+    <a href="{{BasePath}}threads/page/{{NextPage}}" rel="next">Next &raquo;</a>
+    {{/HasNext}}
+{{/Pages}}
+</div>
 {{/Data}}

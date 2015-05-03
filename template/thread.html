@@ -9,8 +9,18 @@
 </nav>
 <hr />
 {{#Data}}
-<div class="pages" data-current="{{Page}}" data-max="{{MaxPages}}"></div>
 {{#Thread}}
+{{#Pages}}
+<div class="pages" data-current="{{Page}}" data-max="{{MaxPage}}">
+    {{#HasPrev}}
+    <a href="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/page/{{PrevPage}}" rel="prev">&laquo; Back</a>
+    {{/HasPrev}}
+    <b>{{Page}}</b>
+    {{#HasNext}}
+    <a href="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/page/{{NextPage}}" rel="next">Next &raquo;</a>
+    {{/HasNext}}
+</div>
+{{/Pages}}
 <section class="tags">
 {{#Tags}}<a href="{{BasePath}}tag/{{.}}" class="tag" rel="tag">#{{{.}}}</a> {{/Tags}}
 </section>
@@ -70,7 +80,17 @@
 </article>
 {{/Posts}}
 </div>
-<div class="pages" data-current="{{Page}}" data-max="{{MaxPages}}"></div>
+{{#Pages}}
+<div class="pages" data-current="{{Page}}" data-max="{{MaxPage}}">
+    {{#HasPrev}}
+    <a href="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/page/{{PrevPage}}" rel="prev">&laquo; Back</a>
+    {{/HasPrev}}
+    <b>{{Page}}</b>
+    {{#HasNext}}
+    <a href="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/page/{{NextPage}}" rel="next">Next &raquo;</a>
+    {{/HasNext}}
+</div>
+{{/Pages}}
 <div id="quoted_posts" class="post"></div>
 <hr />
 <section class="form"><a name="reply" class="noborder"></a>

@@ -16,10 +16,18 @@
 <article class="tag-item thread">
     <h3 class="tag-name"><a href="{{BasePath}}tag/{{Name}}" class="nolink">{{{Name}}}</a></h3>
     <div>Last updated thread: {{#LastThread}}{{#Thread}}<a href="{{BasePath}}thread/{{ShortUrl}}/page/{{Page}}#p{{LastMessage}}" class="thread-title">{{Title}}</a>{{/Thread}}{{/LastThread}} (<span class="date" data-udate="{{LastUpdate}}">{{StrLastUpdate}}</span>)</div>
-    <div class="right">
-        <a class="noborder hide" href="" onclick="Hiding.toggleHide('#{{Name}}')">Hide</a>
-    </div>
+    <div class="right hiding" data-arg="#{{Name}}"></div>
 </article>
 {{/Tags}}
-<div class="pages" data-current="{{CurrentPage}}" data-max="nomax" data-more="{{#More}}yes{{/More}}{{^More}}no{{/More}}"></div>
+<div class="pages" data-max="nomax">
+{{#Pages}}
+    {{#HasPrev}}
+    <a href="{{BasePath}}tags/page/{{PrevPage}}" rel="prev">&laquo; Back</a>
+    {{/HasPrev}}
+    <b>{{Page}}</b>
+    {{#HasNext}}
+    <a href="{{BasePath}}tags/page/{{NextPage}}" rel="next">Next &raquo;</a>
+    {{/HasNext}}
+{{/Pages}}
+</div>
 {{/Data}}

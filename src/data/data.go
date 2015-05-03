@@ -23,6 +23,15 @@ type Counter struct {
 	Seq  int64
 }
 
+type PageInfo struct {
+	Page     int
+	HasPrev  bool
+	PrevPage int
+	HasNext  bool
+	NextPage int
+	MaxPage  int
+}
+
 type Post struct {
 	Id           bson.ObjectId "_id"
 	ThreadId     bson.ObjectId

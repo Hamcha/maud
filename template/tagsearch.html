@@ -8,7 +8,17 @@
     <a href="{{BasePath}}hidden" class="button">Hidden</a>
 </nav>
 {{#Data}}
-<div class="pages" data-current="{{CurrentPage}}" data-max="nomax" data-more="{{#More}}yes{{/More}}{{^More}}no{{/More}}"></div>
+<div class="pages" data-max="nomax">
+{{#Pages}}
+    {{#HasPrev}}
+    <a href="{{BasePath}}tag/{{TagName}}/page/{{PrevPage}}" rel="prev">&laquo; Back</a>
+    {{/HasPrev}}
+    <b>{{Page}}</b>
+    {{#HasNext}}
+    <a href="{{BasePath}}tag/{{TagName}}/page/{{NextPage}}" rel="next">Next &raquo;</a>
+    {{/HasNext}}
+{{/Pages}}
+</div>
 {{#ThreadList}}
 <hr />
 <article class="home-thread">
@@ -50,5 +60,15 @@
 {{/Tags}}
 </section>
 {{/ThreadList}}
-<div class="pages" data-current="{{CurrentPage}}" data-max="nomax" data-more="{{#More}}yes{{/More}}{{^More}}no{{/More}}"></div>
+<div class="pages" data-max="nomax">
+{{#Pages}}
+    {{#HasPrev}}
+    <a href="{{BasePath}}tag/{{TagName}}/page/{{PrevPage}}" rel="prev">&laquo; Back</a>
+    {{/HasPrev}}
+    <b>{{Page}}</b>
+    {{#HasNext}}
+    <a href="{{BasePath}}tag/{{TagName}}/page/{{NextPage}}" rel="next">Next &raquo;</a>
+    {{/HasNext}}
+{{/Pages}}
+</div>
 {{/Data}}

@@ -84,6 +84,10 @@ toggleHide = (elem) ->
 		location.reload true
 		return
 
+# Bind click events on threads and tags
+fromList(document.querySelectorAll 'div.hiding').map (e) ->
+        e.innerHTML = """<a class="noborder hide" href="" onclick="Hiding.toggleHide('#{e.dataset.arg}')">Hide</a>"""
+
 window.Hiding =
 	toggleHide: toggleHide
 	unhideAllThreads: -> crHidden.clearThreads()

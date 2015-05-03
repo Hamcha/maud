@@ -24,20 +24,11 @@ fromList(document.querySelectorAll ".type blockquote p").map (e) ->
 makePageLists = ->
 	pageDivs = document.querySelectorAll ".pages"
 	for pageDiv in pageDivs
-		page = parseInt pageDiv.dataset.current
-		baseurl = stripPage location.pathname
-		maxstr = pageDiv.dataset.max
-		more = pageDiv.dataset.more
 		# Do Next/Previous only when we don't know the number of pages
-		if maxstr == "nomax"
-			pageHTML = ""
-			if page > 1
-				pageHTML += "<a href=\"#{baseurl}/page/#{page - 1}\" rel=\"prev\">&laquo; Back</a> "
-			pageHTML += "<b>#{page}</b>"
-			if more == "yes"
-				pageHTML += " <a href=\"#{baseurl}/page/#{page + 1}\" rel=\"next\">Next &raquo;</a>"
-			pageDiv.innerHTML = pageHTML
-		else
+		maxstr = pageDiv.dataset.max
+		if maxstr isnt 'nomax'
+			page = parseInt pageDiv.dataset.current
+			baseurl = stripPage location.pathname
 			max = parseInt maxstr
 			if max > 1
 				pageHTML = "PAGE &nbsp;"

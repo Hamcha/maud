@@ -2,7 +2,7 @@ package main
 
 import (
 	"../mustache"
-	"./data"
+	. "./data"
 	"fmt"
 	"github.com/gorilla/mux"
 	"io/ioutil"
@@ -22,7 +22,7 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	tagdata := make([]data.TagData, len(tags))
+	tagdata := make([]TagData, len(tags))
 
 	for i := range tags {
 		thread, err := db.GetThreadById(tags[i].LastThread)
@@ -36,11 +36,11 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 			return
 		}
 
-		tagdata[i] = data.TagData{
+		tagdata[i] = TagData{
 			Name:          htmlFullEscape(tags[i].Name),
 			LastUpdate:    tags[i].LastUpdate,
 			StrLastUpdate: strdate(tags[i].LastUpdate),
-			LastThread: data.ThreadInfo{
+			LastThread: ThreadInfo{
 				Thread:      thread,
 				LastMessage: count - 1,
 				Page:        (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
@@ -57,8 +57,8 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 	send(rw, req, "home", "", struct {
-		Last []data.ThreadInfo
-		Tags []data.TagData
+		Last []ThreadInfo
+		Tags []TagData
 	}{
 		tinfos,
 		tagdata,
@@ -90,14 +90,19 @@ func httpAllThreads(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	pages := PageInfo{
+		Page:     pageInt,
+		HasPrev:  pageInt > 1,
+		PrevPage: pageInt - 1,
+		HasNext:  len(tinfos) == siteInfo.TagsPerPage,
+		NextPage: pageInt + 1,
+	}
 	send(rw, req, "threads", "All threads", struct {
-		Last        []data.ThreadInfo
-		CurrentPage int
-		More        bool
+		Last  []ThreadInfo
+		Pages PageInfo
 	}{
 		tinfos,
-		pageInt,
-		len(tinfos) == siteInfo.ThreadsPerPage,
+		pages,
 	})
 }
 
@@ -128,7 +133,7 @@ func httpAllTags(rw http.ResponseWriter, req *http.Request) {
 		sendError(rw, 500, err.Error())
 		return
 	}
-	tagdata := make([]data.TagData, len(tags))
+	tagdata := make([]TagData, len(tags))
 
 	for i := range tags {
 		thread, err := db.GetThreadById(tags[i].LastThread)
@@ -142,11 +147,11 @@ func httpAllTags(rw http.ResponseWriter, req *http.Request) {
 			return
 		}
 
-		tagdata[i] = data.TagData{
+		tagdata[i] = TagData{
 			Name:          htmlFullEscape(tags[i].Name),
 			LastUpdate:    tags[i].LastUpdate,
 			StrLastUpdate: strdate(tags[i].LastUpdate),
-			LastThread: data.ThreadInfo{
+			LastThread: ThreadInfo{
 				Thread:      thread,
 				LastMessage: count - 1,
 				Page:        (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
@@ -157,14 +162,19 @@ func httpAllTags(rw http.ResponseWriter, req *http.Request) {
 		}
 	}
 
+	pages := PageInfo{
+		Page:     pageInt,
+		HasPrev:  pageInt > 1,
+		PrevPage: pageInt - 1,
+		HasNext:  len(tags) == siteInfo.TagsPerPage,
+		NextPage: pageInt + 1,
+	}
 	send(rw, req, "tags", "All tags", struct {
-		Tags        []data.TagData
-		CurrentPage int
-		More        bool
+		Tags  []TagData
+		Pages PageInfo
 	}{
 		tagdata,
-		pageInt,
-		len(tags) == siteInfo.TagsPerPage,
+		pages,
 	})
 }
 
@@ -218,7 +228,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		sendError(rw, 500, err.Error())
 		return
 	}
-	postsInfo := make([]data.PostInfo, len(posts))
+	postsInfo := make([]PostInfo, len(posts))
 	for index := range posts {
 		posts[index].Content = parseContent(posts[index].Content, posts[index].ContentType)
 		// Modules for changing content based on a condition, e.g. Lightify
@@ -235,13 +245,13 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		postsInfo[index].IsAnon = len(posts[index].Author.Nickname) < 1 && (len(posts[index].Author.Tripcode) < 1 || posts[index].Author.HiddenTripcode)
 	}
 
-	var threadPost data.PostInfo
+	var threadPost PostInfo
 	if pageInt == 1 {
 		threadPost = postsInfo[0]
 		postsInfo = postsInfo[1:]
 	}
 
-	var captchaData data.CaptchaData
+	var captchaData CaptchaData
 	if requiresCaptcha {
 		captchaData, err = randomCaptcha()
 		if err != nil {
@@ -249,21 +259,28 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 			return
 		}
 	}
+	maxPage := (postCount + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage
+	pages := PageInfo{
+		Page:     pageInt,
+		HasPrev:  pageInt > 1,
+		PrevPage: pageInt - 1,
+		HasNext:  pageInt < maxPage,
+		NextPage: pageInt + 1,
+		MaxPage:  maxPage,
+	}
 	send(rw, req, "thread", thread.Title, struct {
-		Thread       data.Thread
-		ThreadPost   data.PostInfo
-		Posts        []data.PostInfo
-		Page         int
-		MaxPages     int
+		Thread       Thread
+		ThreadPost   PostInfo
+		Posts        []PostInfo
+		Pages        PageInfo
 		HasOP        bool
 		NeedsCaptcha bool
-		Captcha      data.CaptchaData
+		Captcha      CaptchaData
 	}{
 		thread,
 		threadPost,
 		postsInfo,
-		pageInt,
-		(postCount + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
+		pages,
 		pageInt == 1,
 		requiresCaptcha,
 		captchaData,
@@ -299,7 +316,7 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 	type ThreadData struct {
 		ShortUrl     string
 		Title        string
-		Author       data.User
+		Author       User
 		Tags         []string
 		Date         int64
 		StrDate      string
@@ -310,7 +327,7 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 		LRStrDate    string
 		HasLR        bool
 		LastPost     struct {
-			Author       data.User
+			Author       User
 			Date         int64
 			StrDate      string
 			HasBroken    bool
@@ -381,14 +398,21 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 		}
 	}
 
+	pages := PageInfo{
+		Page:     pageInt,
+		HasPrev:  pageInt > 1,
+		PrevPage: pageInt - 1,
+		HasNext:  len(threadlist) == siteInfo.TagResultsPerPage,
+		NextPage: pageInt + 1,
+	}
 	send(rw, req, "tagsearch", "Threads under \""+tagName+"\"", struct {
-		ThreadList  []ThreadData
-		CurrentPage int
-		More        bool
+		ThreadList []ThreadData
+		TagName    string
+		Pages      PageInfo
 	}{
 		threadlist,
-		pageInt,
-		len(threadlist) == siteInfo.TagResultsPerPage,
+		tagName,
+		pages,
 	})
 }
 
@@ -400,7 +424,7 @@ func httpNewThread(rw http.ResponseWriter, req *http.Request) {
 			return
 		}
 		send(rw, req, "newthread", "New thread", struct {
-			Captcha data.CaptchaData
+			Captcha CaptchaData
 		}{
 			captchaData,
 		})
@@ -484,7 +508,7 @@ func httpManageHidden(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	tinfos := make([]data.ThreadInfo, len(threads))
+	tinfos := make([]ThreadInfo, len(threads))
 	for i, _ := range threads {
 		count, err := db.PostCount(&threads[i])
 		if err != nil {
@@ -498,10 +522,10 @@ func httpManageHidden(rw http.ResponseWriter, req *http.Request) {
 			return
 		}
 
-		tinfos[i] = data.ThreadInfo{
+		tinfos[i] = ThreadInfo{
 			Thread:      threads[i],
 			LastMessage: count - 1,
-			LastPost: data.PostInfo{
+			LastPost: PostInfo{
 				Data:    lastPost,
 				StrDate: strdate(lastPost.Date),
 			},
@@ -519,7 +543,7 @@ func httpManageHidden(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	tagdata := make([]data.TagData, len(tags))
+	tagdata := make([]TagData, len(tags))
 
 	for i := range tags {
 		thread, err := db.GetThreadById(tags[i].LastThread)
@@ -533,11 +557,11 @@ func httpManageHidden(rw http.ResponseWriter, req *http.Request) {
 			return
 		}
 
-		tagdata[i] = data.TagData{
+		tagdata[i] = TagData{
 			Name:          htmlFullEscape(tags[i].Name),
 			LastUpdate:    tags[i].LastUpdate,
 			StrLastUpdate: strdate(tags[i].LastUpdate),
-			LastThread: data.ThreadInfo{
+			LastThread: ThreadInfo{
 				Thread:      thread,
 				LastMessage: count - 1,
 				Page:        (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
@@ -547,16 +571,21 @@ func httpManageHidden(rw http.ResponseWriter, req *http.Request) {
 			tagdata[i].LastThread.Page = 1
 		}
 	}
+	pages := PageInfo{
+		Page:     pageInt,
+		HasPrev:  pageInt > 1,
+		PrevPage: pageInt - 1,
+		HasNext:  len(tinfos) == siteInfo.TagResultsPerPage,
+		NextPage: pageInt + 1,
+	}
 	send(rw, req, "hidden", "Hidden elements", struct {
-		Last        []data.ThreadInfo
-		Tags        []data.TagData
-		CurrentPage int
-		More        bool
+		Last  []ThreadInfo
+		Tags  []TagData
+		Pages PageInfo
 	}{
 		tinfos,
 		tagdata,
-		pageInt,
-		len(tinfos) == siteInfo.ThreadsPerPage,
+		pages,
 	})
 }
 
@@ -653,7 +682,7 @@ func send(rw http.ResponseWriter, req *http.Request, name, title string, context
 			maudRoot+"/template/"+name+".html",
 			maudRoot+"/template/layout.html",
 			struct {
-				Info     data.SiteInfo
+				Info     SiteInfo
 				Title    string
 				Footer   string
 				Data     interface{}
@@ -689,7 +718,7 @@ func stiki(rw http.ResponseWriter, req *http.Request, name string) {
 			maudRoot+"/stiki/"+name+".html",
 			maudRoot+"/template/layout.html",
 			struct {
-				Info     data.SiteInfo
+				Info     SiteInfo
 				Title    string
 				Footer   string
 				BasePath string
@@ -710,7 +739,7 @@ func sendError(rw http.ResponseWriter, code int, context interface{}) {
 			maudRoot+"/errors/"+strconv.Itoa(code)+".html",
 			maudRoot+"/errors/layout.html",
 			struct {
-				Info data.SiteInfo
+				Info SiteInfo
 				Data interface{}
 			}{
 				siteInfo,
