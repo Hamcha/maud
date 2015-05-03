@@ -56,7 +56,8 @@ updateAutocompleteList = (list, txt, data, opts = {}) ->
 		<a href='#' class='noborder rightanchor' onclick='(function () {
 		           AC.updateTags(#{utargs});
 		           AC.prevent = true; // this is a quite ugly hack
-		           document.getElementById("#{list.parentNode.id}").submit();
+			   var form = document.getElementById("#{list.parentNode.id}");
+			   form.onsubmit && form.onsubmit() && form.submit();
 		   })()'>
 		       search &raquo;
 		</a>

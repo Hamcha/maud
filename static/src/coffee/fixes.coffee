@@ -109,10 +109,15 @@ if toggle?
 	toggle = document.getElementById "tagsearchbtn"
 	toggle.onclick = ->
 		toggle.outerHTML = """
-		    <form id="tagsearch-form" class="ac_wrapper" style="display: inline-block" method="POST" action="#{basepath}tagsearch" onsubmit="this.querySelector('#tagsearch').value = escapeHTML(this.querySelector('#tagsearch').value); return true">
+		    <form id="tagsearch-form" class="ac_wrapper" style="display: inline-block" method="POST" action="#{basepath}tagsearch">
 			<input class="ac_input" data-ac_search="on" type="text" name="tags" id="tagsearch" placeholder="Filter by tag" required title="Insert tags (each starting with '#')" autocomplete="off" />
 			<input type="submit" value="Search" />
 		    </form>"""
+		toggle = document.getElementById('tagsearch-form')
+		toggle.onsubmit = ->
+			tagsrc = toggle.elements[0]
+			tagsrc.value = escapeHTML tagsrc.value.trim().replace(/[\s#]+$/g, '')
+			return true
 		box = document.getElementById "tagsearch"
 		AC.toggleAutocomplete box, "#{basepath}taglist"
 		box.focus()
