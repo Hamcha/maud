@@ -36,7 +36,7 @@
         <span class="nickname">{{#IsAnon}}<span class="anon">Rock</span>{{/IsAnon}}{{#Nickname}}{{Nickname}}{{/Nickname}}</span>
         <span class="tripcode">{{^HiddenTripcode}}{{Tripcode}}{{/HiddenTripcode}}</span>
         {{/Author}}
-        <span class="date" data-udate="{{Date}}">{{StrDate}}</span>
+        <a href="{{BasePath}}thread/{{ShortUrl}}/page/{{Page}}#p{{Number}}" class="date" data-udate="{{Date}}">{{StrDate}}</a> #{{Number}}
     </h3>
     <div class="post-content type{{ContentType}}">
         {{{ShortContent}}}{{#HasBroken}}...<br /><br /><a href="{{BasePath}}thread/{{ShortUrl}}/page/{{Page}}#p{{Number}}">Post truncated, click here to view the full text.</a>{{/HasBroken}}
