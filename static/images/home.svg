@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="120"
+   height="148.18752"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.5 r10040"
+   sodipodi:docname="home-white2.svg">
+  <defs
+     id="defs4">
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect3005"
+       is_visible="true" />
+  </defs>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>Home</dc:title>
+        <dc:date>6 May 2015</dc:date>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Silverweed</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:source>https://crunchy.rocks/static/images/home.svg</dc:source>
+        <dc:relation>icon</dc:relation>
+        <cc:license
+           rdf:resource="http://creativecommons.org/licenses/by-sa/3.0/" />
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/licenses/by-sa/3.0/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:requires
+           rdf:resource="http://creativecommons.org/ns#Notice" />
+        <cc:requires
+           rdf:resource="http://creativecommons.org/ns#Attribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+        <cc:requires
+           rdf:resource="http://creativecommons.org/ns#ShareAlike" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="layer1"
+     transform="translate(13.90625,-638.09374)">
+    <path
+       style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:3.59999967;stroke-linecap:round;stroke-miterlimit:3.0999999;stroke-opacity:1;stroke-dashoffset:0"
+       d="m -5.8607202,692.01038 103.9089402,0 c 3.46002,0 6.24553,2.7855 6.24553,6.24553 l 0,79.98038 c 0,3.46003 -2.78551,6.24554 -6.24553,6.24554 l -31.597328,0 -0.178571,-41.21397 -20.357143,0 -19.821428,0 -0.178572,41.21397 -31.7758982,0 c -3.46002,0 -6.2455298,-2.78551 -6.2455298,-6.24554 l 0,-79.98038 c 0,-3.46003 2.7855098,-6.24553 6.2455298,-6.24553 z"
+       id="rect2989"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ssssscccccssss" />
+    <path
+       style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:3.5999999;stroke-linecap:round;stroke-miterlimit:3.0999999;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       d="M 9.7630598,673.10957 C 32.500926,650.03066 41.498722,641.15614 42.853847,640.47218 c 1.448075,-0.73088 3.564943,-0.7371 5.29189,-0.0155 1.309364,0.54708 4.777836,3.88173 39.242483,37.72837 l 11.97199,12.51384 -53.088409,-0.625 -53.5380112,0.88388 17.02927,-17.84817 z"
+       id="path3009"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cscsccccc" />
+  </g>
+</svg>

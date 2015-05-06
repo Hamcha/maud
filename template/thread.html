@@ -110,11 +110,16 @@
         <input class="full verysmall" name="captcha" type="text" placeholder="{{Question}}"/>
         <input name="captchaanswer" type="hidden" value="{{Answer}}"/>
         {{/Captcha}}{{/NeedsCaptcha}}
-        <div>
+        <div style="position: relative;">
             <div class="center">
                 <div class="chars-count" data-maxlen="{{#Info}}{{MaxPostLength}}{{/Info}}"></div>
                 <input type="submit" value="Reply" />
                 <input type="button" class="button" onclick="Posts.showPreview('reply-form')" value="Preview" />
+            </div>
+            <div class="right">
+                <a class="homelink noborder" href="{{BasePath}}">
+                    <img src="/static/images/home.svg" style="height: 18px;" />
+                </a>
             </div>
         </div>
     </form>

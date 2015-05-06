@@ -186,7 +186,7 @@ a.nolink { border: 0; }
 	position: absolute; right: 0; top: 0;
 	text-align: right;  padding: 0.5em;
 
-	.edit, .delete {
+	.edit, .delete, .homelink {
 		opacity: 0.5;
 		@include transition-property(all);
 		@include transition-duration(0.2s);
