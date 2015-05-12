@@ -18,17 +18,17 @@ import (
 )
 
 func Provide() modules.Formatter {
-	md := new(MarkdownFormatter)
+	md := new(markdownFormatter)
 	md.Init()
 	return md
 }
 
-type MarkdownFormatter struct {
+type markdownFormatter struct {
 	mdElements map[*regexp.Regexp]func(*regexp.Regexp, string) string
 	trimEscape *regexp.Regexp
 }
 
-func (m *MarkdownFormatter) Init() {
+func (m *markdownFormatter) Init() {
 	m.mdElements = map[*regexp.Regexp]func(*regexp.Regexp, string) string{
 		regexp.MustCompile(`(?U)(^|\\\\|[^\\])\*\*(.*[^\\])\*\*`):   mdConvertTag("b"),
 		regexp.MustCompile(`(?U)(^|\\\\|[^\\\*])\*(.*[^\\])\*`):     mdConvertTag("i"),
@@ -45,7 +45,7 @@ func (m *MarkdownFormatter) Init() {
 //   [alt](url)
 //   ![alt](url)  -- insert image
 //   `inline code`
-func (m *MarkdownFormatter) Format(content string) string {
+func (m *markdownFormatter) Format(content string) string {
 	lines := strings.Split(content, "\n")
 
 	for idx := range lines {
@@ -62,6 +62,8 @@ func (m *MarkdownFormatter) Format(content string) string {
 
 	return strings.Join(lines, "<br />\n")
 }
+
+// Unexported //
 
 func mdConvertTag(tag string) func(*regexp.Regexp, string) string {
 	return func(regex *regexp.Regexp, str string) string {
