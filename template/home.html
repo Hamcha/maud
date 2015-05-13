@@ -18,7 +18,8 @@
 <article class="thread-item thread">
     <h3 class="thread-name"><a href="{{BasePath}}thread/{{ShortUrl}}" class="nolink">{{Title}}</a></h3>
     <div>Last reply:
-        <a class="last-reply" href="{{BasePath}}thread/{{ShortUrl}}/page/{{Page}}#p{{LastMessage}}">
+		<a class="last-reply" href="{{BasePath}}thread/{{ShortUrl}}/page/{{Page}}#p{{LastMessage}}">
+			#{{LastMessage}}
             {{#LastPost}}{{#Data}}
             {{#Author}}
             <span class="nickname">{{Nickname}}</span>
