@@ -58,8 +58,8 @@ func (f *LightifyFormatter) ReplaceTags(data modules.PostMutatorData) {
 			content = strings.Replace(content, match[0], "<a class='toggleImage' target='_blank' href="+url+">[Click to view image]</a>", 1)
 		}
 	}
-	content = f.iframeRgx.ReplaceAllString(content, "<a target='_blank' href=$1>[Click to open embedded content]</a>")
-	(*data.Post).Content = f.videoRgx.ReplaceAllString(content, "<a target='_blank' href=$1>[Click to open embedded video]</a>")
+	content = f.iframeRgx.ReplaceAllString(content, "<a target='_blank' href=$1>[Embedded: $1]</a>")
+	(*data.Post).Content = f.videoRgx.ReplaceAllString(content, "<a target='_blank' href=$1>[Video: $1]</a>")
 }
 
 //// Unexported ////
