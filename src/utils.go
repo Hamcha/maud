@@ -259,6 +259,8 @@ func getHiddenElems(req *http.Request) (threads, tags []string) {
 	}
 }
 
+// retreiveThreads retreives up to `n` threads, skipping the first `offset`,
+// from the DB, excluding the ones matching the hidden elements of the client.
 func retreiveThreads(n, offset int, hThreads, hTags []string) ([]data.ThreadInfo, error) {
 	threads, err := db.GetThreadList("", n, offset, hThreads, hTags)
 	if err != nil {

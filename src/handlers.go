@@ -97,6 +97,7 @@ func httpAllThreads(rw http.ResponseWriter, req *http.Request) {
 		HasNext:  len(tinfos) == siteInfo.TagsPerPage,
 		NextPage: pageInt + 1,
 	}
+
 	send(rw, req, "threads", "All threads", struct {
 		Last  []ThreadInfo
 		Pages PageInfo
@@ -169,6 +170,7 @@ func httpAllTags(rw http.ResponseWriter, req *http.Request) {
 		HasNext:  len(tags) == siteInfo.TagsPerPage,
 		NextPage: pageInt + 1,
 	}
+
 	send(rw, req, "tags", "All tags", struct {
 		Tags  []TagData
 		Pages PageInfo
@@ -268,6 +270,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		NextPage: pageInt + 1,
 		MaxPage:  maxPage,
 	}
+
 	send(rw, req, "thread", thread.Title, struct {
 		Thread       Thread
 		ThreadPost   PostInfo
@@ -405,6 +408,7 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 		HasNext:  len(threadlist) == siteInfo.TagResultsPerPage,
 		NextPage: pageInt + 1,
 	}
+
 	send(rw, req, "tagsearch", "Threads under \""+tagName+"\"", struct {
 		ThreadList []ThreadData
 		TagName    string
@@ -571,6 +575,7 @@ func httpManageHidden(rw http.ResponseWriter, req *http.Request) {
 			tagdata[i].LastThread.Page = 1
 		}
 	}
+
 	pages := PageInfo{
 		Page:     pageInt,
 		HasPrev:  pageInt > 1,
@@ -578,6 +583,7 @@ func httpManageHidden(rw http.ResponseWriter, req *http.Request) {
 		HasNext:  len(tinfos) == siteInfo.TagResultsPerPage,
 		NextPage: pageInt + 1,
 	}
+
 	send(rw, req, "hidden", "Hidden elements", struct {
 		Last  []ThreadInfo
 		Tags  []TagData

@@ -21,7 +21,7 @@
 </div>
 {{#ThreadList}}
 <hr />
-<article class="home-thread">
+<article class="home-thread" data-tags="{{#Tags}}#{{{.}}}{{/Tags}}">
     <div class="last-update">Last activity: <span class="date" data-udate="{{LRDate}}">{{LRStrDate}}</span></div>
     <h2 class="thread-title"><a href="{{BasePath}}thread/{{ShortUrl}}" class="noborder">{{Title}}</a></h2>
     <h3 class="thread-author">

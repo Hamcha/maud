@@ -15,9 +15,24 @@ window.Threads =
 			lpage = '1' unless lpage?
 			window.localStorage.setItem "lview_#{surl}", "#{date}##{lpost}##{lpage}"
 
+pageIsThread = window.location.pathname[1...8] == 'thread/'
+pageIsThreads = window.location.pathname[1...8] == 'threads'
+pageIsTagSearch = window.location.pathname[1...5] == 'tag/'
+pageIsHome = window.location.pathname == '/'
+# mark NSFW threads
+if pageIsTagSearch or pageIsThreads or pageIsHome
+	window.fromList(document.querySelectorAll 'article.thread-item').map (thread) ->
+		tags = thread.dataset?.tags?.split '#'
+		return unless tags?
+		# setup title
+		thread.title = "#{tags.join ' #'}"[1..]
+		if 'nsfw' in tags
+			thread.querySelector('.thread-name').classList.add 'nsfw'
+
+
 return unless SiteOptions?.dehighlight or SiteOptions?.jumptolastread
 
-if window.location.pathname[1...8] == 'thread/'
+if pageIsThread
 	# When a thread is visited, save the latest post date is localStorage.
 	# First, ensure this is the last page of the thread. If not, don't
 	# mark this thread as 'visited', since latest replies are not being
@@ -39,7 +54,7 @@ if window.location.pathname[1...8] == 'thread/'
 	if date?
 		surl = window.location.pathname.split('/')[2]
 		window.localStorage.setItem "lview_#{surl}", "#{date}##{nreplies}##{page}"
-else if window.location.pathname == '/' or window.location.pathname[1...8] == 'threads'
+else if pageIsHome or pageIsThreads
 	# In home/all-threads: for each thread, check if already viewed or not
 	window.fromList(document.querySelectorAll 'article.thread-item').map (thread) ->
 		# get last-modified date
