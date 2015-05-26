@@ -21,13 +21,13 @@ pageIsTagSearch = window.location.pathname[1...5] == 'tag/'
 pageIsHome = window.location.pathname == '/'
 # mark NSFW threads
 if pageIsTagSearch or pageIsThreads or pageIsHome
-	window.fromList(document.querySelectorAll 'article.thread-item').map (thread) ->
+	window.fromList(document.querySelectorAll 'article.thread-item, article.home-thread').map (thread) ->
 		tags = thread.dataset?.tags?.split '#'
 		return unless tags?
 		# setup title
 		thread.title = "#{tags.join ' #'}"[1..]
 		if 'nsfw' in tags
-			thread.querySelector('.thread-name').classList.add 'nsfw'
+			thread.querySelector('.thread-name, .thread-title').classList.add 'nsfw'
 
 
 return unless SiteOptions?.dehighlight or SiteOptions?.jumptolastread
