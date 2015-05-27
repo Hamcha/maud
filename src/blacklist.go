@@ -2,8 +2,6 @@ package main
 
 import (
 	"./data"
-	"encoding/json"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"regexp"
@@ -25,30 +23,24 @@ var captchas []data.CaptchaData
 
 func initBL() {
 	// Load Blacklist conf
-	rawconf, err := ioutil.ReadFile(maudRoot + "/blacklist.conf")
+	err := LoadJson("blacklist.conf", &blacklists)
 	if err != nil {
 		log.Printf("[ WARNING ] %s/blacklist.conf not found. BL not initialized.\n", maudRoot)
 		return
 	}
-	err = json.Unmarshal(rawconf, &blacklists)
-	if err != nil {
-		panic(err)
-	}
+
 	for i := range blacklists {
 		item := blacklists[i]
 		item.IPRegexp = regexp.MustCompile(blacklists[i].IP)
 		item.UARegexp = regexp.MustCompile(blacklists[i].UserAgent)
 		blacklists[i] = item
 	}
+
 	// Load Captcha conf
-	rawconf, err = ioutil.ReadFile(maudRoot + "/captcha.conf")
+	err = LoadJson("captcha.conf", &captchas)
 	if err != nil {
 		log.Printf("[ WARNING %s/captcha.conf not found. Captchas not initialized.\n", maudRoot)
 		return
-	}
-	err = json.Unmarshal(rawconf, &captchas)
-	if err != nil {
-		panic(err)
 	}
 }
 

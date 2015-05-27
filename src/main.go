@@ -2,11 +2,9 @@ package main
 
 import (
 	"./data"
-	"encoding/json"
 	"flag"
-	"fmt"
 	"github.com/gorilla/mux"
-	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -81,20 +79,15 @@ func main() {
 	flag.Parse()
 
 	// Load Site info file
-	rawconf, _ := ioutil.ReadFile(maudRoot + "/info.json")
-	err = json.Unmarshal(rawconf, &siteInfo)
+	err = LoadJson("info.json", &siteInfo)
 	if err != nil {
 		panic(err)
 	}
 
 	// Load Admin config file
-	if (*adminfile)[0] != '/' {
-		*adminfile = maudRoot + "/" + *adminfile
-	}
-	rawadmin, _ := ioutil.ReadFile(*adminfile)
-	err = json.Unmarshal(rawadmin, &adminConf)
+	err = LoadJson(*adminfile, &adminConf)
 	if err != nil {
-		panic(err)
+		log.Println("[ WARNING ] Admin file is missing or malformed, Maud will run without administrators.")
 	}
 
 	// Initialize formatters, database and other modules
@@ -124,6 +117,6 @@ func main() {
 	http.Handle("/static/", dontListDirs(http.StripPrefix("/static/", http.FileServer(http.Dir(maudRoot+"/static")))))
 
 	// Start serving pages
-	fmt.Printf("Listening on %s\r\nServer root: %s\r\n", *bind, maudRoot)
+	log.Printf("Listening on %s\r\nServer root: %s\r\n", *bind, maudRoot)
 	http.ListenAndServe(*bind, nil)
 }

@@ -7,11 +7,13 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/binary"
+	"encoding/json"
 	"errors"
 	"html"
 	mathrand "math/rand"
 	"net/http"
 	"net/url"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -32,7 +34,7 @@ func parseNickname(nickname string) (string, string) {
 
 func tripcode(str string) string {
 	sum := sha256.Sum256([]byte(str + siteInfo.Secret))
-	b64 := base64.URLEncoding.EncodeToString(sum[:])
+	b64 := base64.URLEncoding.EncodeToString(sum[:6])
 	return b64[0:6]
 }
 
@@ -306,4 +308,14 @@ func randomCaptcha() (data.CaptchaData, error) {
 // html.EscapeString does NOT escape slash by itself; this function does.
 func htmlFullEscape(str string) string {
 	return strings.Replace(html.EscapeString(str), "/", "&sol;", -1)
+}
+
+func LoadJson(path string, out interface{}) error {
+	file, err := os.Open(maudRoot + string(os.PathSeparator) + path)
+	if err != nil {
+		return err
+	}
+
+	decoder := json.NewDecoder(file)
+	return decoder.Decode(out)
 }
