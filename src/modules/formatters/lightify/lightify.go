@@ -59,7 +59,19 @@ func (f *LightifyFormatter) ReplaceTags(data modules.PostMutatorData) {
 		}
 	}
 	content = f.iframeRgx.ReplaceAllString(content, "<a target='_blank' href=$1>[Embedded: $1]</a>")
-	(*data.Post).Content = f.videoRgx.ReplaceAllString(content, "<a target='_blank' href=$1>[Video: $1]</a>")
+	for _, match := range f.videoRgx.FindAllStringSubmatch(content, -1) {
+		url := strings.Trim(match[1], `"'`)
+		if len(url) > 5 && url[len(url)-5:] == ".webm" {
+			spl := strings.Split(url, "/")
+			if len(spl) > 2 && spl[2] == "i.imgur.com" {
+				gifv := url[:len(url)-5] + "m.gifv"
+				content = strings.Replace(content, match[0], wrapImg(url, "<img src=\""+gifv+"\" alt="+url+"/>"), 1)
+				continue
+			}
+		}
+		content = strings.Replace(content, match[0], "<a target='_blank' href=\""+url+"\">[Video: "+url+"]</a>", 1)
+	}
+	(*data.Post).Content = content
 }
 
 //// Unexported ////
