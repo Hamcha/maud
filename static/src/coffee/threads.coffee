@@ -44,16 +44,18 @@ if pageIsThread
 	posts = document.getElementById('replies').querySelectorAll 'article.post'
 	nreplies = posts.length
 	# if no replies, pick op
-	if posts.length < 1
-		posts = [document.getElementById 'thread']
-		nreplies = 0
-	latest = posts[posts.length-1]
+	latest = document.getElementById 'thread'
+	npost = 0
+	if posts.length > 0
+		latest = posts[posts.length-1]
+		npost = latest.id[1..]
 	# page of latest post
 	page = pages.dataset.current ? "1"
 	date = latest.querySelector('a.date').dataset.udate
+	# id of latest post
 	if date?
 		surl = window.location.pathname.split('/')[2]
-		window.localStorage.setItem "lview_#{surl}", "#{date}##{nreplies}##{page}"
+		window.localStorage.setItem "lview_#{surl}", "#{date}##{npost}##{page}"
 else if pageIsHome or pageIsThreads
 	# In home/all-threads: for each thread, check if already viewed or not
 	window.fromList(document.querySelectorAll 'article.thread-item').map (thread) ->
