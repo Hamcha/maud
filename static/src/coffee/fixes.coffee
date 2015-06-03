@@ -125,8 +125,10 @@ fromList(document.querySelectorAll('.postIdQuote')).map (e) ->
 		ref = document.getElementById refId
 		if ref?.classList?
 			if ref.getBoundingClientRect().top > 0
+				# post is fully contained in viewport
 				ref.classList.add 'highlighted'
 			else
+				# post is at least partially hidden
 				quoted = document.getElementById "#{refId}_quoted"
 				unless quoted?
 					quoted = document.createElement 'article'
@@ -140,10 +142,12 @@ fromList(document.querySelectorAll('.postIdQuote')).map (e) ->
 
 			
 	e.onmouseout = ->
-		post = document.querySelector '.post.highlighted'
+		post = document.querySelector '.highlighted'
 		if post?
+			# post in viewport
 			post.classList.remove 'highlighted'
 		else
+			# post hidden
 			postNum = e.innerHTML[10..]
 			refId = if postNum == '0' then 'thread_quoted' else "p#{postNum}_quoted"
 			post = document.getElementById refId
