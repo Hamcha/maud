@@ -34,7 +34,7 @@ func (f *LightifyFormatter) Format(content string) string {
 		spl := strings.Split(url, "/")
 		switch {
 		case len(spl) > 2 && spl[2] == "i.imgur.com":
-			content = strings.Replace(content, match[0], wrapImg(url, "<img src=\""+imgurThumb(url)+"\" alt="+url+"/>"), 1)
+			content = strings.Replace(content, match[0], wrapImg(url, imgurThumb(url)), -1)
 		case len(spl) > 2 && f.derpiRgx.MatchString(spl[2]):
 			content = strings.Replace(content, match[0], wrapImg(url, "<img src=\""+derpibooruThumb(url)+"\" alt="+url+"/>"), 1)
 		}
@@ -43,7 +43,8 @@ func (f *LightifyFormatter) Format(content string) string {
 }
 
 // ReplaceTags replaces all <img> and <iframe> tags (except for thumbnails)
-// with clickable links to get those resources.
+// with clickable links to get those resources. This is used when light mode
+// is active, while Format is always used.
 func (f *LightifyFormatter) ReplaceTags(data modules.PostMutatorData) {
 	content := (*data.Post).Content
 	for _, match := range f.imgRgx.FindAllStringSubmatch(content, -1) {
@@ -84,10 +85,21 @@ func imgurThumb(origUrl string) string {
 	/* origUrl must be like 'https://i.imgur.com/{id}.jpg', else the returned
 	 * Url won't make sense. Getting a medium thumbnail just means
 	 * inserting a 'm' before the image extension.
+	 * If the image is a gif, though, we replace it with a webm instead of
+	 * thumbnailifying it, since Imgur provides this opportunity.
+	 * Note that if light mode is active, this will be converted again into
+	 * a gifv thumbnail.
 	 */
-	idx := strings.LastIndex(origUrl, ".")
-	thumb := origUrl[0:idx] + "m" + origUrl[idx:]
-	return strings.Trim(thumb, `"'`)
+	url := strings.Trim(origUrl, `"'`)
+	idx := strings.LastIndex(url, ".")
+	ext := url[idx:]
+	if ext == ".gif" || ext == ".gifv" {
+		thumb := url[0:idx] + ".webm"
+		return `<video height="250px" src="` + thumb +
+			`" autoplay loop muted>[Your browser is unable to play this video]</video>`
+	}
+	thumb := url[0:idx] + "m" + ext
+	return "<img src=\"" + thumb + "\" alt=\"" + url + "\"/>"
 }
 
 func derpibooruThumb(origUrl string) string {
