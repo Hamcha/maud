@@ -53,7 +53,7 @@
     {{/ThreadPost}}
     {{/HasOP}}
 </article>
-<section id="replies">
+<div id="replies">
 {{#Posts}}
 <article class="post" id="p{{PostId}}">
     {{#Data}}
@@ -79,7 +79,7 @@
     {{/Data}}
 </article>
 {{/Posts}}
-</section>
+</div>
 {{#Pages}}
 <div class="pages" data-current="{{Page}}" data-max="{{MaxPage}}">
     {{#HasPrev}}
