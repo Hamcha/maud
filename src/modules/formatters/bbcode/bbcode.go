@@ -52,11 +52,18 @@ func (b *bbCodeFormatter) Init() {
 		return "<span class=\"spoiler\">" + con + "</span>"
 	}
 	b.bbElements["youtube"] = func(_, con string) string {
-		idx := strings.Index(con, "?v=")
-		if idx > 0 {
+		/* Content may be one of these:
+		 * 1) https://www.youtube.com/watch?v=qRC4Vk6kisY
+		 * 2) https://youtu.be/qRC4Vk6kisY
+		 * 3) qrC4Vk6kisY
+		 */
+		if idx := strings.Index(con, "?v="); idx > 0 {
 			con = con[idx+3:]
+		} else if idx = strings.LastIndex(con, "/"); idx > 0 {
+			con = con[idx+1:]
 		}
-		return `<iframe width="560" height="315" src="//www.youtube.com/embed/` + url.QueryEscape(con) + `" frameborder="0" allowfullscreen></iframe>`
+		return `<iframe width="560" height="315" src="//www.youtube.com/embed/` +
+			url.QueryEscape(con) + `" frameborder="0" allowfullscreen></iframe>`
 	}
 	b.bbElements["html"] = func(_, con string) string {
 		return strings.Replace(con, "\n", "", -1)
