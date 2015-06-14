@@ -74,7 +74,7 @@ ol { margin: 0; }
 
 /* Buttons and links */
 
-a[href].noborder { border: 0 };
+a[href].noborder { border: 0; }
 
 button, input[type="submit"], input[type="button"],
 a.button, a.button:visited, a.article, a.article:visited,
@@ -252,8 +252,6 @@ a[href].postIdQuote, a[href].postIdQuote:visited {
 a[href].postIdQuote:hover {
 	color: #fcf;
 }
-
-iframe.noborder { border: 0 };
 
 span.spoiler, span.spoiler a[href], span.spoiler a[href]:visited {
 	background-color: #555; color: #555;
