@@ -29,7 +29,8 @@ func (b *bbCodeFormatter) Init() {
 		if idx > 0 {
 			con = con[0:idx] + queryescape(con[idx:])
 		}
-		return "<a href=\"" + con + "\" rel=\"nofollow\"><img src=\"" + con + "\" /></a>"
+		return `<a href="` + con + `" rel="nofollow"><img alt="` + con +
+			`src="` + con + `" /></a>`
 	}
 	b.bbElements["url"] = func(par, con string) string {
 		if len(par) < 1 {
@@ -63,17 +64,14 @@ func (b *bbCodeFormatter) Init() {
 			con = con[idx+1:]
 		}
 		return `<iframe width="560" height="315" src="//www.youtube.com/embed/` +
-			url.QueryEscape(con) + `" frameborder="0" allowfullscreen></iframe>`
+			url.QueryEscape(con) + `" class="noborder" allowfullscreen></iframe>`
 	}
 	b.bbElements["html"] = func(_, con string) string {
 		return strings.Replace(con, "\n", "", -1)
 	}
 	/* [video] tag accepts an optional parameter which can control
 	 * the <video> params:
-	 *   - nocontrols / -ctrl: disable controls on video
-	 *   - autoplay / aplay: make this video autoplay
-	 *   - mute / muted: mute this video
-	 *   - gif / giflike: autoplay + mute + nocontrols
+	 *   - gif: autoplay + mute + nocontrols
 	 */
 	b.bbElements["video"] = func(par, con string) string {
 		idx := strings.LastIndex(con, ".")
@@ -86,9 +84,9 @@ func (b *bbCodeFormatter) Init() {
 		}
 		switch ext {
 		case "webm":
-			return `<video height="250px" src="` + con + `" ` + opts + `>[Your browser is unable to play this video]</video>`
+			return `<video height="250" src="` + con + `" ` + opts + `>[Your browser is unable to play this video]</video>`
 		case "ogg", "ogv", "mp4":
-			return `<video height="250px" ` + opts + `><source src="` + con + `" type="video/` + ext + `"/>[Your browser is unable to play this video]</video>`
+			return `<video height="250" ` + opts + `><source src="` + con + `" type="video/` + ext + `"/>[Your browser is unable to play this video]</video>`
 		}
 		return "<gray>Unsupported video type: " + ext + "</gray>"
 	}

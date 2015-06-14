@@ -95,7 +95,7 @@ func imgurThumb(origUrl string) string {
 	ext := url[idx:]
 	if ext == ".gif" || ext == ".gifv" {
 		thumb := url[0:idx] + ".webm"
-		return `<video height="250px" src="` + thumb +
+		return `<video height="250" src="` + thumb +
 			`" autoplay loop muted>[Your browser is unable to play this video]</video>`
 	}
 	thumb := url[0:idx] + "m" + ext

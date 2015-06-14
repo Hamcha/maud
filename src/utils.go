@@ -17,6 +17,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode"
 	"unicode/utf8"
 )
 
@@ -130,20 +131,25 @@ func shortify(content string) (string, bool) {
 		tagname := short[offset+1 : end]
 
 		if tagname[0] == '/' {
-			if stackindex < 1 {
+			if stackindex < 0 {
 				continue
 			}
 			if tagname[1:] == stack[stackindex] {
 				stack = stack[:stackindex]
 				stackindex--
 			}
-		} else {
+		} else if tagname[len(tagname)-1] != '/' {
+			// don't take self-closing tags into account
+			spaceidx := strings.IndexFunc(tagname, unicode.IsSpace)
+			if spaceidx > 0 {
+				tagname = tagname[:spaceidx]
+			}
 			stack = append(stack, tagname)
 			stackindex++
 		}
 	}
 	// close unclosed tags
-	for stackindex > 0 {
+	for stackindex >= 0 {
 		short += "</" + stack[stackindex] + ">"
 		stackindex--
 	}

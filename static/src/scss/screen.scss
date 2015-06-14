@@ -253,6 +253,8 @@ a[href].postIdQuote:hover {
 	color: #fcf;
 }
 
+iframe.noborder { border: 0 };
+
 span.spoiler, span.spoiler a[href], span.spoiler a[href]:visited {
 	background-color: #555; color: #555;
 	&:hover { color: inherit; background-color: inherit; }
