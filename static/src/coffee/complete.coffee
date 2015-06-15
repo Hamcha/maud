@@ -63,7 +63,7 @@ updateAutocompleteList = (list, txt, data, opts = {}) ->
 		</a>
 	"""
 	list.innerHTML =
-		(for el in data
+		(for el in data when el.trim().length > 0
 			if el[0..txt.length-1] == txt and count++ < limit
 				utargs = """ "#{list.parentNode.id}","#{el}","#{list.id}" """
 				"""
