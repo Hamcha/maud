@@ -167,14 +167,6 @@ a.nolink { border: 0; }
 
 /* Thread view */
 
-.nsfw {
-	&::before {
-		text-transform: none;
-		content: "⚠ ";
-		color: #ff0000;
-	}
-}
-
 .post, .thread {
 	position: relative;
 	&.highlighted {

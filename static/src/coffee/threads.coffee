@@ -29,7 +29,8 @@ if pageIs.tagSearch or pageIs.threads or pageIs.home
 		# setup title
 		thread.title = "#{tags.join ' #'}"[1..]
 		if 'nsfw' in tags
-			thread.querySelector('.thread-name, .thread-title').classList.add 'nsfw'
+			title = thread.querySelector('.thread-name, .thread-title')
+			title.innerHTML = "<img src=\"/static/images/nsfw.svg\" style=\"height: 0.9em; padding-top: 0.1em;\" /> " + title.innerHTML
 
 
 return unless SiteOptions?.dehighlight or SiteOptions?.jumptolastread
