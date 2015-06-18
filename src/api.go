@@ -494,8 +494,12 @@ func apiBlacklistAdd(rw http.ResponseWriter, req *http.Request) {
 		IPRegexp:  regexp.MustCompile(ip),
 		UARegexp:  regexp.MustCompile(ua),
 	}
+	blparams := make(map[string]BlacklistParams, len(blacklists))
+	for n, bl := range blacklists {
+		blparams[n] = bl.Parameters()
+	}
 	// backup old blacklist and save new to disk
-	if err := saveJson(&blacklists, "blacklist.conf", true); err != nil {
+	if err := saveJson(&blparams, "blacklist.conf", true); err != nil {
 		sendError(rw, 500, err.Error())
 		return
 	}
@@ -504,25 +508,95 @@ func apiBlacklistAdd(rw http.ResponseWriter, req *http.Request) {
 }
 
 // apiBlacklistRemove removes blacklist rules by name
-// POST params: rulename
 func apiBlacklistRemove(rw http.ResponseWriter, req *http.Request) {
 	isAdmin, adminInfo := isAdmin(req)
 	if !isAdmin {
 		sendError(rw, 401, "Unauthorized")
 		return
 	}
-	rulename := req.PostFormValue("rulename")
+	vars := mux.Vars(req)
+	rulename := vars["rule"]
 	if len(rulename) < 1 {
 		sendError(rw, 400, "Empty rulename supplied")
 		return
 	}
 	delete(blacklists, rulename)
 
+	blparams := make(map[string]BlacklistParams, len(blacklists))
+	for n, bl := range blacklists {
+		blparams[n] = bl.Parameters()
+	}
 	// backup old blacklist and save new to disk
-	if err := saveJson(&blacklists, "blacklist.conf", true); err != nil {
+	if err := saveJson(&blparams, "blacklist.conf", true); err != nil {
 		sendError(rw, 500, err.Error())
 		return
 	}
 
 	http.Redirect(rw, req, adminInfo.BasePath+"blacklist", http.StatusMovedPermanently)
+}
+
+// POST params: json (a JSON string with the new rule parameters)
+func apiBlacklistEdit(rw http.ResponseWriter, req *http.Request) {
+	isAdmin, adminInfo := isAdmin(req)
+	if !isAdmin {
+		sendError(rw, 401, "Unauthorized")
+		return
+	}
+	vars := mux.Vars(req)
+	rulename := vars["rule"]
+	if len(rulename) < 1 {
+		sendError(rw, 400, "Empty rulename supplied")
+		return
+	}
+	if _, ok := blacklists[rulename]; !ok {
+		sendError(rw, 400, "Rule "+rulename+" not found.")
+		return
+	}
+	rule := req.PostFormValue("json")
+	if len(rule) < 2 {
+		sendError(rw, 400, "Invalid rule specified")
+		return
+	}
+	var newrule BlacklistParams
+	if err := json.Unmarshal([]byte(rule), &newrule); err == nil {
+		blacklists[rulename] = NewBlacklist(newrule)
+	} else {
+		sendError(rw, 500, err.Error())
+		return
+	}
+
+	blparams := make(map[string]BlacklistParams, len(blacklists))
+	for n, bl := range blacklists {
+		blparams[n] = bl.Parameters()
+	}
+	// backup old blacklist and save new to disk
+	if err := saveJson(&blparams, "blacklist.conf", true); err != nil {
+		sendError(rw, 500, err.Error())
+		return
+	}
+
+	http.Redirect(rw, req, adminInfo.BasePath+"blacklist", http.StatusMovedPermanently)
+}
+
+// apiBlacklistGetRaw returns the JSON corresponding to a blacklist rule
+func apiBlacklistGetRaw(rw http.ResponseWriter, req *http.Request) {
+	isAdmin, _ := isAdmin(req)
+	if !isAdmin {
+		sendError(rw, 401, "Unauthorized")
+		return
+	}
+	vars := mux.Vars(req)
+	rulename := vars["rule"]
+	rule, ok := blacklists[rulename]
+	if !ok {
+		sendError(rw, 400, "Rule "+rulename+" not found")
+		return
+	}
+
+	ruleJSON, err := json.MarshalIndent(rule.Parameters(), "", "\t")
+	if err != nil {
+		sendError(rw, 500, err.Error())
+		return
+	}
+	fmt.Fprintln(rw, string(ruleJSON))
 }

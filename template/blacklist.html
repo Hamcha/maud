@@ -1,10 +1,11 @@
+{{#Data}}
+<script src='/static/js/blacklist.js'></script>
 <nav>
     Blacklist
 </nav>
-{{#Data}}
 {{#BLData}}
-<article class="thread-item thread">
-    <h3 class="thread-name"><a href="{{BasePath}}thread/{{ShortUrl}}" class="nolink">{{Name}}</a></h3>
+<article class="thread-item thread" id="bl_{{Name}}">
+    <h3 class="thread-name"><a href="#bl_{{Name}}" class="nolink">{{Name}}</a></h3>
     {{#Blacklist}}
     <dl class='blacklist'>
         <dt>Criteria</dt>
@@ -20,8 +21,43 @@
     </dl>
     {{/Blacklist}}
     <div class="right">
-        <a class="noborder hide" href="" >Unban</a>
+        <a class="noborder hide" href="#bl_{{Name}}" onclick='Blacklist.edit("{{Name}}")'>Edit</a>
+        &nbsp;
+        <a class="noborder hide" href="#bl_{{Name}}" onclick='Blacklist.unban("{{Name}}")'>Unban</a>
     </div>
 </article>
 {{/BLData}}
+<section class="form">
+    <form method="POST" action="{{BasePath}}blacklist/new">
+        <div class='center'>
+            <input class='half small' type='text' name='ip' value='{{Ip}}' placeholder='IP (required)' required />
+            <input class='half small' type='text' name='ua' placeholder='User Agent (optional)' />
+        </div>
+        <input class='full' type='text' name='rulename' placeholder='Ban rule name (required)' required autofocus />
+        <input class='full small' type='text' name='reason' placeholder='Ban reason (optional)' />
+        <div style='margin: 10px'>
+            <span class='formlabel'>Ban criteria: </span>
+            <input id='all' type='radio' name='criteria' value='all' checked/>
+            <label for='all'>All</label>
+            <input id='any' type='radio' name='criteria' value='any'/>
+            <label for='any'>Any</label>
+            <br/>
+            <span class='formlabel'>Ban action: </span>
+            <input id='ban' type='radio' name='banaction' value='ban' checked/>
+            <label for='ban'>Ban</label>
+            <input id='captcha' type='radio' name='banaction' value='captcha'/>
+            <label for='captcha'>Captcha</label>
+        </div>
+        <div style='position: relative'>
+            <div class='center'>
+                <button type='submit'>Add a rule</button>
+            </div>
+            <div class="right">
+                <a class="homelink noborder" href="{{BasePath}}" rel="bookmark">
+                    <img src="/static/images/home.svg" style="height: 18px;" alt="Home" title="Back to home" />
+                </a>
+            </div>
+        </div>
+    </form>
+</section>
 {{/Data}}

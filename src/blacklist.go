@@ -9,6 +9,14 @@ import (
 	"regexp"
 )
 
+type BlacklistParams struct {
+	Criteria  string
+	IP        string
+	UserAgent string
+	Reason    string
+	Action    string
+}
+
 type Blacklist struct {
 	Criteria  string
 	IP        string
@@ -98,4 +106,27 @@ func checkBlacklist(req *http.Request) (bool, string, string) {
 	}
 
 	return false, "", ""
+}
+
+// Parameters returns a struct with only the conf params (i.e.
+// without IPRegexp and UARegexp)
+func (blacklist Blacklist) Parameters() (params BlacklistParams) {
+	params.Criteria = blacklist.Criteria
+	params.IP = blacklist.IP
+	params.UserAgent = blacklist.UserAgent
+	params.Reason = blacklist.Reason
+	params.Action = blacklist.Action
+	return
+}
+
+func NewBlacklist(params BlacklistParams) Blacklist {
+	return Blacklist{
+		Criteria:  params.Criteria,
+		IP:        params.IP,
+		UserAgent: params.UserAgent,
+		Reason:    params.Reason,
+		Action:    params.Action,
+		IPRegexp:  regexp.MustCompile(params.IP),
+		UARegexp:  regexp.MustCompile(params.UserAgent),
+	}
 }

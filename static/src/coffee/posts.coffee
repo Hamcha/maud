@@ -10,15 +10,12 @@ editPost = (id) ->
 		type = "post"
 		idname = "##{id}"
 	post = document.getElementById pid
-	content = "Retrieving content..."
 	qwest.post(window.stripPage(location.pathname) + "/post/" + id + "/raw")
 		.then (resp) ->
-			content = resp
 			textarea = document.querySelector("##{pid} textarea[name='text']")
-			textarea.value = content
+			textarea.value = resp
 			textarea.placeholder = "Post content (Markdown, HTML and BBCode are supported)"
 		.catch (err) ->
-			content = ""
 			return if section.firstChild.className == "errmsg"
 			section = document.getElementById id
 			errmsg = document.createElement 'p'
@@ -32,14 +29,14 @@ editPost = (id) ->
 		if nickspan.firstChild instanceof HTMLSpanElement
 			# hidden tripcode (post-author contains <span class="anon"></span> instead of nick)
 			htrip = JSON.parse(window.localStorage?.getItem 'crLatestPost')?.htrip
-			tripcodebar = "<input type=\"hidden\" name=\"tripcode\" value=\"#{htrip}\" required />"
+			tripcodebar = "<input type='hidden' name='tripcode' value='#{htrip}' required />"
 		else  # visible tripcode
-			tripcodebar = "<input class=\"full short inline verysmall\" type=\"text\" name=\"tripcode\" placeholder=\"Tripcode (required)\" required />"
+			tripcodebar = "<input class='full short inline verysmall' type='text' name='tripcode' placeholder='Tripcode (required)' required />"
 	# if post is OP, allow editing thread tags
 	tagsbar = ""
 	tags = post.dataset?.tags
 	if idname is "OP"
-		tagsbar = "<input class=\"full small\" type=\"text\" name=\"tags\" placeholder=\"Tags (separated by #)\" value=\"#{tags}\"/>"
+		tagsbar = "<input class='full small' type='text' name='tags' placeholder='Tags (separated by #)' value='#{tags}'/>"
 	original[id] = post.innerHTML
 	post.innerHTML = """
 <section id="#{id}" class="form"><a name="edit" class="nolink"></a>
@@ -97,9 +94,9 @@ deletePost = (id) ->
 		if nickspan.firstChild instanceof HTMLSpanElement
 			# hidden tripcode
 			htrip = JSON.parse(window.localStorage?.getItem 'crLatestPost')?.htrip
-			tripcodebar = "<input type=\"hidden\" name=\"tripcode\" value=\"#{htrip}\" required />"
+			tripcodebar = "<input type='hidden' name='tripcode' value='#{htrip}' required />"
 		else  # visible tripcode
-			tripcodebar = "<input class=\"full short inline verysmall\" type=\"text\" name=\"tripcode\" placeholder=\"Tripcode (required)\" required />"
+			tripcodebar = "<input class='full short inline verysmall' type='text' name='tripcode' placeholder='Tripcode (required)' required />"
 	else
 		purge = '<button name="deletetype" value="purge" type="submit">Purge</button>'
 	post.innerHTML = """

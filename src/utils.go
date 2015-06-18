@@ -338,10 +338,16 @@ func saveJson(in interface{}, path string, backup bool) error {
 		}
 	}
 	file, err := os.Create(maudRoot + string(os.PathSeparator) + path)
+	buf := make([]byte, 0)
+	out := bytes.NewBuffer(buf)
+	enc, err := json.MarshalIndent(in, "", "\t")
 	if err != nil {
 		return err
 	}
-
-	encoder := json.NewEncoder(file)
-	return encoder.Encode(in)
+	_, err = out.Write(enc)
+	if err != nil {
+		return err
+	}
+	_, err = out.WriteTo(file)
+	return err
 }

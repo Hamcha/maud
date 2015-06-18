@@ -52,8 +52,10 @@ func setupHandlers(router *mux.Router, isAdmin, isSubdir bool) {
 	SetHandler(POST, "/tagsearch", apiTagSearch, isAdmin, isSubdir)
 	SetHandler(POST, "/postpreview", apiPreview, isAdmin, isSubdir)
 	SetHandler(POST, "/taglist", apiTagList, isAdmin, isSubdir)
-	SetHandler(POST, "/blacklist/add", apiBlacklistAdd, isAdmin, isSubdir)
-	SetHandler(POST, "/blacklist/remove", apiBlacklistRemove, isAdmin, isSubdir)
+	SetHandler(POST, "/blacklist/new", apiBlacklistAdd, isAdmin, isSubdir)
+	SetHandler(POST, "/blacklist/{rule}/edit", apiBlacklistEdit, isAdmin, isSubdir)
+	SetHandler(POST, "/blacklist/{rule}/delete", apiBlacklistRemove, isAdmin, isSubdir)
+	SetHandler(POST, "/blacklist/{rule}/raw", apiBlacklistGetRaw, isAdmin, isSubdir)
 }
 
 func dontListDirs(h http.Handler) http.HandlerFunc {
