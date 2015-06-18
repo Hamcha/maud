@@ -13,6 +13,7 @@ run: all
 dep:
 	go get github.com/gorilla/mux
 	go get github.com/microcosm-cc/bluemonday
+	go get github.com/oschwald/maxminddb-golang
 	go get gopkg.in/mgo.v2
 	touch dep
 
