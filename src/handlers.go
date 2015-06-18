@@ -682,8 +682,8 @@ func httpBanUser(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	if !isAdmin {
-		//sendError(rw, 401, "Unauthorized")
-		//return
+		sendError(rw, 401, "Unauthorized")
+		return
 	}
 
 	// retreive Ip
