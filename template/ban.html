@@ -1,0 +1,31 @@
+<section><h2 style="padding: 2px 5px;">Banning user</h2></section>
+<section class="form">
+{{#Data}}
+    <form method="POST" action="{{BasePath}}/blacklist">
+        <div class='center'>
+            <input class='half small' type='text' name='ip' value='{{Ip}}' placeholder='IP (required)' required />
+            <input class='half small' type='text' name='ua' placeholder='User Agent (optional)' />
+        </div>
+        <input class='full' type='text' name='rulename' placeholder='Ban rule name (required)' required autofocus />
+        <input class='full small' type='text' name='reason' placeholder='Ban reason (optional)' />
+        <div style='margin: 10px'>
+            <span class='formlabel'>Ban criteria: </span>
+            <input id='all' type='radio' name='criteria' value='all' checked/>
+            <label for='all'>All</label>
+            <input id='any' type='radio' name='criteria' value='any'/>
+            <label for='any'>Any</label>
+            <br/>
+            <span class='formlabel'>Ban action: </span>
+            <input id='ban' type='radio' name='banaction' value='ban' checked/>
+            <label for='ban'>Ban</label>
+            <input id='captcha' type='radio' name='banaction' value='captcha'/>
+            <label for='captcha'>Captcha</label>
+        </div>
+        <div class='center'>
+            <button type='submit'>Apply ban</button>
+        </div>
+        <input type='hidden' name='action' value='add'/>
+        <input type='hidden' name='admin' value='{{AdminName}}'/>
+    </form>
+{{/Data}}
+</section>

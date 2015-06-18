@@ -316,7 +316,7 @@ func htmlFullEscape(str string) string {
 	return strings.Replace(html.EscapeString(str), "/", "&sol;", -1)
 }
 
-func LoadJson(path string, out interface{}) error {
+func loadJson(path string, out interface{}) error {
 	file, err := os.Open(maudRoot + string(os.PathSeparator) + path)
 	if err != nil {
 		return err
@@ -324,4 +324,14 @@ func LoadJson(path string, out interface{}) error {
 
 	decoder := json.NewDecoder(file)
 	return decoder.Decode(out)
+}
+
+func saveJson(in interface{}, path string) error {
+	file, err := os.Create(maudRoot + string(os.PathSeparator) + path)
+	if err != nil {
+		return err
+	}
+
+	encoder := json.NewEncoder(file)
+	return encoder.Encode(in)
 }

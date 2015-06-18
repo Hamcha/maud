@@ -108,4 +108,5 @@ type User struct {
 	Nickname       string
 	Tripcode       string
 	HiddenTripcode bool
+	Ip             string
 }

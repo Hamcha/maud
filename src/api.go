@@ -63,7 +63,12 @@ func apiNewThread(rw http.ResponseWriter, req *http.Request) {
 		hTrip = randomString(8)
 		tcode = tripcode(hTrip)
 	}
-	user := data.User{nickname, tcode, len(hTrip) > 0}
+	user := data.User{
+		Nickname:       nickname,
+		Tripcode:       tcode,
+		HiddenTripcode: len(hTrip) > 0,
+		Ip:             req.Header.Get("X-Forwarded-For"),
+	}
 	content := postContent
 	tags := parseTags(postTags)
 
@@ -171,7 +176,12 @@ func apiReply(rw http.ResponseWriter, req *http.Request) {
 		hTrip = randomString(8)
 		tcode = tripcode(hTrip)
 	}
-	user := data.User{nickname, tcode, len(hTrip) > 0}
+	user := data.User{
+		Nickname:       nickname,
+		Tripcode:       tcode,
+		HiddenTripcode: len(hTrip) > 0,
+		Ip:             req.Header.Get("X-Forwarded-For"),
+	}
 	content := postContent
 
 	if postTooLong(content) {
@@ -444,4 +454,12 @@ func apiTagList(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 	fmt.Fprintln(rw, string(tagJSON))
+}
+
+// apiBlacklist adds or removes blacklist rules, saves them to
+// blacklist.conf and hotplugs them.
+// POST params: action, rulename, ip, criteria, banaction, [ua], [admin]
+// (action = add / remove; banaction = ban, captcha)
+func apiBlacklist(rw http.ResponseWriter, req *http.Request) {
+	// TODO
 }

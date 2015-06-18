@@ -293,6 +293,47 @@ a.toggleImage, a.toggleIframe {
 	}
 }
 
+.half {
+	display: inline-block; width: 47%; margin: 5px auto;
+	font-family: "Source Sans Pro", sans-serif;
+	font-size: 1.3rem; font-weight: 300; color: #eee;
+	border: 1px solid #666; background-color: transparent;
+	padding: 5px; outline: 0;
+	@include transition-property(border-color);
+	@include transition-duration(0.2s);
+	&:focus {
+		border-color: #ccc;
+	}
+}
+
+input[type="radio"] {
+	display: none;
+	& + label {
+		display: inline-block;
+		width: 80px;
+		padding: 5px;
+		border: 2px solid darkred;
+		@include transition-property(border-color);
+		@include transition-duration(0.2s);
+		cursor: pointer;
+		&:hover {
+			border-color: #fff;
+		}
+	}
+	&:checked {
+		& + label {
+			font-weight: bold;
+			border-color: green;
+			&:before { content: "✓ "; }
+		}
+	}
+}
+
+span.formlabel {
+	display: inline-block;
+	width: 90px;
+}
+
 textarea.full { margin: 6px auto; min-height: 200px; overflow: auto; }
 .small { font-size: 1rem; }
 .verysmall { font-size: 1rem; }

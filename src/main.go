@@ -29,6 +29,7 @@ func setupHandlers(router *mux.Router, isAdmin, isSubdir bool) {
 	SetHandler(GET, "/thread/{thread}/page/{page}", httpThread, isAdmin, isSubdir)
 	SetHandler(GET, "/thread/{thread}/post/{post}/edit", httpEditPost, isAdmin, isSubdir)
 	SetHandler(GET, "/thread/{thread}/post/{post}/delete", httpDeletePost, isAdmin, isSubdir)
+	SetHandler(GET, "/thread/{thread}/post/{post}/ban", httpBanUser, isAdmin, isSubdir)
 	SetHandler(GET, "/new", httpNewThread, isAdmin, isSubdir)
 	SetHandler(GET, "/threads", httpAllThreads, isAdmin, isSubdir)
 	SetHandler(GET, "/threads/page/{page}", httpAllThreads, isAdmin, isSubdir)
@@ -50,6 +51,7 @@ func setupHandlers(router *mux.Router, isAdmin, isSubdir bool) {
 	SetHandler(POST, "/tagsearch", apiTagSearch, isAdmin, isSubdir)
 	SetHandler(POST, "/postpreview", apiPreview, isAdmin, isSubdir)
 	SetHandler(POST, "/taglist", apiTagList, isAdmin, isSubdir)
+	SetHandler(POST, "/blacklist", apiBlacklist, isAdmin, isSubdir)
 }
 
 func dontListDirs(h http.Handler) http.HandlerFunc {
@@ -79,13 +81,13 @@ func main() {
 	flag.Parse()
 
 	// Load Site info file
-	err = LoadJson("info.json", &siteInfo)
+	err = loadJson("info.json", &siteInfo)
 	if err != nil {
 		panic(err)
 	}
 
 	// Load Admin config file
-	err = LoadJson(*adminfile, &adminConf)
+	err = loadJson(*adminfile, &adminConf)
 	if err != nil {
 		log.Println("[ WARNING ] Admin file is missing or malformed, Maud will run without administrators.")
 	}

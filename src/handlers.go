@@ -278,6 +278,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		Pages        PageInfo
 		HasOP        bool
 		NeedsCaptcha bool
+		IsAdmin      bool
 		Captcha      CaptchaData
 	}{
 		thread,
@@ -286,6 +287,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		pages,
 		pageInt == 1,
 		requiresCaptcha,
+		isAdmin,
 		captchaData,
 	})
 }
@@ -667,6 +669,35 @@ func httpDeletePost(rw http.ResponseWriter, req *http.Request) {
 		vars["post"],
 		post.Author.Nickname,
 		isAdmin,
+	})
+}
+
+func httpBanUser(rw http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+	isAdmin, adminInfo := isAdmin(req)
+
+	_, post, err := threadPostOrErr(rw, vars["thread"], vars["post"])
+	if err != nil {
+		return
+	}
+
+	if !isAdmin {
+		//sendError(rw, 401, "Unauthorized")
+		//return
+	}
+
+	// retreive Ip
+	if len(post.Author.Ip) < 1 {
+		sendError(rw, 500, "Couldn't find post IP")
+		return
+	}
+
+	send(rw, req, "ban", "Ban user", struct {
+		Ip        string
+		AdminName string
+	}{
+		post.Author.Ip,
+		adminInfo.User,
 	})
 }
 
