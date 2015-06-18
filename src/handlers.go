@@ -673,16 +673,15 @@ func httpDeletePost(rw http.ResponseWriter, req *http.Request) {
 }
 
 func httpBanUser(rw http.ResponseWriter, req *http.Request) {
+	isAdmin, _ := isAdmin(req)
+	if !isAdmin {
+		sendError(rw, 401, "Unauthorized")
+		return
+	}
 	vars := mux.Vars(req)
-	isAdmin, adminInfo := isAdmin(req)
 
 	_, post, err := threadPostOrErr(rw, vars["thread"], vars["post"])
 	if err != nil {
-		return
-	}
-
-	if !isAdmin {
-		sendError(rw, 401, "Unauthorized")
 		return
 	}
 
@@ -693,11 +692,35 @@ func httpBanUser(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	send(rw, req, "ban", "Ban user", struct {
-		Ip        string
-		AdminName string
+		Ip string
 	}{
 		post.Author.Ip,
-		adminInfo.User,
+	})
+}
+
+func httpBlacklist(rw http.ResponseWriter, req *http.Request) {
+	isAdmin, _ := isAdmin(req)
+	if !isAdmin {
+		sendError(rw, 401, "Unauthorized")
+		return
+	}
+
+	// Flattened blacklist structure
+	type BlacklistData struct {
+		Name      string
+		Blacklist Blacklist
+	}
+	blacklisted := make([]BlacklistData, len(blacklists))
+	i := 0
+	for name, rule := range blacklists {
+		blacklisted[i] = BlacklistData{name, rule}
+		i++
+	}
+
+	send(rw, req, "blacklist", "Blacklist", struct {
+		BLData []BlacklistData
+	}{
+		blacklisted,
 	})
 }
 

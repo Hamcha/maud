@@ -59,6 +59,15 @@ nav.upper {
 
 img.head { width: 100%; max-width: 410px; margin-top: 10px; }
 
+dl.blacklist {
+	dt { 
+		font-style: italic; 
+	}
+	dd { 
+		font-family: monospace;
+	}
+}
+
 footer {
 	margin: 10px;
 	text-align: center;

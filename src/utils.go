@@ -326,7 +326,17 @@ func loadJson(path string, out interface{}) error {
 	return decoder.Decode(out)
 }
 
-func saveJson(in interface{}, path string) error {
+// saveJson unmarshals the content of a struct in a JSON file, optionally
+// backing up old file if existing.
+func saveJson(in interface{}, path string, backup bool) error {
+	if backup {
+		if _, err := os.Stat(path); os.IsExist(err) {
+			err := os.Rename(path, path+".old")
+			if err != nil {
+				return err
+			}
+		}
+	}
 	file, err := os.Create(maudRoot + string(os.PathSeparator) + path)
 	if err != nil {
 		return err

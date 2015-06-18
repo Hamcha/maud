@@ -121,6 +121,8 @@ cancelForm = (id) ->
 	pid = if id == 0 then "thread" else "p#{id}"
 	post = document.getElementById pid
 	post.innerHTML = original[id]
+	post.querySelector('.postEditLink')?.onclick = -> editPost parseInt(id, 10)
+	post.querySelector('.postDeleteLink')?.onclick = -> deletePost parseInt(id, 10)
 
 # post preview
 showPreview = (where) ->
@@ -182,7 +184,7 @@ fromList(document.getElementsByClassName 'postEditLink').map (e) ->
 	postId = e.dataset?.postid
 	return unless postId?
 	e.href = "#p#{postId}"
-	e.className ="edit nolink"
+	e.className ="postEditLink edit nolink"
 	do (postId) ->
 		e.onclick = -> editPost parseInt(postId, 10)
 
@@ -190,7 +192,7 @@ fromList(document.getElementsByClassName 'postDeleteLink').map (e) ->
 	postId = e.dataset?.postid
 	return unless postId?
 	e.href = "#p#{postId}"
-	e.className ="delete nolink"
+	e.className ="postDeleteLink delete nolink"
 	do (postId) ->
 		e.onclick = -> deletePost parseInt(postId, 10)
 

@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/mux"
 	"net/http"
 	"net/url"
+	"regexp"
 	"runtime/debug"
 	"strconv"
 	"strings"
@@ -456,10 +457,72 @@ func apiTagList(rw http.ResponseWriter, req *http.Request) {
 	fmt.Fprintln(rw, string(tagJSON))
 }
 
-// apiBlacklist adds or removes blacklist rules, saves them to
+// apiBlacklistAdd adds blacklist rules, saves them to
 // blacklist.conf and hotplugs them.
-// POST params: action, rulename, ip, criteria, banaction, [ua], [admin]
-// (action = add / remove; banaction = ban, captcha)
-func apiBlacklist(rw http.ResponseWriter, req *http.Request) {
-	// TODO
+// POST params: rulename, ip, [criteria=all], [banaction=ban], [ua], [reason]
+func apiBlacklistAdd(rw http.ResponseWriter, req *http.Request) {
+	isAdmin, adminInfo := isAdmin(req)
+	if !isAdmin {
+		sendError(rw, 401, "Unauthorized")
+		return
+	}
+	rulename := req.PostFormValue("rulename")
+	if len(rulename) < 1 {
+		sendError(rw, 400, "Empty rulename supplied")
+		return
+	}
+	ip := req.PostFormValue("ip")
+	criteria := req.PostFormValue("criteria")
+	if criteria != "all" && criteria != "any" {
+		criteria = "all"
+	}
+	banaction := req.PostFormValue("banaction")
+	if banaction != "ban" && banaction != "captcha" {
+		banaction = "ban"
+	}
+	ua := req.PostFormValue("ua")
+	if len("ua") < 1 {
+		ua = "."
+	}
+	// add rule to the in-memory blacklist
+	blacklists[rulename] = Blacklist{
+		Criteria:  criteria,
+		IP:        ip,
+		UserAgent: ua,
+		Reason:    req.PostFormValue("reason"),
+		Action:    banaction,
+		IPRegexp:  regexp.MustCompile(ip),
+		UARegexp:  regexp.MustCompile(ua),
+	}
+	// backup old blacklist and save new to disk
+	if err := saveJson(&blacklists, "blacklist.conf", true); err != nil {
+		sendError(rw, 500, err.Error())
+		return
+	}
+
+	http.Redirect(rw, req, adminInfo.BasePath+"blacklist", http.StatusMovedPermanently)
+}
+
+// apiBlacklistRemove removes blacklist rules by name
+// POST params: rulename
+func apiBlacklistRemove(rw http.ResponseWriter, req *http.Request) {
+	isAdmin, adminInfo := isAdmin(req)
+	if !isAdmin {
+		sendError(rw, 401, "Unauthorized")
+		return
+	}
+	rulename := req.PostFormValue("rulename")
+	if len(rulename) < 1 {
+		sendError(rw, 400, "Empty rulename supplied")
+		return
+	}
+	delete(blacklists, rulename)
+
+	// backup old blacklist and save new to disk
+	if err := saveJson(&blacklists, "blacklist.conf", true); err != nil {
+		sendError(rw, 500, err.Error())
+		return
+	}
+
+	http.Redirect(rw, req, adminInfo.BasePath+"blacklist", http.StatusMovedPermanently)
 }

@@ -1,0 +1,27 @@
+<nav>
+    Blacklist
+</nav>
+{{#Data}}
+{{#BLData}}
+<article class="thread-item thread">
+    <h3 class="thread-name"><a href="{{BasePath}}thread/{{ShortUrl}}" class="nolink">{{Name}}</a></h3>
+    {{#Blacklist}}
+    <dl class='blacklist'>
+        <dt>Criteria</dt>
+        <dd>{{Criteria}}</dd>
+        <dt>IP</dt>
+        <dd>{{IP}}</dd>
+        <dt>UserAgent</dt>
+        <dd>{{UserAgent}}</dd>
+        <dt>Reason</dt>
+        <dd>{{Reason}}</dd>
+        <dt>Action</dt>
+        <dd>{{Action}}</dd>
+    </dl>
+    {{/Blacklist}}
+    <div class="right">
+        <a class="noborder hide" href="" >Unban</a>
+    </div>
+</article>
+{{/BLData}}
+{{/Data}}

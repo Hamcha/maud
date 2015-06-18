@@ -39,6 +39,7 @@ func setupHandlers(router *mux.Router, isAdmin, isSubdir bool) {
 	SetHandler(GET, "/stiki/{page}", httpStiki, isAdmin, isSubdir)
 	SetHandler(GET, "/hidden", httpManageHidden, isAdmin, isSubdir)
 	SetHandler(GET, "/hidden/page/{page}", httpManageHidden, isAdmin, isSubdir)
+	SetHandler(GET, "/blacklist", httpBlacklist, isAdmin, isSubdir)
 	SetHandler(GET, "/{otherwise}", func(rw http.ResponseWriter, req *http.Request) {
 		sendError(rw, 404, "Not found")
 	}, isAdmin, isSubdir)
@@ -51,7 +52,8 @@ func setupHandlers(router *mux.Router, isAdmin, isSubdir bool) {
 	SetHandler(POST, "/tagsearch", apiTagSearch, isAdmin, isSubdir)
 	SetHandler(POST, "/postpreview", apiPreview, isAdmin, isSubdir)
 	SetHandler(POST, "/taglist", apiTagList, isAdmin, isSubdir)
-	SetHandler(POST, "/blacklist", apiBlacklist, isAdmin, isSubdir)
+	SetHandler(POST, "/blacklist/add", apiBlacklistAdd, isAdmin, isSubdir)
+	SetHandler(POST, "/blacklist/remove", apiBlacklistRemove, isAdmin, isSubdir)
 }
 
 func dontListDirs(h http.Handler) http.HandlerFunc {
