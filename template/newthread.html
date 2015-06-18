@@ -16,8 +16,9 @@
         <span style="display: inline-block; margin: 5px">{{Question}}&nbsp;</span>
         <img src="{{ImgPath}}" height="250px" alt="captcha"/>
         <input class="full verysmall" name="captcha" type="text" placeholder="{{Question}}"/>
-        <input name="captchaanswer" type="hidden" value="{{Answer}}"/>
+        <input name="question" type="hidden" value="{{Question}}"/>
         {{/Captcha}}{{/Data}}
+		<input type="text" name="ferrarelle" style="display: none;" placeholder="Leave empty" />
         <div class="center">
             <div class="chars-count" data-maxlen="{{#Info}}{{MaxPostLength}}{{/Info}}"></div>
             <input type="submit" value="Create thread" />

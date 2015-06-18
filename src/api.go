@@ -25,8 +25,17 @@ func apiNewThread(rw http.ResponseWriter, req *http.Request) {
 			// require captcha parameter
 			postUserCaptcha := strings.Replace(req.PostFormValue("captcha"), " ", "", -1)
 			postUserCaptcha = strings.ToLower(postUserCaptcha)
-			postRealCaptcha := req.PostFormValue("captchaanswer")
-			if postUserCaptcha != postRealCaptcha {
+			postCaptchaQuestion := req.PostFormValue("question")
+			found := false
+			postRealCaptcha := ""
+			for idx := range captchas {
+				if captchas[idx].Question == postCaptchaQuestion {
+					postRealCaptcha = captchas[idx].Answer
+					found = true
+					break
+				}
+			}
+			if !found || postUserCaptcha != postRealCaptcha {
 				sendError(rw, 401, "Incorrect captcha.")
 				return
 			}
@@ -38,6 +47,13 @@ func apiNewThread(rw http.ResponseWriter, req *http.Request) {
 	postTags := req.PostFormValue("tags")
 	if len(postTitle) < 1 || len(postContent) < 1 {
 		sendError(rw, 400, "Required fields are missing")
+		return
+	}
+
+	postAntispam := req.PostFormValue("ferrarelle")
+	if len(postAntispam) > 0 {
+		// Fuck spambots
+		sendError(rw, 500, "Database error")
 		return
 	}
 
@@ -98,8 +114,17 @@ func apiReply(rw http.ResponseWriter, req *http.Request) {
 			// require captcha parameter
 			postUserCaptcha := strings.Replace(req.PostFormValue("captcha"), " ", "", -1)
 			postUserCaptcha = strings.ToLower(postUserCaptcha)
-			postRealCaptcha := req.PostFormValue("captchaanswer")
-			if postUserCaptcha != postRealCaptcha {
+			postCaptchaQuestion := req.PostFormValue("question")
+			found := false
+			postRealCaptcha := ""
+			for idx := range captchas {
+				if captchas[idx].Question == postCaptchaQuestion {
+					postRealCaptcha = captchas[idx].Answer
+					found = true
+					break
+				}
+			}
+			if !found || postUserCaptcha != postRealCaptcha {
 				sendError(rw, 401, "Incorrect captcha.")
 				return
 			}
@@ -130,6 +155,13 @@ func apiReply(rw http.ResponseWriter, req *http.Request) {
 	postContent := strings.TrimSpace(req.PostFormValue("text"))
 	if len(postContent) < 1 {
 		sendError(rw, 400, "Required fields are missing")
+		return
+	}
+
+	postAntispam := req.PostFormValue("ferrarelle")
+	if len(postAntispam) > 0 {
+		// Fuck spambots
+		sendError(rw, 500, "Database error")
 		return
 	}
 

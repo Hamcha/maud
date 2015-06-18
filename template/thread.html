@@ -1,6 +1,6 @@
 <nav>
     <a href="#reply-form" class="button">Reply</a>
-    <form id="tagsearch-form" class="ac_wrapper" style="display: inline-block" method="POST" action="{{BasePath}}tagsearch"> 
+    <form id="tagsearch-form" class="ac_wrapper" style="display: inline-block" method="POST" action="{{BasePath}}tagsearch">
         <input class="ac_input" type="text" name="tags" id="tagsearch" placeholder="Filter by tag" required title="Insert tags (each starting with '#')" autocomplete="off" />
         <input type="submit" value="Search" />
     </form>
@@ -108,8 +108,9 @@
         <span style="display: inline-block; margin: 5px">{{Question}}&nbsp;</span>
         <img src="{{ImgPath}}" height="250px" alt="captcha"/>
         <input class="full verysmall" name="captcha" type="text" placeholder="{{Question}}"/>
-        <input name="captchaanswer" type="hidden" value="{{Answer}}"/>
+        <input name="question" type="hidden" value="{{Question}}"/>
         {{/Captcha}}{{/NeedsCaptcha}}
+		<input type="text" name="ferrarelle" style="display: none;" placeholder="Leave empty" />
         <div style="position: relative;">
             <div class="center">
                 <div class="chars-count" data-maxlen="{{#Info}}{{MaxPostLength}}{{/Info}}"></div>
