@@ -118,8 +118,8 @@ cancelForm = (id) ->
 	pid = if id == 0 then "thread" else "p#{id}"
 	post = document.getElementById pid
 	post.innerHTML = original[id]
-	post.querySelector('.postEditLink')?.onclick = -> editPost parseInt(id, 10)
-	post.querySelector('.postDeleteLink')?.onclick = -> deletePost parseInt(id, 10)
+	post.querySelector('.postEditLink')?.onclick = -> editPost +id
+	post.querySelector('.postDeleteLink')?.onclick = -> deletePost +id
 
 # post preview
 showPreview = (where) ->

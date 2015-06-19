@@ -82,7 +82,7 @@ func checkBlacklist(req *http.Request) (bool, string, string) {
 			ipmatch := blacklists[i].IPRegexp.MatchString(ip)
 			uamatch := blacklists[i].UARegexp.MatchString(userAgent)
 			var matches bool
-			if blacklists[i].Criteria == "ALL" || blacklists[i].Criteria == "all" {
+			if strings.ToLower(blacklists[i].Criteria) == "all" {
 				matches = ipmatch && uamatch
 			} else {
 				matches = ipmatch || uamatch

@@ -64,11 +64,15 @@ func apiNewThread(rw http.ResponseWriter, req *http.Request) {
 		hTrip = randomString(8)
 		tcode = tripcode(hTrip)
 	}
+	ip := req.Header.Get("X-Forwarded-For")
+	if len(ip) < 1 {
+		ip = req.RemoteAddr
+	}
 	user := data.User{
 		Nickname:       nickname,
 		Tripcode:       tcode,
 		HiddenTripcode: len(hTrip) > 0,
-		Ip:             req.Header.Get("X-Forwarded-For"),
+		Ip:             ip,
 	}
 	content := postContent
 	tags := parseTags(postTags)
@@ -177,11 +181,15 @@ func apiReply(rw http.ResponseWriter, req *http.Request) {
 		hTrip = randomString(8)
 		tcode = tripcode(hTrip)
 	}
+	ip := req.Header.Get("X-Forwarded-For")
+	if len(ip) < 1 {
+		ip = req.RemoteAddr
+	}
 	user := data.User{
 		Nickname:       nickname,
 		Tripcode:       tcode,
 		HiddenTripcode: len(hTrip) > 0,
-		Ip:             req.Header.Get("X-Forwarded-For"),
+		Ip:             ip,
 	}
 	content := postContent
 
@@ -473,9 +481,6 @@ func apiBlacklistAdd(rw http.ResponseWriter, req *http.Request) {
 	}
 	ip := req.PostFormValue("ip")
 	criteria := req.PostFormValue("criteria")
-	if criteria != "all" && criteria != "any" {
-		criteria = "all"
-	}
 	banaction := req.PostFormValue("banaction")
 	if banaction != "ban" && banaction != "captcha" {
 		banaction = "ban"
