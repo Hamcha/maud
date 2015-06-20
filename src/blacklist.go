@@ -60,7 +60,7 @@ func initBL() {
 	}
 
 	// Load GeoIP database
-	geoip, err = maxminddb.Open("geoip.mmdb")
+	geoip, err = maxminddb.Open(maudRoot + "/geoip.mmdb")
 	if err != nil {
 		log.Printf("[ WARNING ] %s/geoip.mmdb not found. GeoIP limiting not initialized.\n", maudRoot)
 	}
