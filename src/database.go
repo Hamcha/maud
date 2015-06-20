@@ -126,8 +126,8 @@ func (db Database) GetThreadList(tag string, limit, offset int, hThreads, hTags 
 		if idx := strings.Index(tag, "#"); idx > -1 {
 			// tag1,tag2,... means 'union'
 			tags := strings.Split(tag, "#")
-			tagsRgx := make([]bson.RegEx, 0)
-			for i, _ := range tags {
+			var tagsRgx []bson.RegEx
+			for i := range tags {
 				t := strings.TrimSpace(tags[i])
 				if len(t) == 0 {
 					continue
@@ -259,7 +259,7 @@ func (db Database) GetPopularTags(limit, offset int, filter []string) ([]data.Ta
 	var result []data.Tag
 	var cond bson.M
 	if filter != nil && len(filter) > 0 {
-		condParts := make([]bson.M, 0)
+		var condParts []bson.M
 		for i := range filter {
 			condParts = append(condParts, bson.M{"name": filter[i]})
 		}

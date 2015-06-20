@@ -466,7 +466,7 @@ func httpStikiIndex(rw http.ResponseWriter, req *http.Request) {
 		LastUpdate int64
 		StrDate    string
 	}
-	stikiPages := make([]StikiPage, 0)
+	var stikiPages []StikiPage
 	for _, file := range fileList {
 		if file.IsDir() || !strings.HasSuffix(file.Name(), ".html") {
 			continue
@@ -515,7 +515,7 @@ func httpManageHidden(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	tinfos := make([]ThreadInfo, len(threads))
-	for i, _ := range threads {
+	for i := range threads {
 		count, err := db.PostCount(&threads[i])
 		if err != nil {
 			sendError(rw, 500, err.Error())

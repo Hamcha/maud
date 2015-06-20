@@ -80,7 +80,7 @@ func parseTags(tags string) []string {
 }
 
 func removeEmpty(in []string) []string {
-	out := make([]string, 0)
+	var out []string
 	for _, i := range in {
 		if len(strings.TrimSpace(i)) > 0 {
 			out = append(out, i)
@@ -91,7 +91,7 @@ func removeEmpty(in []string) []string {
 }
 
 func removeDuplicates(in []string) []string {
-	out := make([]string, 0)
+	var out []string
 	for _, i := range in {
 		found := false
 		for _, j := range out {
@@ -116,7 +116,7 @@ func shortify(content string) (string, bool) {
 
 	// count open HTML tags in content
 	short := content[:300]
-	stack := make([]string, 0)
+	var stack []string
 	stackindex := -1
 	offset := -1
 	for offset < len(short) {
@@ -260,11 +260,8 @@ func getHiddenElems(req *http.Request) (threads, tags []string) {
 				threads = append(threads, s)
 			}
 		}
-		return
-	} else {
-		// cookie not present
-		return
 	}
+	return
 }
 
 // retreiveThreads retreives up to `n` threads, skipping the first `offset`,
@@ -276,8 +273,7 @@ func retreiveThreads(n, offset int, hThreads, hTags []string) ([]data.ThreadInfo
 	}
 
 	tinfos := make([]data.ThreadInfo, 0, siteInfo.HomeThreadsNum)
-	for i, _ := range threads {
-
+	for i := range threads {
 		count, err := db.PostCount(&threads[i])
 		if err != nil {
 			return tinfos, err
@@ -338,7 +334,7 @@ func saveJson(in interface{}, path string, backup bool) error {
 		}
 	}
 	file, err := os.Create(maudRoot + string(os.PathSeparator) + path)
-	buf := make([]byte, 0)
+	var buf []byte
 	out := bytes.NewBuffer(buf)
 	enc, err := json.MarshalIndent(in, "", "\t")
 	if err != nil {
