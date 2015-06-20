@@ -7,18 +7,22 @@
 <article class="thread-item thread" id="bl_{{Name}}">
     <h3 class="thread-name"><a href="#bl_{{Name}}" class="nolink">{{Name}}</a></h3>
     {{#Blacklist}}
-    <dl class='blacklist'>
-        <dt>Criteria</dt>
-        <dd>{{Criteria}}</dd>
-        <dt>IP</dt>
-        <dd>{{IP}}</dd>
-        <dt>UserAgent</dt>
-        <dd>{{UserAgent}}</dd>
-        <dt>Reason</dt>
-        <dd>{{Reason}}</dd>
-        <dt>Action</dt>
-        <dd>{{Action}}</dd>
-    </dl>
+    <table class='blacklist'>
+    <tr>
+        <th>Criteria</th>
+        <th>IP</th>
+        <th>UserAgent</th>
+        <th>Reason</th>
+        <th>Action</th>
+    </tr>
+    <tr>
+        <td>{{Criteria}}</td>
+        <td>{{IP}}</td>
+        <td>{{UserAgent}}</td>
+        <td style="text-align: left;">{{Reason}}</td>
+        <td>{{Action}}</td>
+    </tr>
+    </table>
     {{/Blacklist}}
     <div class="right">
         <a class="noborder hide" href="#bl_{{Name}}" onclick='Blacklist.edit("{{Name}}")'>Edit</a>

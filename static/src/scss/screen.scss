@@ -59,12 +59,14 @@ nav.upper {
 
 img.head { width: 100%; max-width: 410px; margin-top: 10px; }
 
-dl.blacklist {
-	dt { 
-		font-style: italic; 
+table.blacklist {
+	margin-top: 0.5em;
+	th, td { padding: 0.2em 0.5em; }
+	th {
+		text-align: center; background-color: #222; border-bottom: 1px solid #000;
 	}
-	dd { 
-		font-family: monospace;
+	td {
+		font-family: monospace; text-align: center; background-color: #333;
 	}
 }
 
@@ -195,7 +197,7 @@ a.nolink { border: 0; }
 	position: absolute; right: 0; top: 0;
 	text-align: right;  padding: 0.5em;
 
-	.edit, .delete, .homelink {
+	.edit, .delete, .ban, .homelink {
 		opacity: 0.5;
 		@include transition-property(all);
 		@include transition-duration(0.2s);
@@ -414,8 +416,8 @@ ul.ac_list {
 			color: #000;
 		}
 		a.rightanchor {
-			position: absolute; 
-			right: 0; 
+			position: absolute;
+			right: 0;
 			top: 0;
 			padding: 0.5;
 			text-align: right;
