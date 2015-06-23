@@ -92,6 +92,15 @@ func imgurThumb(origUrl string) string {
 	 */
 	url := strings.Trim(origUrl, `"'`)
 	idx := strings.LastIndex(url, ".")
+	/* If the image ends with a thumbnail suffix, it *may* be already a
+	 * thumbnail. In this case, don't modify the url, or we may link an
+	 * inexisting image by appending the thumbnail suffix 2 times.
+	 */
+	switch url[idx-1] {
+	case 's', 'b', 't', 'm', 'l', 'h':
+		return "<img src=\"" + url + "\" alt=\"" + url + "\"/>"
+	}
+
 	ext := url[idx:]
 	if ext == ".gif" || ext == ".gifv" {
 		thumb := url[0:idx] + ".webm"
