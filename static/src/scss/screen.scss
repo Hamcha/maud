@@ -234,7 +234,7 @@ a.date, a.postId, a.date:visited, a.postId:visited { border: 0; cursor: pointer;
 
 h2 { font-size: 1.3em; padding: 0; }
 .thread-content p, .post-content p { margin: 0; padding: 0 0 5px 0; }
-.thread-content, .post-content { margin: 5px; padding: 0; color: #eee; }
+.thread-content, .post-content { margin: 5px; padding: 0; color: #eee; word-wrap: break-word; }
 
 .anon {
 	font-weight: normal; color: #ccc;
