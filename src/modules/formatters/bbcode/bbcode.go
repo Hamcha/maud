@@ -83,6 +83,9 @@ func (b *bbCodeFormatter) Init() {
 			opts = "controls"
 		}
 		switch ext {
+		case "gifv":
+			con = con[:idx] + ".webm"
+			fallthrough
 		case "webm":
 			return `<video height="250" src="` + con + `" ` + opts + `>[Your browser is unable to play this video]</video>`
 		case "ogg", "ogv", "mp4":

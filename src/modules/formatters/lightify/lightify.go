@@ -92,6 +92,15 @@ func imgurThumb(origUrl string) string {
 	 */
 	url := strings.Trim(origUrl, `"'`)
 	idx := strings.LastIndex(url, ".")
+
+	ext := url[idx:]
+	// Convert gif/gifvs to webm
+	if ext == ".gif" || ext == ".gifv" {
+		thumb := url[0:idx] + ".webm"
+		return `<video height="250" src="` + thumb +
+			`" autoplay loop muted>[Your browser is unable to play this video]</video>`
+	}
+
 	/* If the image ends with a thumbnail suffix, it *may* be already a
 	 * thumbnail. In this case, don't modify the url, or we may link an
 	 * inexisting image by appending the thumbnail suffix 2 times.
@@ -101,12 +110,6 @@ func imgurThumb(origUrl string) string {
 		return "<img src=\"" + url + "\" alt=\"" + url + "\"/>"
 	}
 
-	ext := url[idx:]
-	if ext == ".gif" || ext == ".gifv" {
-		thumb := url[0:idx] + ".webm"
-		return `<video height="250" src="` + thumb +
-			`" autoplay loop muted>[Your browser is unable to play this video]</video>`
-	}
 	thumb := url[0:idx] + "m" + ext
 	return "<img src=\"" + thumb + "\" alt=\"" + url + "\"/>"
 }
