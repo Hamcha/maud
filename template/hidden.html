@@ -6,6 +6,9 @@
     </form>
     <a href="{{BasePath}}stiki" class="button" rel="prefetch">Stiki</a>
     <a href="{{BasePath}}hidden" class="button">Hidden</a>
+    {{#IsAdmin}}
+    <a href="{{BasePath}}blacklist" class="button">Blacklist</a>
+    {{/IsAdmin}}
 </nav>
 <hr />
 <nav>
