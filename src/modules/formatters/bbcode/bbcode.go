@@ -1,3 +1,15 @@
+// Supported bbcodes:
+//   [b]
+//   [i]
+//   [s]
+//   [u]
+//   [img]
+//   [url]
+//   [youtube]
+//   [video]
+//   [spoiler]
+//   [html]
+//   [pre]
 package bbcode
 
 import (
@@ -93,6 +105,9 @@ func (b *bbCodeFormatter) Init() {
 		}
 		return "<gray>Unsupported video type: " + ext + "</gray>"
 	}
+	b.bbElements["pre"] = func(_, con string) string {
+		return "<pre>" + con + "</pre>"
+	}
 }
 
 func (b *bbCodeFormatter) Format(code string) string {
@@ -105,6 +120,7 @@ func (b *bbCodeFormatter) Format(code string) string {
 	}
 	stack := make([]BBCode, 0)
 	top := -1
+	preContent := ""
 	for {
 		// Get next tag in string (Regexp free)
 		start := index(code, offset, '[')
@@ -121,6 +137,10 @@ func (b *bbCodeFormatter) Format(code string) string {
 		// Is it a closing tag?
 		if top >= 0 && tag[0] == '/' {
 			tag = strings.ToLower(tag[1:])
+			if top >= 0 && stack[top].Name == "pre" && tag != "pre" {
+				preContent += "[/" + tag + "]"
+				continue
+			}
 			for idx := top; idx >= 0; idx -= 1 {
 				if stack[idx].Name == tag {
 					content := code[stack[top].End:start]
@@ -129,10 +149,15 @@ func (b *bbCodeFormatter) Format(code string) string {
 					// Pop stack
 					stack = stack[:idx]
 					top = idx - 1
+					preContent = ""
 					break
 				}
 			}
 		} else {
+			if top >= 0 && stack[top].Name == "pre" {
+				preContent += "[" + tag + "]"
+				continue
+			}
 			// Separate parameter, if given
 			parameter := ""
 			if index(tag, 0, '=') > 0 {

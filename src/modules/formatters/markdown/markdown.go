@@ -23,18 +23,24 @@ func Provide() modules.Formatter {
 	return md
 }
 
+type mdPair struct {
+	Regex *regexp.Regexp
+	Func  func(*regexp.Regexp, string) string
+}
+
 type markdownFormatter struct {
-	mdElements map[*regexp.Regexp]func(*regexp.Regexp, string) string
+	mdElements []mdPair
 	trimEscape *regexp.Regexp
 }
 
 func (m *markdownFormatter) Init() {
-	m.mdElements = map[*regexp.Regexp]func(*regexp.Regexp, string) string{
-		regexp.MustCompile(`(?U)(^|\\\\|[^\\])\*\*(.*[^\\])\*\*`):   mdConvertTag("b"),
-		regexp.MustCompile(`(?U)(^|\\\\|[^\\\*])\*(.*[^\\])\*`):     mdConvertTag("i"),
-		regexp.MustCompile(`(?U)(^|\\\\|[^\\])!\[(.*)\]\((.*)\)`):   mdConvertImg,
-		regexp.MustCompile(`(?U)(^|\\\\|[^\\!])\[(.*)\]\((.*)\)`):   mdConvertTagParam("a", "href"),
-		regexp.MustCompile("(?U)(^|\\\\\\\\|[^\\\\])`(.*[^\\\\])`"): mdConvertTag("code"),
+	m.mdElements = []mdPair{
+		{regexp.MustCompile(`(?U)(^|\\\\|[^\\])\*\*(.*[^\\])\*\*`), mdConvertTag("b")},
+		{regexp.MustCompile(`(?U)(^|\\\\|[^\\\*])\*(.*[^\\])\*`), mdConvertTag("i")},
+		{regexp.MustCompile(`(?U)(^|\\\\|[^\\])~~(.*[^\\])~~`), mdConvertTag("s")},
+		{regexp.MustCompile(`(?U)(^|\\\\|[^\\])!\[(.*)\]\((.*)\)`), mdConvertImg},
+		{regexp.MustCompile(`(?U)(^|\\\\|[^\\!])\[(.*)\]\((.*)\)`), mdConvertTagParam("a", "href")},
+		{regexp.MustCompile("(?U)(^|\\\\\\\\|[^\\\\])`(.*[^\\\\])`"), mdConvertTag("code")},
 	}
 	m.trimEscape = regexp.MustCompile("\\\\([*\\[!`\\\\])")
 }
@@ -42,6 +48,7 @@ func (m *markdownFormatter) Init() {
 // Allowed markdown snippets:
 //   *italic*
 //   **bold**
+//   ~~strike~~
 //   [alt](url)
 //   ![alt](url)  -- insert image
 //   `inline code`
@@ -52,7 +59,9 @@ func (m *markdownFormatter) Format(content string) string {
 		if len(strings.TrimSpace(lines[idx])) == 0 {
 			continue
 		}
-		for regex, fn := range m.mdElements {
+		for _, pair := range m.mdElements {
+			regex := pair.Regex
+			fn := pair.Func
 			for regex.MatchString(lines[idx]) {
 				lines[idx] = fn(regex, lines[idx])
 			}

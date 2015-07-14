@@ -261,6 +261,10 @@ span.spoiler, span.spoiler a[href], span.spoiler a[href]:visited {
 	&:hover { color: inherit; background-color: inherit; }
 }
 
+.thread-content pre, .post-content pre {
+	overflow: auto;
+}
+
 #post-preview {
 	background-color: rgba(0,0,0,.7);
 	h3 {
