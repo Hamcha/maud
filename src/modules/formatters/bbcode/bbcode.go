@@ -120,7 +120,6 @@ func (b *bbCodeFormatter) Format(code string) string {
 	}
 	stack := make([]BBCode, 0)
 	top := -1
-	preContent := ""
 	for {
 		// Get next tag in string (Regexp free)
 		start := index(code, offset, '[')
@@ -138,7 +137,6 @@ func (b *bbCodeFormatter) Format(code string) string {
 		if top >= 0 && tag[0] == '/' {
 			tag = strings.ToLower(tag[1:])
 			if top >= 0 && stack[top].Name == "pre" && tag != "pre" {
-				preContent += "[/" + tag + "]"
 				continue
 			}
 			for idx := top; idx >= 0; idx -= 1 {
@@ -149,13 +147,11 @@ func (b *bbCodeFormatter) Format(code string) string {
 					// Pop stack
 					stack = stack[:idx]
 					top = idx - 1
-					preContent = ""
 					break
 				}
 			}
 		} else {
 			if top >= 0 && stack[top].Name == "pre" {
-				preContent += "[" + tag + "]"
 				continue
 			}
 			// Separate parameter, if given
