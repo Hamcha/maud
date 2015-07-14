@@ -42,7 +42,7 @@ func (m *markdownFormatter) Init() {
 		{regexp.MustCompile(`(?U)(^|\\\\|[^\\!])\[(.*)\]\((.*)\)`), mdConvertTagParam("a", "href")},
 		{regexp.MustCompile("(?U)(^|\\\\\\\\|[^\\\\])`(.*[^\\\\])`"), mdConvertTag("code")},
 	}
-	m.trimEscape = regexp.MustCompile("\\\\([*\\[!`\\\\])")
+	m.trimEscape = regexp.MustCompile("\\\\([*~\\[!`\\\\])")
 }
 
 // Allowed markdown snippets:
