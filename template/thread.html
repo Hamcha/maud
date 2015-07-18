@@ -1,7 +1,7 @@
 <nav>
     <a href="#reply-form" class="button">Reply</a>
     <form id="tagsearch-form" class="ac_wrapper" style="display: inline-block" method="POST" action="{{BasePath}}tagsearch">
-        <input class="ac_input" type="text" name="tags" id="tagsearch" placeholder="Filter by tag" required title="Insert tags (each starting with '#')" autocomplete="off" />
+        <input class="ac_input" type="search" name="tags" id="tagsearch" placeholder="Filter by tag" required title="Insert tags (each starting with '#')" autocomplete="off" />
         <input type="submit" value="Search" />
     </form>
     <a href="{{BasePath}}stiki" class="button" rel="prefetch">Stiki</a>
