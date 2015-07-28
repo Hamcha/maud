@@ -14,11 +14,11 @@
 <div class="pages" data-max="nomax">
 {{#Pages}}
     {{#HasPrev}}
-    <a href="{{BasePath}}tag/{{TagName}}/page/{{PrevPage}}" rel="prev">&laquo; Back</a>
+    <a href="{{BasePath}}tag/{{{TagName}}}/page/{{PrevPage}}" rel="prev">&laquo; Back</a>
     {{/HasPrev}}
     <b>{{Page}}</b>
     {{#HasNext}}
-    <a href="{{BasePath}}tag/{{TagName}}/page/{{NextPage}}" rel="next">Next &raquo;</a>
+    <a href="{{BasePath}}tag/{{{TagName}}}/page/{{NextPage}}" rel="next">Next &raquo;</a>
     {{/HasNext}}
 {{/Pages}}
 </div>

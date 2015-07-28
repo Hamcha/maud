@@ -11,7 +11,6 @@ window.onhashchange = ->
 		o.className = o.className.replace "post-selected", "" for o in document.querySelectorAll ".post-selected"
 		doc = document.querySelector location.hash
 		doc.className = "post post-selected" if doc?
-	return
 
 window.onhashchange()
 
@@ -26,43 +25,46 @@ makePageLists = ->
 	for pageDiv in pageDivs
 		# Do Next/Previous only when we don't know the number of pages
 		maxstr = pageDiv.dataset.max
-		if maxstr isnt 'nomax'
-			page = parseInt pageDiv.dataset.current
-			baseurl = stripPage location.pathname
-			max = parseInt maxstr
-			if max > 1
-				pageHTML = "PAGE &nbsp;"
-				# make the pages fit the window width
-				width = getViewport().width
-				insPage = (i) ->
-					pageHTML += (if page == i then "<b>#{i}</b> " else "<a href=\"#{baseurl}/page/#{i}\">#{i}</a> ")
-				insDots = -> pageHTML += "..."
-				# m = max number of buttons to output (at least 7)
-				# we leave 70px for the "PAGE" text and account 30px per button.
-				m = Math.max 7, Math.floor((width - 70) / 30)
-				if max <= m
-					# output all page buttons
-					insPage i for i in [1..max]
+		max = parseInt maxstr
+		continue if maxstr is 'nomax' or max <= 1
+
+		page = parseInt pageDiv.dataset.current
+		baseurl = stripPage location.pathname
+		pageHTML = "PAGE &nbsp;"
+
+		# make the pages fit the window width (650px is the max-width)
+		width = Math.min getViewport().width, 650
+		insPage = (i) ->
+			pageHTML += if page == i then "<b>#{i}</b> " else "<a href=\"#{baseurl}/page/#{i}\">#{i}</a> "
+		insDots = -> pageHTML += "..."
+
+		# m = max number of buttons to output (at least 7)
+		# we leave 50px for the "PAGE" text and account 30px per button.
+		m = Math.max 7, Math.floor((width - 50) / 30)
+		if max <= m
+			# output all page buttons
+			insPage i for i in [1..max]
+		else
+			left = page - 1
+			right = max - page
+			a = Math.floor((m-5)/2)
+			lrem = Math.max 0, a - left
+			rrem = Math.max 0, a - right
+			if left <= a + rrem
+				insPage i for i in [1..page]
+			else
+				insPage 1
+				insDots()
+				insPage i for i in [page-a-rrem..page]
+			if page < max
+				if right <= a + lrem
+					insPage i for i in [page+1..max]
 				else
-					left = page - 1
-					right = max - page
-					a = Math.floor((m-5)/2)
-					lrem = Math.max 0, a - left
-					rrem = Math.max 0, a - right
-					if left <= a + rrem
-						insPage i for i in [1..page]
-					else
-						insPage 1
-						insDots()
-						insPage i for i in [page-a-rrem..page]
-					if page < max
-						if right <= a + lrem
-							insPage i for i in [page+1..max]
-						else
-							insPage i for i in [page+1..page+a+lrem]
-							insDots()
-							insPage max
-				pageDiv.innerHTML = pageHTML
+					insPage i for i in [page+1..page+a+lrem]
+					insDots()
+					insPage max
+		pageDiv.innerHTML = pageHTML
+
 makePageLists()
 window.onresize = makePageLists
 
@@ -77,7 +79,6 @@ charsCount = (id) ->
 			div.innerHTML = "#{remaining} characters left"
 			div.style.padding = "0 0 0.5em 0"
 			text.style.borderColor = if remaining < 0 then "#E33" else ""
-	return
 
 charsCount "reply-form"
 
@@ -140,7 +141,6 @@ fromList(document.querySelectorAll('.postIdQuote')).map (e) ->
 				quoted.style.left = "#{ev.clientX + 35}px"
 				quoted.style.display = 'block'
 
-			
 	e.onmouseout = ->
 		post = document.querySelector '.highlighted'
 		if post?

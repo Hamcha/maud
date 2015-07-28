@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"math/rand"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -417,7 +418,7 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 		Pages      PageInfo
 	}{
 		threadlist,
-		tagName,
+		url.QueryEscape(tagName),
 		pages,
 	})
 }
