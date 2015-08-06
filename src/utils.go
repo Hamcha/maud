@@ -36,7 +36,7 @@ func parseNickname(nickname string) (string, string) {
 func tripcode(str string) string {
 	sum := sha256.Sum256([]byte(str + siteInfo.Secret))
 	b64 := base64.URLEncoding.EncodeToString(sum[:6])
-	return b64[0:6]
+	return b64[:6]
 }
 
 func parseContent(content, ctype string) string {
@@ -72,7 +72,7 @@ func parseTags(tags string) []string {
 		list[i] = strings.ToLower(strings.TrimSpace(list[i]))
 		// limit tag length
 		if len(list[i]) > 31 {
-			list[i] = list[i][0:31]
+			list[i] = list[i][:31]
 		}
 	}
 	list = removeDuplicates(list)
@@ -230,9 +230,9 @@ func randomString(length int) string {
 			sum2 := sha256.Sum256(sum[:])
 			b64 = base64.URLEncoding.EncodeToString(sum2[:]) + b64
 		}
-		return b64[0:length]
+		return b64[:length]
 	}
-	return base64.URLEncoding.EncodeToString(b)[0:length]
+	return base64.URLEncoding.EncodeToString(b)[:length]
 }
 
 func strdate(unixtime int64) string {

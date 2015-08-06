@@ -474,7 +474,7 @@ func httpStikiIndex(rw http.ResponseWriter, req *http.Request) {
 		}
 		url := strings.TrimSuffix(file.Name(), ".html")
 		// Prettify title
-		title := strings.ToUpper(url[0:1]) + strings.Replace(url[1:], "-", " ", -1)
+		title := strings.ToUpper(url[:1]) + strings.Replace(url[1:], "-", " ", -1)
 		modTime := file.ModTime().Unix()
 		if len(title) > 0 {
 			stikiPages = append(stikiPages, StikiPage{title, url, modTime, strdate(modTime)})
@@ -773,7 +773,7 @@ func stiki(rw http.ResponseWriter, req *http.Request, name string) {
 	if len(siteInfo.PostFooter) > 0 {
 		footer += siteInfo.PostFooter
 	}
-	title := strings.ToUpper(name[0:1]) + strings.Replace(name[1:], "-", " ", -1)
+	title := strings.ToUpper(name[:1]) + strings.Replace(name[1:], "-", " ", -1)
 	fmt.Fprintln(rw,
 		mustache.RenderFileInLayout(
 			maudRoot+"/stiki/"+name+".html",

@@ -30,13 +30,13 @@ func (mt *MaudtextMutator) maudtext(data modules.PostMutatorData) {
 
 	for idx := range lines {
 		line := strings.TrimSpace(lines[idx])
-		if len(line) < 5 || line[0:4] != "&gt;" {
+		if len(line) < 5 || line[:4] != "&gt;" {
 			continue
 		}
 		// find out if this is a post quote (^>>\s*#[0-9]+\s*$) or a line quote
 		stripped := strings.Replace(line, " ", "", -1)
 		stripped = strings.TrimSuffix(stripped, "<br/>")
-		if threadok && len(stripped) > 9 && stripped[0:9] == "&gt;&gt;#" {
+		if threadok && len(stripped) > 9 && stripped[:9] == "&gt;&gt;#" {
 			if num, err := strconv.ParseInt(stripped[9:], 10, 32); err == nil {
 				// valid post quote
 				lines[idx] = "<a href=\"" + mt.getLink(int(num), threadUrl) +

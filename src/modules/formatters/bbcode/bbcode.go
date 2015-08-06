@@ -39,7 +39,7 @@ func (b *bbCodeFormatter) Init() {
 	b.bbElements["img"] = func(_, con string) string {
 		idx := strings.IndexRune(con, '?')
 		if idx > 0 {
-			con = con[0:idx] + queryescape(con[idx:])
+			con = con[:idx] + queryescape(con[idx:])
 		}
 		return `<a href="` + con + `" rel="nofollow"><img alt="` + con +
 			`" src="` + con + `" /></a>`
@@ -57,7 +57,7 @@ func (b *bbCodeFormatter) Init() {
 		}
 		idx := strings.IndexRune(par, '?')
 		if idx > 0 {
-			par = par[0:idx] + queryescape(par[idx:])
+			par = par[:idx] + queryescape(par[idx:])
 		}
 		return "<a href=\"" + par + "\" rel=\"nofollow\">" + con + "</a>"
 	}
@@ -143,7 +143,7 @@ func (b *bbCodeFormatter) Format(code string) string {
 				if stack[idx].Name == tag {
 					content := code[stack[top].End:start]
 					parsed := b.bbElements[tag](stack[top].Parameter, content)
-					code = code[0:stack[top].Start] + parsed + code[offset:]
+					code = code[:stack[top].Start] + parsed + code[offset:]
 					// Pop stack
 					stack = stack[:idx]
 					top = idx - 1

@@ -96,7 +96,7 @@ func imgurThumb(origUrl string) string {
 	ext := url[idx:]
 	// Convert gif/gifvs to webm
 	if ext == ".gif" || ext == ".gifv" {
-		thumb := url[0:idx] + ".webm"
+		thumb := url[:idx] + ".webm"
 		return `<video height="250" src="` + thumb +
 			`" autoplay loop muted>[Your browser is unable to play this video]</video>`
 	}
@@ -110,7 +110,7 @@ func imgurThumb(origUrl string) string {
 		return "<img src=\"" + url + "\" alt=\"" + url + "\"/>"
 	}
 
-	thumb := url[0:idx] + "m" + ext
+	thumb := url[:idx] + "m" + ext
 	return "<img src=\"" + thumb + "\" alt=\"" + url + "\"/>"
 }
 
@@ -137,15 +137,21 @@ func derpibooruThumb(origUrl string) string {
 	var id string
 	if splitted[4] == "view" {
 		i++
+		// Usually basename of the image is numericID_tags.ext;
+		// sometimes it's just numericID.ext.
 		idx = strings.Index(splitted[8], "_")
 		if idx < 0 {
-			return ""
+			idx = strings.LastIndex(splitted[8], ".")
+			if idx < 0 {
+				// Invalid url
+				return ""
+			}
 		}
-		id = splitted[8][0:idx]
+		id = splitted[8][:idx]
 	} else {
 		id = splitted[7]
 	}
 	copy(fields, splitted[i:i+3])
-	thumb := strings.Join(splitted[0:4], "/") + "/" + strings.Join(fields, "/") + id + "/thumb." + ext
+	thumb := strings.Join(splitted[:4], "/") + "/" + strings.Join(fields, "/") + id + "/thumb." + ext
 	return strings.Trim(thumb, `"'`)
 }
