@@ -34,6 +34,7 @@ type markdownFormatter struct {
 }
 
 func (m *markdownFormatter) Init() {
+	// Order of regexes is important
 	m.mdElements = []mdPair{
 		{regexp.MustCompile(`(?U)(^|\\\\|[^\\])\*\*(.*[^\\])\*\*`), mdConvertTag("b")},
 		{regexp.MustCompile(`(?U)(^|\\\\|[^\\\*])\*(.*[^\\])\*`), mdConvertTag("i")},
@@ -60,8 +61,7 @@ func (m *markdownFormatter) Format(content string) string {
 			continue
 		}
 		for _, pair := range m.mdElements {
-			regex := pair.Regex
-			fn := pair.Func
+			regex, fn := pair.Regex, pair.Func
 			for regex.MatchString(lines[idx]) {
 				lines[idx] = fn(regex, lines[idx])
 			}
@@ -88,12 +88,4 @@ func mdConvertTagParam(tag, param string) func(*regexp.Regexp, string) string {
 
 func mdConvertImg(regex *regexp.Regexp, str string) string {
 	return regex.ReplaceAllString(str, `$1<a href="$3" rel="nofollow"><img src="$3" alt="$2"/></a>`)
-}
-
-func mdConvertQuote(_ *regexp.Regexp, str string) string {
-	return "<span class=\"purpletext\">&gt; " + strings.TrimSpace(str[4:]) + "</span>"
-}
-
-func mdConvertPostQuote(regex *regexp.Regexp, str string) string {
-	return regex.ReplaceAllString(str, `<a href="#p$1" class="postIdQuote">$0</a>`)
 }
