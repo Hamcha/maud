@@ -26,12 +26,14 @@ editPost = (id) ->
 	nick = nickspan.innerHTML
 	tripcodebar = ""
 	if !window.adminMode
-		if nickspan.firstChild instanceof HTMLSpanElement
+		if nickspan.parentNode.querySelector('span.tripcode')?.innerHTML.length > 0
+			# visible tripcode
+			tripcodebar = "<input class='full short inline verysmall' type='text' name='tripcode' placeholder='Tripcode (required)' required />"
+		else
 			# hidden tripcode (post-author contains <span class="anon"></span> instead of nick)
 			htrip = JSON.parse(window.localStorage?.getItem 'crLatestPost')?.htrip
 			tripcodebar = "<input type='hidden' name='tripcode' value='#{htrip}' required />"
-		else  # visible tripcode
-			tripcodebar = "<input class='full short inline verysmall' type='text' name='tripcode' placeholder='Tripcode (required)' required />"
+
 	# if post is OP, allow editing thread tags
 	tagsbar = ""
 	tags = post.dataset?.tags
@@ -91,12 +93,14 @@ deletePost = (id) ->
 	tripcodebar = ""
 	if !window.adminMode
 		purge = ""
-		if nickspan.firstChild instanceof HTMLSpanElement
+		if nickspan.parentNode.querySelector('span.tripcode')?.innerHTML.length > 0
+			# visible tripcode
+			tripcodebar = "<input class='full short inline verysmall' type='text' name='tripcode' placeholder='Tripcode (required)' required />"
+		else
 			# hidden tripcode
 			htrip = JSON.parse(window.localStorage?.getItem 'crLatestPost')?.htrip
 			tripcodebar = "<input type='hidden' name='tripcode' value='#{htrip}' required />"
-		else  # visible tripcode
-			tripcodebar = "<input class='full short inline verysmall' type='text' name='tripcode' placeholder='Tripcode (required)' required />"
+
 	else
 		purge = '<button name="deletetype" value="purge" type="submit">Purge</button>'
 	post.innerHTML = """
