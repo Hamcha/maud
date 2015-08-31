@@ -63,6 +63,7 @@ editPost = (id) ->
             <a onclick="Editor.add(this, 'youtube')">youtube</a>
             <a onclick="Editor.add(this, 'html')">html</a>
             <a onclick="Editor.add(this, 'video')">video</a>
+            <a onclick="Editor.add(this, 'pre')">pre</a>
             <a onclick="Editor.quoteText(this)">&gt;</a>
         </div>
         <textarea class="full small editor" name="text" required placeholder="Retreiving content..."></textarea>
