@@ -1,10 +1,12 @@
 editorAdd = (elem, tag) ->
+	# get the textarea and the selection
 	txt = elem.parentElement.parentElement.text
 	cursor = txt.selectionStart
 	selectionLen = txt.selectionEnd - txt.selectionStart
-	txt.value = (if txt.selectionStart > 0 then txt.value[0..txt.selectionStart-1] else "") +
-		"[#{tag}]" + txt.value[txt.selectionStart..txt.selectionEnd-1] + "[/#{tag}]" +
-		txt.value[txt.selectionEnd..]
+	text = txt.value
+	[start, end] = [txt.selectionStart, txt.selectionEnd]
+	txt.value = if start is 0 then "" else text[..start-1]
+	txt.value += "[#{tag}]#{if end > 0 then text[start..end-1] else ""}[/#{tag}]#{text[end..]}"
 	txt.selectionStart = cursor + tag.length + 2
 	txt.selectionEnd = txt.selectionStart + selectionLen
 	txt.focus()
