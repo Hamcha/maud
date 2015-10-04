@@ -15,7 +15,9 @@ package bbcode
 import (
 	"../.."
 	"net/url"
+	"strconv"
 	"strings"
+	"time"
 )
 
 func Provide() modules.Formatter {
@@ -66,17 +68,54 @@ func (b *bbCodeFormatter) Init() {
 	}
 	b.bbElements["youtube"] = func(_, con string) string {
 		/* Content may be one of these:
-		 * 1) https://www.youtube.com/watch?v=qRC4Vk6kisY
-		 * 2) https://youtu.be/qRC4Vk6kisY
-		 * 3) qrC4Vk6kisY
+		 * 1) (full link) https://www.youtube.com/watch?v=qRC4Vk6kisY
+		 * 2) (short link) https://youtu.be/qRC4Vk6kisY
+		 * 3) (video code) qrC4Vk6kisY
+		 * If a query parameter 't=XXmYYs' is found, it's converted to
+		 * 'start=NNs', which is the parameter accepted by the
+		 * youtube embed API.
 		 */
-		if idx := strings.Index(con, "?v="); idx > 0 {
-			con = con[idx+3:]
-		} else if idx = strings.LastIndex(con, "/"); idx > 0 {
-			con = con[idx+1:]
+		yturl, err := url.Parse(con)
+		if err != nil {
+			return con
 		}
-		return `<iframe  width="560" height="315" src="//www.youtube.com/embed/` +
-			url.QueryEscape(con) + `" frameborder="0" allowfullscreen></iframe>`
+
+		var (
+			videoCode string
+			startTime time.Duration
+		)
+
+		if query := yturl.Query(); len(query) == 0 {
+			// Either short link (w/o start time) or video code
+			if idx := strings.LastIndex(con, "/"); idx > 0 {
+				// Short link
+				videoCode = yturl.Path
+			} else {
+				// Video code
+				videoCode = con
+			}
+		} else {
+			// Either full link or short link with start time
+			if q := query.Get("v"); len(q) > 0 {
+				// Full link
+				videoCode = q
+			} else {
+				// Short link
+				videoCode = yturl.Path
+			}
+			// Check for start time
+			if rawtime := query.Get("t"); len(rawtime) > 0 {
+				if startTime, err = time.ParseDuration(rawtime); err != nil {
+					return con
+				}
+			}
+		}
+		str := `<iframe  width="560" height="315" src="//www.youtube.com/embed/` + videoCode
+		if startTime > 0 {
+			str += "?start=" + strconv.Itoa(int(startTime.Seconds()))
+		}
+		str += `" frameborder="0" allowfullscreen></iframe>`
+		return str
 	}
 	b.bbElements["html"] = func(_, con string) string {
 		return strings.Replace(con, "\n", "", -1)
