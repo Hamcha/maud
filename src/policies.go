@@ -20,9 +20,9 @@ func PostPolicy() *bluemonday.Policy {
 	p.AllowAttrs("href").OnElements("a")
 
 	// Extra markup
-	p.AllowElements("abbr", "acronym", "bdi", "cite", "code", "dd", "del",
+	p.AllowElements("abbr", "acronym", "bdi", "code", "dd", "del",
 		"dfn", "dl", "dt", "figcaption", "figure", "ins", "kbd", "mark",
-		"meter", "ol", "progress", "q", "s", "samp", "strong", "sub",
+		"meter", "ol", "progress", "samp", "strong", "sub",
 		"sup", "time", "ul", "var")
 
 	p.AllowAttrs("value", "min", "max").OnElements("meter", "progress")
