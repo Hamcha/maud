@@ -39,6 +39,9 @@ func (b *bbCodeFormatter) Init() {
 	b.bbElements["s"] = bbToHTML("s")
 	// Other BBcode tags
 	b.bbElements["img"] = func(_, con string) string {
+		if !strings.HasPrefix(con, "http") && !strings.HasPrefix(con, "//") {
+			con = "http://" + con
+		}
 		idx := strings.IndexRune(con, '?')
 		if idx > 0 {
 			con = con[:idx] + queryescape(con[idx:])
@@ -54,7 +57,7 @@ func (b *bbCodeFormatter) Init() {
 		if strings.HasPrefix(par, "<a ") {
 			return par
 		}
-		if !strings.HasPrefix(par, "http://") && !strings.HasPrefix(par, "https://") {
+		if !strings.HasPrefix(par, "http") && !strings.HasPrefix(par, "//") {
 			par = "http://" + par
 		}
 		idx := strings.IndexRune(par, '?')

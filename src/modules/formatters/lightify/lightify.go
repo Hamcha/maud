@@ -33,9 +33,9 @@ func (f *LightifyFormatter) Format(content string) string {
 		url := match[1]
 		spl := strings.Split(url, "/")
 		switch {
-		case len(spl) > 2 && spl[2] == "i.imgur.com":
+		case len(spl) > 2 && strings.ToLower(spl[2]) == "i.imgur.com":
 			content = strings.Replace(content, match[0], wrapImg(url, imgurThumb(url)), -1)
-		case len(spl) > 2 && f.derpiRgx.MatchString(spl[2]):
+		case len(spl) > 2 && f.derpiRgx.MatchString(strings.ToLower(spl[2])):
 			content = strings.Replace(content, match[0], wrapImg(url, "<img src=\""+derpibooruThumb(url)+"\" alt="+url+"/>"), 1)
 		}
 	}
@@ -51,15 +51,28 @@ func (f *LightifyFormatter) ReplaceTags(data modules.PostMutatorData) {
 		url := match[1]
 		spl := strings.Split(url, "/")
 		switch {
-		case len(spl) > 2 && spl[2] == "i.imgur.com":
+		case len(spl) > 2 && strings.ToLower(spl[2]) == "i.imgur.com":
 			continue
-		case len(spl) > 2 && f.derpiRgx.MatchString(spl[2]):
+		case len(spl) > 2 && f.derpiRgx.MatchString(strings.ToLower(spl[2])):
 			continue
 		default:
 			content = strings.Replace(content, match[0], "<a class='toggleImage' target='_blank' href="+url+">[Click to view image]</a>", 1)
 		}
 	}
-	content = f.iframeRgx.ReplaceAllString(content, "<a target='_blank' href=$1>[Embedded: $1]</a>")
+
+	// Detect youtube embedded videos and give them a prettier link
+	for _, match := range f.iframeRgx.FindAllStringSubmatch(content, -1) {
+		url := match[1]
+		spl := strings.Split(url, "/")
+		switch {
+		case len(spl) > 2 && strings.HasSuffix(strings.ToLower(spl[2]), "youtube.com"):
+			full := strings.Replace(url, "/embed/", "/watch?v=", 1)
+			content = "<a target='_blank' href=" + full + ">[Youtube: " + full + "]</a>"
+		default:
+			content = "<a target='_blank' href=" + url + ">[Embedded: " + url + "]</a>"
+		}
+	}
+
 	for _, match := range f.videoRgx.FindAllStringSubmatch(content, -1) {
 		url := strings.Trim(match[1], `"'`)
 		if len(url) > 5 && url[len(url)-5:] == ".webm" {
