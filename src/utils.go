@@ -21,6 +21,11 @@ import (
 	"unicode/utf8"
 )
 
+var (
+	errPostNotFound         = errors.New("Post not found")
+	errCapthasNotConfigured = errors.New("Sorry, captchas weren't configured properly.")
+)
+
 func parseNickname(nickname string) (string, string) {
 	nickname = strings.TrimSpace(nickname)
 	if len(nickname) < 1 {
@@ -188,7 +193,7 @@ func threadPostOrErr(rw http.ResponseWriter, threadId, postIdStr string) (data.T
 	}
 	if len(posts) < 1 {
 		sendError(rw, 404, "Post not found")
-		return thread, data.Post{}, errors.New("Post not found")
+		return thread, data.Post{}, errPostNotFound
 	}
 	return thread, posts[0], nil
 }
@@ -302,7 +307,7 @@ func retreiveThreads(n, offset int, hThreads, hTags []string) ([]data.ThreadInfo
 
 func randomCaptcha() (data.CaptchaData, error) {
 	if len(captchas) < 1 {
-		return data.CaptchaData{}, errors.New("Sorry, captchas weren't configured properly.")
+		return data.CaptchaData{}, errCapthasNotConfigured
 	}
 	return captchas[mathrand.Intn(len(captchas))], nil
 }
