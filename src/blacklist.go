@@ -66,9 +66,28 @@ func initBL() {
 	}
 }
 
+func wrapBlacklist(handler http.HandlerFunc) http.HandlerFunc {
+	return func(rw http.ResponseWriter, req *http.Request) {
+		isBanned, banReason, blAction := checkBlacklist(req)
+		if isBanned {
+			switch blAction {
+			case "ban":
+				sendError(rw, 423, banReason)
+				return
+			case "captcha":
+				req.Header.Add("Captcha-required", "true")
+			}
+		}
+		handler(rw, req)
+	}
+}
+
 // checkBlacklists finds out if a request comes from a blacklisted IP.
 // Returns (isBanned, banReason, banAction).
 func checkBlacklist(req *http.Request) (bool, string, string) {
+	if a, _ := isAdmin(req); a {
+		return false, "", ""
+	}
 	userAgent := req.UserAgent()
 	var ip string
 	if iphead, ok := req.Header["X-Forwarded-For"]; ok {
