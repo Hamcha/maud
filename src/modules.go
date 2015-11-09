@@ -7,6 +7,7 @@ import (
 	"./modules/formatters/bbcode"
 	"./modules/formatters/lightify"
 	"./modules/formatters/markdown"
+	"./modules/formatters/proxy"
 	// Mutators
 	"./modules/maudtext"
 	// Go libs
@@ -23,6 +24,7 @@ func InitFormatters() {
 	// Post formatters
 	formatters = append(formatters, bbcode.Provide())
 	formatters = append(formatters, markdown.Provide())
+	formatters = append(formatters, proxy.Provide())
 
 	// Lightifier
 	lightifier := lightify.Provide()
