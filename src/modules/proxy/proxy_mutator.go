@@ -34,20 +34,13 @@ func (f *ProxyMutator) Condition(_ *http.Request) bool {
 func (f *ProxyMutator) Mutator(content string) string {
 	for _, match := range f.imgRgx.FindAllStringSubmatch(content, -1) {
 		origUrl := match[1]
-		cachedUrl := getProxiedUrl(origUrl)
-		if _, err := os.Stat(path.Join(siteInfo.ProxyRoot)); err == nil {
-			content = strings.Replace(content, match[0], WrapImg(origUrl, cachedUrl, nil), -1)
+		if proxyUrl, err := someproxyhere.GetContent(origUrl); err == nil {
+			// Serve the cached content
+			content = strings.Replace(content, match[0], modules.WrapImg(origUrl, proxyUrl, nil), -1)
+		} else {
+			// Give up and serve the link instead
+			content = strings.Replace(content, match[0], `<a href="`+origUrl+`">`+origUrl+`</a>`)
 		}
 	}
 	return content
-}
-
-// getProxydUrl replaces an URL like http://domain.com/path/to/file to
-// https://<siteInfo.ProxyDomain>/domain.com/path/to/file
-func getProxiedUrl(orig string) string {
-	split := strings.Split(orig, '/')
-	split[0] = "https"
-	split[3] = split[2] + split[3]
-	split[2] = siteInfo.ProxyDomain
-	return strings.Join(split, '/')
 }
