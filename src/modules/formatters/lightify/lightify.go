@@ -15,10 +15,10 @@ var (
 )
 
 func init() {
-	imgRgx = regexp.MustCompile(`(?:<a [^>]+>)?<img .*src=("[^"]+"|'[^']+'|[^'"][^\s]+).*>(?:</a>)?`)
+	imgRgx = regexp.MustCompile(`(?:<a [^>]+>)?<img [^>]*src=("[^"]+"|'[^']+'|[^'"][^\s]+)[^>]*>(?:</a>)?`)
 	derpiRgx = regexp.MustCompile(`(?:img[0-9]\.)?derpicdn\.net`)
-	iframeRgx = regexp.MustCompile(`<iframe .*src=("[^"]+"|'[^']+'|[^'"][^\s]+).*>`)
-	videoRgx = regexp.MustCompile(`<video .*src=("[^"]+"|'[^']+'|[^'"][^\s]+).*</video>`)
+	iframeRgx = regexp.MustCompile(`<iframe [^>]*src=("[^"]+"|'[^']+'|[^'"][^\s]+)[^>]*>`)
+	videoRgx = regexp.MustCompile(`<video [^>]*src=("[^"]+"|'[^']+'|[^'"][^\s]+)[^>]*</video>`)
 	log.Printf("Module initialized: Lightify")
 }
 
