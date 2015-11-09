@@ -22,7 +22,7 @@ import (
 
 func Provide() modules.Formatter {
 	bbcode := new(bbCodeFormatter)
-	bbcode.Init()
+	bbcode.init()
 	return bbcode
 }
 
@@ -30,7 +30,7 @@ type bbCodeFormatter struct {
 	bbElements map[string]func(string, string) string
 }
 
-func (b *bbCodeFormatter) Init() {
+func (b *bbCodeFormatter) init() {
 	b.bbElements = make(map[string]func(string, string) string)
 	// Standard BBcode -> HTML tags
 	b.bbElements["b"] = bbToHTML("b")

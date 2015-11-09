@@ -17,13 +17,12 @@ type Proxy struct {
 // If the content already exists then it just returns the path to it
 func (p Proxy) GetContent(contentURL string) (string, error) {
 	contentPath := getPathURL(contentURL)
-	ospath := Proxy.Root + filepath.FromSlash(contentPath)
+	ospath := p.Root + filepath.FromSlash(contentPath)
 
-	_, err := os.Stat(ospath)
-	if err != nil {
+	if _, err := os.Stat(ospath); err != nil {
 		if os.IsNotExist(err) {
 			// File does not exist, fetch it
-			err = Fetch(contentURL)
+			err = p.Fetch(contentURL)
 			if err != nil {
 				return contentPath, err
 			}
@@ -36,6 +35,8 @@ func (p Proxy) GetContent(contentURL string) (string, error) {
 	return contentPath, nil
 }
 
+// Fetch retreives the resources at `contentURL` and saves it
+// under p.Root/domain/path/to/file.
 func (p Proxy) Fetch(contentURL string) error {
 	resp, err := http.Get(contentURL)
 	if err != nil {
@@ -63,6 +64,6 @@ func (p Proxy) Fetch(contentURL string) error {
 }
 
 func getPathURL(rawURL string) string {
-	urldata := url.Parse(rawURL)
+	urldata, _ := url.Parse(rawURL)
 	return "/" + urldata.Host + urldata.Path
 }
