@@ -2,40 +2,42 @@ package lightify
 
 import (
 	"../.."
+	"log"
 	"regexp"
 	"strings"
 )
 
-func Provide() *LightifyFormatter {
-	lightify := new(LightifyFormatter)
-	lightify.init()
-	return lightify
-}
-
-type LightifyFormatter struct {
+var (
 	imgRgx    *regexp.Regexp
 	derpiRgx  *regexp.Regexp
 	iframeRgx *regexp.Regexp
 	videoRgx  *regexp.Regexp
+)
+
+func init() {
+	imgRgx = regexp.MustCompile(`(?:<a [^>]+>)?<img .*src=("[^"]+"|'[^']+'|[^'"][^\s]+).*>(?:</a>)?`)
+	derpiRgx = regexp.MustCompile(`(?:img[0-9]\.)?derpicdn\.net`)
+	iframeRgx = regexp.MustCompile(`<iframe .*src=("[^"]+"|'[^']+'|[^'"][^\s]+).*>`)
+	videoRgx = regexp.MustCompile(`<video .*src=("[^"]+"|'[^']+'|[^'"][^\s]+).*</video>`)
+	log.Printf("Module initialized: Lightify")
 }
 
-func (f *LightifyFormatter) init() {
-	f.imgRgx = regexp.MustCompile(`(?:<a [^>]+>)?<img .*src=("[^"]+"|'[^']+'|[^'"][^\s]+).*>(?:</a>)?`)
-	f.derpiRgx = regexp.MustCompile(`(?:img[0-9]\.)?derpicdn\.net`)
-	f.iframeRgx = regexp.MustCompile(`<iframe .*src=("[^"]+"|'[^']+'|[^'"][^\s]+).*>`)
-	f.videoRgx = regexp.MustCompile(`<video .*src=("[^"]+"|'[^']+'|[^'"][^\s]+).*</video>`)
+type LightifyFormatter struct{}
+
+func Provide() *LightifyFormatter {
+	return &LightifyFormatter{}
 }
 
 // Format thumbnailifies all images from Imgur or Derpibooru
 // and returns the other content unaltered
 func (f *LightifyFormatter) Format(content string) string {
-	for _, match := range f.imgRgx.FindAllStringSubmatch(content, -1) {
+	for _, match := range imgRgx.FindAllStringSubmatch(content, -1) {
 		url := match[1]
 		spl := strings.Split(url, "/")
 		switch {
 		case len(spl) > 2 && strings.ToLower(spl[2]) == "i.imgur.com":
 			content = strings.Replace(content, match[0], wrapImg(url, imgurThumb(url)), -1)
-		case len(spl) > 2 && f.derpiRgx.MatchString(strings.ToLower(spl[2])):
+		case len(spl) > 2 && derpiRgx.MatchString(strings.ToLower(spl[2])):
 			content = strings.Replace(content, match[0], wrapImg(
 				url, "<img src='"+derpibooruThumb(url)+"' alt="+url+"/>"), 1)
 		}
@@ -48,13 +50,13 @@ func (f *LightifyFormatter) Format(content string) string {
 // is active, while Format is always used.
 func (f *LightifyFormatter) ReplaceTags(data modules.PostMutatorData) {
 	content := (*data.Post).Content
-	for _, match := range f.imgRgx.FindAllStringSubmatch(content, -1) {
+	for _, match := range imgRgx.FindAllStringSubmatch(content, -1) {
 		url := match[1]
 		spl := strings.Split(url, "/")
 		switch {
 		case len(spl) > 2 && strings.ToLower(spl[2]) == "i.imgur.com":
 			continue
-		case len(spl) > 2 && f.derpiRgx.MatchString(strings.ToLower(spl[2])):
+		case len(spl) > 2 && derpiRgx.MatchString(strings.ToLower(spl[2])):
 			continue
 		default:
 			content = strings.Replace(content, match[0], "<a class='toggleImage' target='_blank' href="+url+">[Click to view image]</a>", 1)
@@ -62,7 +64,7 @@ func (f *LightifyFormatter) ReplaceTags(data modules.PostMutatorData) {
 	}
 
 	// Detect youtube embedded videos and give them a prettier link
-	for _, match := range f.iframeRgx.FindAllStringSubmatch(content, -1) {
+	for _, match := range iframeRgx.FindAllStringSubmatch(content, -1) {
 		url := match[1]
 		spl := strings.Split(url, "/")
 		switch {
@@ -74,7 +76,7 @@ func (f *LightifyFormatter) ReplaceTags(data modules.PostMutatorData) {
 		}
 	}
 
-	for _, match := range f.videoRgx.FindAllStringSubmatch(content, -1) {
+	for _, match := range videoRgx.FindAllStringSubmatch(content, -1) {
 		url := strings.Trim(match[1], `"'`)
 		if len(url) > 5 && url[len(url)-5:] == ".webm" {
 			spl := strings.Split(url, "/")

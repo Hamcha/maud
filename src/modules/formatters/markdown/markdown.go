@@ -13,29 +13,24 @@ package markdown
 
 import (
 	"../.."
+	"log"
 	"regexp"
 	"strings"
 )
-
-func Provide() modules.Formatter {
-	md := new(markdownFormatter)
-	md.init()
-	return md
-}
 
 type mdPair struct {
 	Regex *regexp.Regexp
 	Func  func(*regexp.Regexp, string) string
 }
 
-type markdownFormatter struct {
+var (
 	mdElements []mdPair
 	trimEscape *regexp.Regexp
-}
+)
 
-func (m *markdownFormatter) init() {
+func init() {
 	// Order of regexes is important
-	m.mdElements = []mdPair{
+	mdElements = []mdPair{
 		{regexp.MustCompile(`(?U)(^|\\\\|[^\\])\*\*(.*[^\\])\*\*`), mdConvertTag("b")},
 		{regexp.MustCompile(`(?U)(^|\\\\|[^\\\*])\*(.*[^\\])\*`), mdConvertTag("i")},
 		{regexp.MustCompile(`(?U)(^|\\\\|[^\\])~~(.*[^\\])~~`), mdConvertTag("s")},
@@ -43,7 +38,14 @@ func (m *markdownFormatter) init() {
 		{regexp.MustCompile(`(?U)(^|\\\\|[^\\!])\[(.*)\]\((.*)\)`), mdConvertTagParam("a", "href")},
 		{regexp.MustCompile("(?U)(^|\\\\\\\\|[^\\\\])`(.*[^\\\\])`"), mdConvertTag("code")},
 	}
-	m.trimEscape = regexp.MustCompile("\\\\([*~\\[!`\\\\])")
+	trimEscape = regexp.MustCompile("\\\\([*~\\[!`\\\\])")
+	log.Printf("Module initialized: Markdown")
+}
+
+type markdownFormatter struct{}
+
+func Provide() modules.Formatter {
+	return &markdownFormatter{}
 }
 
 // Allowed markdown snippets:
@@ -60,13 +62,13 @@ func (m *markdownFormatter) Format(content string) string {
 		if len(strings.TrimSpace(lines[idx])) == 0 {
 			continue
 		}
-		for _, pair := range m.mdElements {
+		for _, pair := range mdElements {
 			regex, fn := pair.Regex, pair.Func
 			for regex.MatchString(lines[idx]) {
 				lines[idx] = fn(regex, lines[idx])
 			}
 		}
-		lines[idx] = m.trimEscape.ReplaceAllString(lines[idx], "$1")
+		lines[idx] = trimEscape.ReplaceAllString(lines[idx], "$1")
 	}
 
 	return strings.Join(lines, "<br />\n")
