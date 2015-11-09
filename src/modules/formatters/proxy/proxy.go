@@ -1,24 +1,31 @@
 package proxy
 
 import (
+	"log"
 	"regexp"
 	"strings"
 )
 
-func Provide(root string) *ProxyFormatter {
+func Provide(root, domain string) *ProxyFormatter {
 	proxyFormatter := new(ProxyFormatter)
-	proxyFormatter.init(root)
+	proxyFormatter.init(root, domain)
 	return proxyFormatter
 }
 
 type ProxyFormatter struct {
 	imgRgx *regexp.Regexp
 	proxy  Proxy
+	domain string
 }
 
-func (f *ProxyFormatter) init(root string) {
-	f.imgRgx = regexp.MustCompile(`<img .*src=("[^"]+"|'[^']+'|[^'"][^\s]+).*>`)
+func (f *ProxyFormatter) init(root, domain string) {
+	f.imgRgx = regexp.MustCompile(`<img .*src=["']?([^"']+)["']?.*>`)
 	f.proxy.Root = root
+	f.domain = domain
+	if !strings.HasPrefix(f.domain, "https://") {
+		f.domain = "https://" + f.domain
+	}
+	log.Printf("Module initialized: Proxy")
 }
 
 // Mutator converts all external <img> references to the relative
@@ -31,7 +38,7 @@ func (f *ProxyFormatter) Format(content string) string {
 		if proxyUrl, err := f.proxy.GetContent(origUrl); err == nil {
 			// Serve the cached content
 			content = strings.Replace(content, match[0],
-				`<img src="`+proxyUrl+`" alt="`+origUrl+`">`, -1)
+				`<img src="`+f.domain+proxyUrl+`" alt="`+origUrl+`">`, -1)
 		} else {
 			// Give up and serve the link instead
 			content = strings.Replace(content, match[0], `<a href="`+origUrl+`">`+origUrl+`</a>`, -1)

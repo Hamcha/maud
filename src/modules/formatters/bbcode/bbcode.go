@@ -14,31 +14,24 @@ package bbcode
 
 import (
 	"../.."
+	"log"
 	"net/url"
 	"strconv"
 	"strings"
 	"time"
 )
 
-func Provide() modules.Formatter {
-	bbcode := new(bbCodeFormatter)
-	bbcode.init()
-	return bbcode
-}
+var bbElements map[string]func(string, string) string
 
-type bbCodeFormatter struct {
-	bbElements map[string]func(string, string) string
-}
-
-func (b *bbCodeFormatter) init() {
-	b.bbElements = make(map[string]func(string, string) string)
+func init() {
+	bbElements = make(map[string]func(string, string) string)
 	// Standard BBcode -> HTML tags
-	b.bbElements["b"] = bbToHTML("b")
-	b.bbElements["i"] = bbToHTML("i")
-	b.bbElements["u"] = bbToHTML("u")
-	b.bbElements["s"] = bbToHTML("s")
+	bbElements["b"] = bbToHTML("b")
+	bbElements["i"] = bbToHTML("i")
+	bbElements["u"] = bbToHTML("u")
+	bbElements["s"] = bbToHTML("s")
 	// Other BBcode tags
-	b.bbElements["img"] = func(_, con string) string {
+	bbElements["img"] = func(_, con string) string {
 		if !strings.HasPrefix(con, "http") && !strings.HasPrefix(con, "//") {
 			con = "http://" + con
 		}
@@ -49,7 +42,7 @@ func (b *bbCodeFormatter) init() {
 		return `<a href="` + con + `" rel="nofollow"><img alt="` + con +
 			`" src="` + con + `" /></a>`
 	}
-	b.bbElements["url"] = func(par, con string) string {
+	bbElements["url"] = func(par, con string) string {
 		if len(par) < 1 {
 			par = con
 		}
@@ -66,10 +59,10 @@ func (b *bbCodeFormatter) init() {
 		}
 		return "<a href=\"" + par + "\" rel=\"nofollow\">" + con + "</a>"
 	}
-	b.bbElements["spoiler"] = func(_, con string) string {
+	bbElements["spoiler"] = func(_, con string) string {
 		return "<span class=\"spoiler\">" + con + "</span>"
 	}
-	b.bbElements["youtube"] = func(_, con string) string {
+	bbElements["youtube"] = func(_, con string) string {
 		/* Content may be one of these:
 		 * 1) (full link) https://www.youtube.com/watch?v=qRC4Vk6kisY
 		 * 2) (short link) https://youtu.be/qRC4Vk6kisY
@@ -120,14 +113,14 @@ func (b *bbCodeFormatter) init() {
 		str += `" frameborder="0" allowfullscreen></iframe>`
 		return str
 	}
-	b.bbElements["html"] = func(_, con string) string {
+	bbElements["html"] = func(_, con string) string {
 		return strings.Replace(con, "\n", "", -1)
 	}
 	/* [video] tag accepts an optional parameter which can control
 	 * the <video> params:
 	 *   - gif: autoplay + mute + nocontrols
 	 */
-	b.bbElements["video"] = func(par, con string) string {
+	bbElements["video"] = func(par, con string) string {
 		idx := strings.LastIndex(con, ".")
 		ext := con[idx+1:]
 		var opts string
@@ -147,9 +140,17 @@ func (b *bbCodeFormatter) init() {
 		}
 		return "<gray>Unsupported video type: " + ext + "</gray>"
 	}
-	b.bbElements["pre"] = func(_, con string) string {
+	bbElements["pre"] = func(_, con string) string {
 		return "<pre>" + con + "</pre>"
 	}
+
+	log.Printf("Module initialized: BBCode")
+}
+
+type bbCodeFormatter struct{}
+
+func Provide() modules.Formatter {
+	return &bbCodeFormatter{}
 }
 
 func (b *bbCodeFormatter) Format(code string) string {
@@ -184,7 +185,7 @@ func (b *bbCodeFormatter) Format(code string) string {
 			for idx := top; idx >= 0; idx -= 1 {
 				if stack[idx].Name == tag {
 					content := code[stack[top].End:start]
-					parsed := b.bbElements[tag](stack[top].Parameter, content)
+					parsed := bbElements[tag](stack[top].Parameter, content)
 					code = code[:stack[top].Start] + parsed + code[offset:]
 					// Pop stack
 					stack = stack[:idx]
@@ -206,7 +207,7 @@ func (b *bbCodeFormatter) Format(code string) string {
 				tag = strings.ToLower(tag)
 			}
 			// Is it a registered bbcode?
-			if _, ok := b.bbElements[tag]; ok {
+			if _, ok := bbElements[tag]; ok {
 				stack = append(stack, BBCode{
 					Name:      tag,
 					Parameter: parameter,

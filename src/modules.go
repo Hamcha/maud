@@ -25,7 +25,7 @@ func InitFormatters() {
 	formatters = append(formatters, bbcode.Provide())
 	formatters = append(formatters, markdown.Provide())
 	if siteInfo.UseProxy {
-		formatters = append(formatters, proxy.Provide(siteInfo.ProxyRoot))
+		formatters = append(formatters, proxy.Provide(siteInfo.ProxyRoot, siteInfo.ProxyDomain))
 	}
 
 	// Lightifier
