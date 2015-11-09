@@ -9,32 +9,30 @@ import (
 	"strings"
 )
 
-func Provide() modules.PostMutator {
-	proxyMutator := new(ProxyMutator)
-	proxyMutator.Init()
-	return proxyMutator
+func Provide() *ProxyFormatter {
+	proxyFormatter := new(ProxyFormatter)
+	proxyFormatter.Init()
+	return proxyFormatter
 }
 
-type ProxyMutator struct {
+type ProxyFormatter struct {
 	imgRgx *regexp.Regexp
+	proxy  Proxy
 }
 
-func (f *ProxyMutator) Init() {
+func (f *ProxyFormatter) Init(root string) {
 	f.imgRgx = regexp.MustCompile(`(?:<a [^>]+>)?<img .*src=("[^"]+"|'[^']+'|[^'"][^\s]+).*>(?:</a>)?`)
-}
-
-func (f *ProxyMutator) Condition(_ *http.Request) bool {
-	return siteInfo.UseProxy
+	f.proxy.Root = root
 }
 
 // Mutator converts all external <img> references to the relative
 // cached URLs (as configured in ProxyDomain). If the resource is
 // not currently cached, caches it. If fetching fails somehow,
 // the <img> is replaced with a simple link to the original resource.
-func (f *ProxyMutator) Mutator(content string) string {
+func (f *ProxyFormatter) Format(content string) string {
 	for _, match := range f.imgRgx.FindAllStringSubmatch(content, -1) {
 		origUrl := match[1]
-		if proxyUrl, err := someproxyhere.GetContent(origUrl); err == nil {
+		if proxyUrl, err := f.proxy.GetContent(origUrl); err == nil {
 			// Serve the cached content
 			content = strings.Replace(content, match[0], modules.WrapImg(origUrl, proxyUrl, nil), -1)
 		} else {
