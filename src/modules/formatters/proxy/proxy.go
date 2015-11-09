@@ -1,17 +1,13 @@
 package proxy
 
 import (
-	".."
-	"../.."
-	"net/http"
-	"os"
-	"path"
+	"regexp"
 	"strings"
 )
 
-func Provide() *ProxyFormatter {
+func Provide(root string) *ProxyFormatter {
 	proxyFormatter := new(ProxyFormatter)
-	proxyFormatter.Init()
+	proxyFormatter.init(root)
 	return proxyFormatter
 }
 
@@ -20,8 +16,8 @@ type ProxyFormatter struct {
 	proxy  Proxy
 }
 
-func (f *ProxyFormatter) Init(root string) {
-	f.imgRgx = regexp.MustCompile(`(?:<a [^>]+>)?<img .*src=("[^"]+"|'[^']+'|[^'"][^\s]+).*>(?:</a>)?`)
+func (f *ProxyFormatter) init(root string) {
+	f.imgRgx = regexp.MustCompile(`<img .*src=("[^"]+"|'[^']+'|[^'"][^\s]+).*>`)
 	f.proxy.Root = root
 }
 
@@ -34,10 +30,11 @@ func (f *ProxyFormatter) Format(content string) string {
 		origUrl := match[1]
 		if proxyUrl, err := f.proxy.GetContent(origUrl); err == nil {
 			// Serve the cached content
-			content = strings.Replace(content, match[0], modules.WrapImg(origUrl, proxyUrl, nil), -1)
+			content = strings.Replace(content, match[0],
+				`<img src="`+proxyUrl+`" alt="`+origUrl+`">`, -1)
 		} else {
 			// Give up and serve the link instead
-			content = strings.Replace(content, match[0], `<a href="`+origUrl+`">`+origUrl+`</a>`)
+			content = strings.Replace(content, match[0], `<a href="`+origUrl+`">`+origUrl+`</a>`, -1)
 		}
 	}
 	return content

@@ -19,7 +19,7 @@ import (
 
 func Provide() modules.Formatter {
 	md := new(markdownFormatter)
-	md.Init()
+	md.init()
 	return md
 }
 
@@ -33,7 +33,7 @@ type markdownFormatter struct {
 	trimEscape *regexp.Regexp
 }
 
-func (m *markdownFormatter) Init() {
+func (m *markdownFormatter) init() {
 	// Order of regexes is important
 	m.mdElements = []mdPair{
 		{regexp.MustCompile(`(?U)(^|\\\\|[^\\])\*\*(.*[^\\])\*\*`), mdConvertTag("b")},
