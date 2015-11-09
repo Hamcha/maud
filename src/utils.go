@@ -1,7 +1,7 @@
 package main
 
 import (
-	"./data"
+	. "./data"
 	"bytes"
 	"crypto/rand"
 	"crypto/sha256"
@@ -162,18 +162,18 @@ func shortify(content string) (string, bool) {
 	return PostPolicy().Sanitize(short), true
 }
 
-func threadPostOrErr(rw http.ResponseWriter, threadId, postIdStr string) (data.Thread, data.Post, error) {
+func threadPostOrErr(rw http.ResponseWriter, threadId, postIdStr string) (Thread, Post, error) {
 	thread, err := db.GetThread(threadId)
 	if err != nil {
 		sendError(rw, 404, "Thread not found")
-		return data.Thread{}, data.Post{}, err
+		return Thread{}, Post{}, err
 	}
 
 	// parse post ID
 	postId, err := strconv.Atoi(postIdStr)
 	if err != nil {
 		sendError(rw, 400, err.Error())
-		return thread, data.Post{}, err
+		return thread, Post{}, err
 	}
 
 	// special case: OP
@@ -181,7 +181,7 @@ func threadPostOrErr(rw http.ResponseWriter, threadId, postIdStr string) (data.T
 		post, err := db.GetPost(thread.ThreadPost)
 		if err != nil {
 			sendError(rw, 500, err.Error())
-			return thread, data.Post{}, err
+			return thread, Post{}, err
 		}
 		return thread, post, err
 	}
@@ -193,7 +193,7 @@ func threadPostOrErr(rw http.ResponseWriter, threadId, postIdStr string) (data.T
 	}
 	if len(posts) < 1 {
 		sendError(rw, 404, "Post not found")
-		return thread, data.Post{}, errPostNotFound
+		return thread, Post{}, errPostNotFound
 	}
 	return thread, posts[0], nil
 }
@@ -271,13 +271,13 @@ func getHiddenElems(req *http.Request) (threads, tags []string) {
 
 // retreiveThreads retreives up to `n` threads, skipping the first `offset`,
 // from the DB, excluding the ones matching the hidden elements of the client.
-func retreiveThreads(n, offset int, hThreads, hTags []string) ([]data.ThreadInfo, error) {
+func retreiveThreads(n, offset int, hThreads, hTags []string) ([]ThreadInfo, error) {
 	threads, err := db.GetThreadList("", n, offset, hThreads, hTags)
 	if err != nil {
 		return nil, err
 	}
 
-	tinfos := make([]data.ThreadInfo, 0, siteInfo.HomeThreadsNum)
+	tinfos := make([]ThreadInfo, 0, siteInfo.HomeThreadsNum)
 	for i := range threads {
 		count, err := db.PostCount(&threads[i])
 		if err != nil {
@@ -289,10 +289,10 @@ func retreiveThreads(n, offset int, hThreads, hTags []string) ([]data.ThreadInfo
 			return tinfos, err
 		}
 
-		tinfos = append(tinfos, data.ThreadInfo{
+		tinfos = append(tinfos, ThreadInfo{
 			Thread:      threads[i],
 			LastMessage: count - 1,
-			LastPost: data.PostInfo{
+			LastPost: PostInfo{
 				Data:    lastPost,
 				StrDate: strdate(lastPost.Date),
 			},
@@ -305,9 +305,9 @@ func retreiveThreads(n, offset int, hThreads, hTags []string) ([]data.ThreadInfo
 	return tinfos, err
 }
 
-func randomCaptcha() (data.CaptchaData, error) {
+func randomCaptcha() (CaptchaData, error) {
 	if len(captchas) < 1 {
-		return data.CaptchaData{}, errCapthasNotConfigured
+		return CaptchaData{}, errCapthasNotConfigured
 	}
 	return captchas[mathrand.Intn(len(captchas))], nil
 }

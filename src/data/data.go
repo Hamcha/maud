@@ -67,6 +67,9 @@ type SiteInfo struct {
 	PostFooter         string
 	FullVersionDomain  string
 	LightVersionDomain string
+	UseProxy           bool
+	ProxyDomain        string
+	ProxyRoot          string
 }
 
 type Tag struct {

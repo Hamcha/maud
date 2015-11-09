@@ -2,8 +2,8 @@
     "Title" : "Maud pie lair",
     "Secret" : "secret key",
     "PostsPerPage" : 30,
-    "HomeThreadsNum": 5,
-    "HomeTagsNum": 10,
+    "HomeThreadsNum": 10,
+    "HomeTagsNum": 5,
     "ThreadsPerPage" : 20,
     "TagResultsPerPage": 10,
     "TagsPerPage" : 20,
@@ -20,5 +20,8 @@
     ],
     "PostFooter": " - <a href=\"https://github.com/hamcha/maud\">GitHub</a> - <a href=\"/stiki/dmca\">DMCA</a>",
     "FullVersionDomain": "localhost.localdomain:8080",
-    "LightVersionDomain": "lite.localhost.localdomain:8080"
+    "LightVersionDomain": "lite.localhost.localdomain:8080",
+    "UseProxy": true,
+    "ProxyDomain": "static.crunchy.rocks",
+    "ProxyRoot": "/var/www/static/"
 }

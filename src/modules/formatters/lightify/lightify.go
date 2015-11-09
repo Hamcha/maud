@@ -34,9 +34,10 @@ func (f *LightifyFormatter) Format(content string) string {
 		spl := strings.Split(url, "/")
 		switch {
 		case len(spl) > 2 && strings.ToLower(spl[2]) == "i.imgur.com":
-			content = strings.Replace(content, match[0], wrapImg(url, imgurThumb(url)), -1)
+			content = strings.Replace(content, match[0], modules.WrapImg(url, imgurThumb(url), nil), -1)
 		case len(spl) > 2 && f.derpiRgx.MatchString(strings.ToLower(spl[2])):
-			content = strings.Replace(content, match[0], wrapImg(url, "<img src=\""+derpibooruThumb(url)+"\" alt="+url+"/>"), 1)
+			content = strings.Replace(content, match[0], modules.WrapImg(
+				url, "<img src='"+derpibooruThumb(url)+"' alt="+url+"/>", nil), 1)
 		}
 	}
 	return content
@@ -79,20 +80,17 @@ func (f *LightifyFormatter) ReplaceTags(data modules.PostMutatorData) {
 			spl := strings.Split(url, "/")
 			if len(spl) > 2 && spl[2] == "i.imgur.com" {
 				gifv := url[:len(url)-5] + "m.gifv"
-				content = strings.Replace(content, match[0], wrapImg(url, "<img src=\""+gifv+"\" alt="+url+"/>"), 1)
+				content = strings.Replace(content, match[0], modules.WrapImg(
+					url, "<img src='"+gifv+"' alt="+url+"/>", nil), 1)
 				continue
 			}
 		}
-		content = strings.Replace(content, match[0], "<a target='_blank' href=\""+url+"\">[Video: "+url+"]</a>", 1)
+		content = strings.Replace(content, match[0], "<a target='_blank' href='"+url+"'>[Video: "+url+"]</a>", 1)
 	}
 	(*data.Post).Content = content
 }
 
 //// Unexported ////
-
-func wrapImg(url, content string) string {
-	return `<a target="_blank" href=` + url + ">" + content + "</a>"
-}
 
 func imgurThumb(origUrl string) string {
 	/* origUrl must be like 'https://i.imgur.com/{id}.jpg', else the returned

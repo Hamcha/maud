@@ -1,7 +1,7 @@
 package main
 
 import (
-	"./data"
+	. "./data"
 	"flag"
 	"github.com/gorilla/mux"
 	"log"
@@ -12,10 +12,10 @@ import (
 )
 
 var (
-	adminConf data.AdminConfig
+	adminConf AdminConfig
 	db        Database
 	maudRoot  string
-	siteInfo  data.SiteInfo
+	siteInfo  SiteInfo
 )
 
 func setupHandlers(router *mux.Router, isAdmin, isSubdir bool) {
