@@ -1,7 +1,7 @@
 package main
 
 import (
-	"./data"
+	. "./data"
 	"github.com/oschwald/maxminddb-golang"
 	"log"
 	"net"
@@ -30,7 +30,7 @@ type Blacklist struct {
 }
 
 var blacklists map[string]Blacklist
-var captchas []data.CaptchaData
+var captchas []CaptchaData
 var geoip *maxminddb.Reader
 
 type onlyCountry struct {

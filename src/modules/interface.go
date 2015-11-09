@@ -1,7 +1,7 @@
 package modules
 
 import (
-	"../data"
+	. "../data"
 	"net/http"
 )
 
@@ -11,8 +11,8 @@ type Formatter interface {
 
 type PostMutatorData struct {
 	Request *http.Request
-	Thread  *data.Thread
-	Post    *data.Post
+	Thread  *Thread
+	Post    *Post
 }
 
 type PostMutator struct {
