@@ -22,9 +22,6 @@ func (f *ProxyFormatter) init(root, domain string) {
 	f.imgRgx = regexp.MustCompile(`<img [^>]*src=["']?([^"']+)["']?[^>]*>`)
 	f.proxy.Root = root
 	f.domain = domain
-	if !strings.HasPrefix(f.domain, "https://") {
-		f.domain = "https://" + f.domain
-	}
 	log.Printf("Module initialized: Proxy")
 }
 
