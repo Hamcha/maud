@@ -48,7 +48,7 @@ func (p Proxy) Fetch(contentURL string) error {
 	ospath := p.Root + filepath.FromSlash(path)
 
 	// Create the directory tree
-	err = os.MkdirAll(filepath.Dir(ospath), 0700)
+	err = os.MkdirAll(filepath.Dir(ospath), 0701)
 	if err != nil {
 		return err
 	}
