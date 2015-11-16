@@ -17,6 +17,13 @@ window.OptionUtils =
 		# save options in localStorage (it's no use changing the SiteOptions
 		# live, because the new options will be effective only after a page reload).
 		window.localStorage.setItem 'crOptions', JSON.stringify opts
+		toggleImgProxy()
+
+toggleImgProxy = ->
+	if document.getElementById('useProxy')?.checked
+		Cookies.set 'crUseProxy', true, { expires: Infinity }
+	else
+		Cookies.expire 'crUseProxy'
 
 # Load options
 opts = window.localStorage?.getItem 'crOptions'

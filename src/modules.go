@@ -24,9 +24,7 @@ func InitFormatters() {
 	// Post formatters
 	formatters = append(formatters, bbcode.Provide())
 	formatters = append(formatters, markdown.Provide())
-	if siteInfo.UseProxy {
-		formatters = append(formatters, proxy.Provide(siteInfo.ProxyRoot, siteInfo.ProxyDomain))
-	}
+
 
 	// Lightifier
 	lightifier := lightify.Provide()
@@ -39,6 +37,11 @@ func InitFormatters() {
 
 	// Maudtext (handles quotes etc)
 	postmutators = append(postmutators, maudtext.Provide(siteInfo.PostsPerPage))
+
+	// Proxy
+	if siteInfo.UseProxy {
+		postmutators = append(postmutators, proxy.Provide(siteInfo.ProxyRoot, siteInfo.ProxyDomain))
+	}
 }
 
 func applyPostMutator(m modules.PostMutator, thread *Thread, post *Post, req *http.Request) {
