@@ -67,3 +67,18 @@ func getPathURL(rawURL string) string {
 	urldata, _ := url.Parse(rawURL)
 	return "/" + urldata.Host + urldata.Path
 }
+
+func (p Proxy) GetContentAsync(contentURL string) <-chan string {
+	ch := make(chan string)
+
+	go func() {
+		url, err := p.GetContent(contentURL)
+		if err != nil {
+			ch <- ""
+		} else {
+			ch <- url
+		}
+	}()
+
+	return ch
+}

@@ -29,17 +29,32 @@ func (f *ProxyFormatter) init(root, domain string) {
 // cached URLs (as configured in ProxyDomain). If the resource is
 // not currently cached, caches it. If fetching fails somehow,
 // the <img> is replaced with a simple link to the original resource.
-func (f *ProxyFormatter) Format(content string) string {
-	for _, match := range f.imgRgx.FindAllStringSubmatch(content, -1) {
-		origUrl := match[1]
-		if proxyUrl, err := f.proxy.GetContent(origUrl); err == nil {
+func (f *ProxyFormatter) Format(rawcontent string) string {
+	type Content struct {
+		Type     string
+		Original string
+		URL      string
+	}
+	chans := make(map[Content]<-chan string)
+	matches := f.imgRgx.FindAllStringSubmatch(rawcontent, -1)
+	for _, match := range matches {
+		content := Content{
+			Type:     "image",
+			Original: match[0],
+			URL:      match[1],
+		}
+		chans[content] = f.proxy.GetContentAsync(content.URL)
+	}
+	for content, uchan := range chans {
+		proxyUrl := <-uchan
+		if proxyUrl != "" {
 			// Serve the cached content
-			content = strings.Replace(content, match[0],
-				`<img src="`+f.domain+proxyUrl+`" alt="`+origUrl+`">`, -1)
+			rawcontent = strings.Replace(rawcontent, content.Original,
+				`<img src="`+f.domain+proxyUrl+`" alt="`+content.URL+`">`, -1)
 		} else {
 			// Give up and serve the link instead
-			content = strings.Replace(content, match[0], `<a href="`+origUrl+`">`+origUrl+`</a>`, -1)
+			rawcontent = strings.Replace(rawcontent, content.Original, `<a href="`+content.URL+`">`+content.URL+`</a>`, -1)
 		}
 	}
-	return content
+	return rawcontent
 }
