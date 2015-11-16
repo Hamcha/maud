@@ -9,21 +9,21 @@ import (
 )
 
 func Provide(postsPerPage int) modules.PostMutator {
-	mt := MaudtextMutator{postsPerPage}
+	mt := maudtextMutator{postsPerPage}
 	return modules.PostMutator{
 		Condition: func(_ *http.Request) bool { return true },
 		Mutator:   mt.maudtext,
 	}
 }
 
-type MaudtextMutator struct {
+type maudtextMutator struct {
 	postsPerPage int
 }
 
 // converts:
 //   >> #postId
 //   > quote
-func (mt *MaudtextMutator) maudtext(data modules.PostMutatorData) {
+func (mt *maudtextMutator) maudtext(data modules.PostMutatorData) {
 	lines := strings.Split((*data.Post).Content, "\n")
 	vars := mux.Vars(data.Request)
 	threadUrl, threadok := vars["thread"]
@@ -50,7 +50,7 @@ func (mt *MaudtextMutator) maudtext(data modules.PostMutatorData) {
 	(*data.Post).Content = strings.Join(lines, "\n")
 }
 
-func (mt *MaudtextMutator) getLink(postNum int, threadUrl string) string {
+func (mt *maudtextMutator) getLink(postNum int, threadUrl string) string {
 	if postNum == 0 {
 		return "/thread/" + threadUrl + "/page/1#thread"
 	}
