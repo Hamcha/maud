@@ -6,6 +6,7 @@ import (
 	"image"
 	"image/color"
 	"image/draw"
+	_ "image/gif"
 	"image/jpeg"
 	"image/png"
 	"io"
@@ -164,7 +165,7 @@ func (p Proxy) FetchThumb(contentURL string) (ImageData, error) {
 
 	// Check content type to see if it is a supported format
 	switch resp.Header.Get("Content-Type") {
-	case "image/png", "image/jpeg", "image/bmp":
+	case "image/png", "image/jpeg":
 		break
 	default:
 		return data, ErrFormatNotSupported
