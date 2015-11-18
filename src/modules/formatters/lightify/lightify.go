@@ -67,9 +67,9 @@ func (f *LightifyFormatter) ReplaceTags(data modules.PostMutatorData) {
 		switch {
 		case len(spl) > 2 && strings.HasSuffix(strings.ToLower(spl[2]), "youtube.com"):
 			full := strings.Replace(url, "/embed/", "/watch?v=", 1)
-			content = "<a target='_blank' href=" + full + ">[Youtube: " + full + "]</a>"
+			content = strings.Replace(content, match[0], "<a target='_blank' href="+full+">[Youtube: "+full+"]</a><br />", 1)
 		default:
-			content = "<a target='_blank' href=" + url + ">[Embedded: " + url + "]</a>"
+			content = strings.Replace(content, match[0], "<a target='_blank' href="+url+">[Embedded: "+url+"]</a><br />", 1)
 		}
 	}
 
