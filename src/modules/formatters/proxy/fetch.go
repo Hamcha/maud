@@ -77,29 +77,9 @@ func (p Proxy) GetImage(contentURL string) (string, ImageData, error) {
 	// Check if file exists
 	stat, err := os.Stat(ospath)
 
-	// If image does not exist then fetch it and make a thumbnail
-	if os.IsNotExist(err) {
-		data, err = p.FetchThumb(contentURL)
-
-		// If the file has been successfully fetched, exit
-		if err == nil {
-			return contentPath, data, nil
-		}
-
-		// If the format is not supported, fetch as standard file
-		// and treat it as existing
-		if err == ErrFormatNotSupported {
-			err = p.Fetch(contentURL)
-			if err == nil {
-				stat, err = os.Stat(ospath)
-			}
-		}
-	}
-
 	// If the file already exists or has been just fetched then
 	// get its metadata and return it
 	if err == nil {
-		data.Size = stat.Size()
 
 		file, err := os.Open(ospath)
 		if err != nil {
@@ -112,9 +92,36 @@ func (p Proxy) GetImage(contentURL string) (string, ImageData, error) {
 			return contentPath, data, err
 		}
 
+		// Assign image data
 		data.Width = img.Width
 		data.Height = img.Height
+		data.Size = stat.Size()
+
+		// Check that width/height are within limits and resize if necessary
+		var ratio float32
+		if data.Width > p.MaxWidth {
+			ratio = float32(data.Width) / float32(p.MaxWidth)
+			data.Width = p.MaxWidth
+			data.Height = int(float32(data.Height) / ratio)
+		}
+		if data.Height > p.MaxHeight {
+			ratio = float32(data.Height) / float32(p.MaxHeight)
+			data.Height = p.MaxHeight
+			data.Width = int(float32(data.Width) / ratio)
+		}
+
 		return contentPath, data, nil
+	}
+
+	// If image does not exist then fetch it and make a thumbnail
+	if os.IsNotExist(err) {
+		data, err = p.FetchThumb(contentURL)
+
+		// If the format is not supported, fetch as standard file
+		if err == ErrFormatNotSupported {
+			err = p.Fetch(contentURL)
+			return contentPath, ImageData{}, err
+		}
 	}
 
 	return contentPath, data, err
