@@ -63,9 +63,13 @@ func (f *proxyMutator) mutator(data modules.PostMutatorData) {
 	for content, uchan := range imgChans {
 		res := <-uchan
 		if res.Error == nil {
+			sizedata := ""
+			if res.Data.Width != 0 || res.Data.Height != 0 {
+				sizedata = ` width="` + strconv.Itoa(res.Data.Width) + `" height="` + strconv.Itoa(res.Data.Height) + `"`
+			}
 			// Serve the cached content
 			rawcontent = strings.Replace(rawcontent, content.Original,
-				`<img src="`+f.domain+res.Path+`" width="`+strconv.Itoa(res.Data.Width)+`" height="`+strconv.Itoa(res.Data.Height)+`" alt="`+content.URL+`">`, -1)
+				`<img src="`+f.domain+res.Path+`"`+sizedata+` alt="`+content.URL+`">`, -1)
 		} else {
 			// Give up and serve the link instead
 			rawcontent = strings.Replace(rawcontent, content.Original, `<a href="`+content.URL+`">`+content.URL+`</a>`, -1)
