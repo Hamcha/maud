@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -13,7 +14,7 @@ func Provide(root, domain string) modules.PostMutator {
 	pm.init(root, domain)
 	return modules.PostMutator{
 		Condition: condition,
-		Mutator: pm.mutator,
+		Mutator:   pm.mutator,
 	}
 }
 
@@ -26,13 +27,16 @@ type proxyMutator struct {
 func (f *proxyMutator) init(root, domain string) {
 	f.imgRgx = regexp.MustCompile(`<img [^>]*src=["']?([^"']+)["']?[^>]*>`)
 	f.proxy.Root = root
+	f.proxy.MaxWidth = 640
+	f.proxy.MaxHeight = 300
 	f.domain = domain
 	log.Printf("Module initialized: Proxy")
 }
 
 func condition(req *http.Request) bool {
-	_, err := req.Cookie("crUseProxy")
-	return err == nil
+	return true /*
+		_, err := req.Cookie("crUseProxy")
+		return err == nil*/
 }
 
 // Mutator converts all external <img> references to the relative
@@ -46,7 +50,7 @@ func (f *proxyMutator) mutator(data modules.PostMutatorData) {
 		Original string
 		URL      string
 	}
-	chans := make(map[Content]<-chan string)
+	imgChans := make(map[Content]<-chan AsyncImageResult)
 	matches := f.imgRgx.FindAllStringSubmatch(rawcontent, -1)
 	for _, match := range matches {
 		content := Content{
@@ -54,14 +58,14 @@ func (f *proxyMutator) mutator(data modules.PostMutatorData) {
 			Original: match[0],
 			URL:      match[1],
 		}
-		chans[content] = f.proxy.GetContentAsync(content.URL)
+		imgChans[content] = f.proxy.GetImageAsync(content.URL)
 	}
-	for content, uchan := range chans {
-		proxyUrl := <-uchan
-		if proxyUrl != "" {
+	for content, uchan := range imgChans {
+		res := <-uchan
+		if res.Error == nil {
 			// Serve the cached content
 			rawcontent = strings.Replace(rawcontent, content.Original,
-				`<img src="`+f.domain+proxyUrl+`" alt="`+content.URL+`">`, -1)
+				`<img src="`+f.domain+res.Path+`" width="`+strconv.Itoa(res.Data.Width)+`" height="`+strconv.Itoa(res.Data.Height)+`" alt="`+content.URL+`">`, -1)
 		} else {
 			// Give up and serve the link instead
 			rawcontent = strings.Replace(rawcontent, content.Original, `<a href="`+content.URL+`">`+content.URL+`</a>`, -1)
