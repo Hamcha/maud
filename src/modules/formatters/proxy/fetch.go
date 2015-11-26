@@ -20,6 +20,7 @@ type Proxy struct {
 	Root      string
 	MaxWidth  int
 	MaxHeight int
+	client    http.Client
 }
 
 type ImageData struct {
@@ -130,7 +131,7 @@ func (p Proxy) GetImage(contentURL string) (string, ImageData, error) {
 // Fetch retreives the resources at `contentURL` and saves it
 // under p.Root/domain/path/to/file.
 func (p Proxy) Fetch(contentURL string) error {
-	resp, err := http.Get(contentURL)
+	resp, err := p.client.Get(contentURL)
 	if err != nil {
 		return err
 	}
@@ -164,7 +165,7 @@ func (p Proxy) FetchThumb(contentURL string) (ImageData, error) {
 	data := ImageData{}
 
 	// Request image
-	resp, err := http.Get(contentURL)
+	resp, err := p.client.Get(contentURL)
 	if err != nil {
 		return data, err
 	}
