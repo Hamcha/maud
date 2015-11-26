@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func Provide(root, domain string) modules.PostMutator {
@@ -29,14 +30,16 @@ func (f *proxyMutator) init(root, domain string) {
 	f.proxy.Root = root
 	f.proxy.MaxWidth = 640
 	f.proxy.MaxHeight = 300
+	f.proxy.client = http.Client{
+		Timeout: time.Duration(10 * time.Second),
+	}
 	f.domain = domain
-	log.Printf("Module initialized: Proxy")
+	log.Printf("Module initialized: Proxy (root: " + root + ", domain: " + domain + ")")
 }
 
 func condition(req *http.Request) bool {
-	return true /*
-		_, err := req.Cookie("crUseProxy")
-		return err == nil*/
+	_, err := req.Cookie("crUseProxy")
+	return err == nil
 }
 
 // Mutator converts all external <img> references to the relative
@@ -65,14 +68,16 @@ func (f *proxyMutator) mutator(data modules.PostMutatorData) {
 		if res.Error == nil {
 			sizedata := ""
 			if res.Data.Width != 0 || res.Data.Height != 0 {
-				sizedata = ` width="` + strconv.Itoa(res.Data.Width) + `" height="` + strconv.Itoa(res.Data.Height) + `"`
+				sizedata = ` width="` + strconv.Itoa(res.Data.Width) +
+					`" height="` + strconv.Itoa(res.Data.Height) + `"`
 			}
 			// Serve the cached content
 			rawcontent = strings.Replace(rawcontent, content.Original,
 				`<img src="`+f.domain+res.Path+`"`+sizedata+` alt="`+content.URL+`">`, -1)
 		} else {
 			// Give up and serve the link instead
-			rawcontent = strings.Replace(rawcontent, content.Original, `<a href="`+content.URL+`">`+content.URL+`</a>`, -1)
+			rawcontent = strings.Replace(rawcontent, content.Original,
+				`<a href="`+content.URL+`">`+content.URL+`</a>`, -1)
 		}
 	}
 	(*data.Post).Content = rawcontent
