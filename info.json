@@ -22,6 +22,6 @@
     "FullVersionDomain": "localhost.localdomain:8080",
     "LightVersionDomain": "lite.localhost.localdomain:8080",
     "UseProxy": true,
-    "ProxyDomain": "static.crunchy.rocks",
+    "ProxyDomain": "https://static.crunchy.rocks",
     "ProxyRoot": "/tmp/static"
 }
