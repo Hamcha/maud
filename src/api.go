@@ -1,16 +1,17 @@
 package main
 
 import (
-	. "./data"
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
 	"net/http"
 	"net/url"
 	"regexp"
 	"runtime/debug"
 	"strconv"
 	"strings"
+
+	. "./data"
+	"github.com/gorilla/mux"
 )
 
 // apiNewThread: creates a new thread with its OP.
@@ -156,7 +157,7 @@ func apiReply(rw http.ResponseWriter, req *http.Request) {
 		sendError(rw, 500, "Database error: "+err.Error())
 		return
 	}
-	page := (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage
+	page := (count + siteInfo.PostsPerPage) / siteInfo.PostsPerPage
 	if page < 1 {
 		page = 1
 	}
@@ -219,7 +220,8 @@ func apiReply(rw http.ResponseWriter, req *http.Request) {
 			HttpOnly: false,
 		})
 	}
-	http.Redirect(rw, req, basepath+"thread/"+thread.ShortUrl+"/page/"+strconv.Itoa(page)+"#p"+strconv.Itoa(count), http.StatusMovedPermanently)
+	http.Redirect(rw, req, basepath+"thread/"+thread.ShortUrl+"/page/"+
+		strconv.Itoa(page)+"#p"+strconv.Itoa(count), http.StatusMovedPermanently)
 }
 
 // apiPreview: returns the content that would be inserted in the post if this
@@ -328,11 +330,12 @@ func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 		basepath = val.BasePath
 	}
 
-	page := (postId + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage
+	page := (postId + siteInfo.PostsPerPage) / siteInfo.PostsPerPage
 	if page < 1 {
 		page = 1
 	}
-	http.Redirect(rw, req, basepath+"thread/"+thread.ShortUrl+"/page/"+strconv.Itoa(page)+"#p"+vars["post"], http.StatusMovedPermanently)
+	http.Redirect(rw, req, basepath+"thread/"+thread.ShortUrl+"/page/"+
+		strconv.Itoa(page)+"#p"+vars["post"], http.StatusMovedPermanently)
 }
 
 // apiDeletePost: Sets the 'deleted flag' to a post, auth-ing request by tripcode.
@@ -392,7 +395,7 @@ func apiDeletePost(rw http.ResponseWriter, req *http.Request) {
 		basepath = val.BasePath
 	}
 
-	page := (postId + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage
+	page := (postId + siteInfo.PostsPerPage) / siteInfo.PostsPerPage
 	if page < 1 {
 		page = 1
 	}
