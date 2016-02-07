@@ -38,7 +38,12 @@
 </head>
 <body>
     <div id="container">
-        <header><a href="{{BasePath}}"><img class="head" src="/static/images/header.png" alt="Crunchy Rocks"/></a></header>
+        <header>
+            <a href="{{BasePath}}">
+                <img class="head" src="/static/images/header.png" alt="Crunchy Rocks"/>
+            </a>
+            <div id="secureSign">&#x1f512; &#x2705;</div>
+        </header>
         <main>{{{content}}}</main>
     </div>
     <footer>{{{Footer}}}<br />

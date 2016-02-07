@@ -32,6 +32,9 @@ if opts?
 	fromList(document.getElementsByName 'option').map (opt) ->
 		return unless opt.id?
 		opt.checked = window.SiteOptions[opt.id]
+	# Enable lock-tick if using proxy
+	if Cookies.get 'crUseProxy'
+		document.getElementById('secureSign').style.visibility = 'visible'
 else
 	# likely the first time visiting the site
 	window.SiteOptions = OptionUtils.reloadOptions()

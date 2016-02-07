@@ -20,11 +20,13 @@ header, footer, h1, h2, h3, h4 { font-family: "Raleway", sans-serif; }
 }
 
 nav, section, article {
+	position: relative;
 	background: rgba(0,0,0,0.5);
 	padding: 5px; margin: 2px 0;
 }
 
 header {
+	position: relative;
 	background: #000;
 	font-size: 2em;
 	height: 150px;
@@ -36,6 +38,15 @@ header {
 	a[href], a[href]:visited {
 		color: #fff; border: 0;
 		font-weight: 200;
+	}
+
+	#secureSign {
+		position: absolute;
+		left: 0.5rem;
+		bottom: 0.5rem;
+		font-size: 1rem;
+		color: lightgreen;
+		visibility: hidden;
 	}
 }
 
