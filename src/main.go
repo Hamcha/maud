@@ -1,14 +1,15 @@
 package main
 
 import (
-	. "./data"
 	"flag"
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
+
+	. "./data"
+	"github.com/gorilla/mux"
 )
 
 var (

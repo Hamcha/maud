@@ -1,7 +1,6 @@
 package main
 
 import (
-	. "./data"
 	"bytes"
 	"crypto/rand"
 	"crypto/sha256"
@@ -19,6 +18,8 @@ import (
 	"time"
 	"unicode"
 	"unicode/utf8"
+
+	. "./data"
 )
 
 var (
@@ -114,6 +115,10 @@ func removeDuplicates(in []string) []string {
 	return out
 }
 
+// shortify returns a string which is either `content` or its first
+// ~300 runes, ensuring all HTML tags are properly closed and the
+// returned string is sanitized. The second return parameter is
+// false if the content wasn't shortified, true otherwise.
 func shortify(content string) (string, bool) {
 	if len(content) < 300 {
 		return content, false
@@ -124,18 +129,25 @@ func shortify(content string) (string, bool) {
 	var stack []string
 	stackindex := -1
 	offset := -1
+	// Saves the offset before the latest tag opening
+	preTagOffset := -1
+	isTagOpen := false
 	for offset < len(short) {
 		offset = index(short, offset+1, '<')
+		preTagOffset = offset - 1
 		if offset < 0 {
 			break
 		}
+		isTagOpen = true
 		end := index(short, offset+1, '>')
 		if end < 0 {
 			break
 		}
+		isTagOpen = false
 		tagname := short[offset+1 : end]
 
 		if tagname[0] == '/' {
+			// it's a closing tag
 			if stackindex < 0 {
 				continue
 			}
@@ -153,6 +165,12 @@ func shortify(content string) (string, bool) {
 			stackindex++
 		}
 	}
+
+	if isTagOpen && preTagOffset > 0 {
+		// we broke from the cycle while inside a tag: drop it.
+		short = short[:preTagOffset]
+	}
+
 	// close unclosed tags
 	for stackindex >= 0 {
 		short += "</" + stack[stackindex] + ">"
