@@ -57,23 +57,25 @@
             <a href="//{{#Info}}{{FullVersionDomain}}{{/Info}}{{UrlPath}}" style="box-shadow: 0 0 0 1px green inset;" rel="alternate">EXIT LIGHT VERSION</a>
     {{/IsLight}}
             <a id="safeBtn" href="#">SAFE MODE</a>
-            <a href="#overlay" style="box-shadow: 0 0 0 1px #777 inset;" onclick='OptionUtils.showOptions()'>SITE OPTIONS</a>
-            <div id="overlay">
-                <div>
-                    <h2>Site options</h2>
-                    <form action="javascript:void(0)" onchange="OptionUtils.reloadOptions()">
-                        <input name="option" type="checkbox" id="dehighlight" checked/>
-                        <label for="dehighlight">De-highlight already viewed threads</label>
-                        <input name="option" type="checkbox" id="jumptolastread" checked>
-                        <label for="jumptolastread">Make 'last reply' link point to latest read post</label>
-                        <input name="option" type="checkbox" id="anonizeAll">
-                        <label for="anonizeAll">Make every user anonymous (hide names/tripcodes)</label>
-                        <input name="option" type="checkbox" id="useProxy">
-                        <label for="useProxy">Use enhanced security (see stiki page)</label>
-                    </form>
-                    <a href="#overlay" class="button" style="border: 1px solid #ccc; padding: 0.1em 1em;" onclick='OptionUtils.showOptions()'>Exit</a>
+            <span id="siteOptions">
+                <a href="#overlay" style="box-shadow: 0 0 0 1px #777 inset;" onclick='OptionUtils.showOptions()'>SITE OPTIONS</a>
+                <div id="overlay">
+                    <div>
+                        <h2>Site options</h2>
+                        <form action="javascript:void(0)" onchange="OptionUtils.reloadOptions()">
+                            <input name="option" type="checkbox" id="dehighlight" checked/>
+                            <label for="dehighlight">De-highlight already viewed threads</label>
+                            <input name="option" type="checkbox" id="jumptolastread" checked/>
+                            <label for="jumptolastread">Make 'last reply' link point to latest read post</label>
+                            <input name="option" type="checkbox" id="anonizeAll"/>
+                            <label for="anonizeAll">Make every user anonymous (hide names/tripcodes)</label>
+                            <input name="option" type="checkbox" id="useProxy"/>
+                            <label for="useProxy">Use enhanced security (see stiki page)</label>
+                        </form>
+                        <a href="#overlay" class="button" style="border: 1px solid #ccc; padding: 0.1em 1em;" onclick='OptionUtils.showOptions()'>Exit</a>
+                    </div>
                 </div>
-            </div>
+            </span>
     </nav></footer>
     <script src="/static/lib/qwest.min.js"></script>
     <script src="/static/lib/cookies.min.js"></script>

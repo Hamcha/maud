@@ -68,6 +68,10 @@ nav.upper {
 
 img.head { width: 100%; max-width: 410px; margin-top: 10px; }
 
+span#siteOptions {
+	display: none;
+}
+
 table.blacklist {
 	margin-top: 0.5em;
 	th, td { padding: 0.2em 0.5em; }

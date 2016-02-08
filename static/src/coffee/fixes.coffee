@@ -152,3 +152,6 @@ fromList(document.querySelectorAll('.postIdQuote')).map (e) ->
 			refId = if postNum == '0' then 'thread_quoted' else "p#{postNum}_quoted"
 			post = document.getElementById refId
 			post?.style.display = ''
+
+# Unhide siteoptions button
+document.getElementById('siteOptions')?.style.display = 'inline'
