@@ -17,7 +17,8 @@ quoteText = (elem) ->
 		txt.value = txt.value[0..txt.selectionStart] + "> " + txt.value[txt.selectionStart+1..]
 		txt.focus()
 		return
-	txt.value = "> #{window.getSelection()}"
+	separator = if txt.selectionStart > 0 and txt.value[txt.selectionStart - 1] isnt "\n" then "\n" else ""
+	txt.value = txt.value[0...txt.selectionStart] + separator + "> #{window.getSelection()}\n" + txt.value[txt.selectionEnd+1..]
 	txt.selectionStart = txt.selectionEnd = txt.value.length + 1
 	txt.focus()
 
