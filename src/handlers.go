@@ -1,10 +1,7 @@
 package main
 
 import (
-	"../mustache"
-	. "./data"
 	"fmt"
-	"github.com/gorilla/mux"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
@@ -13,6 +10,10 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	"../mustache"
+	. "./data"
+	"github.com/gorilla/mux"
 )
 
 func httpHome(rw http.ResponseWriter, req *http.Request) {
@@ -725,6 +726,10 @@ func httpBlacklist(rw http.ResponseWriter, req *http.Request) {
 	})
 }
 
+func httpRobots(rw http.ResponseWriter, req *http.Request) {
+	fmt.Fprintln(rw, "User-agent: *\nDisallow: /thread/*/edit\nDisallow: /thread/*/delete")
+}
+
 func send(rw http.ResponseWriter, req *http.Request, name, title string, context interface{}) {
 	if len(title) > 0 {
 		title = " ~ " + title
@@ -760,7 +765,9 @@ func send(rw http.ResponseWriter, req *http.Request, name, title string, context
 				req.URL.String(),
 				ok,
 				isLightVersion(req),
-			}))
+			},
+		),
+	)
 }
 
 func stiki(rw http.ResponseWriter, req *http.Request, name string) {
@@ -790,7 +797,9 @@ func stiki(rw http.ResponseWriter, req *http.Request, name string) {
 				footer,
 				basepath,
 				req.URL.String(),
-			}))
+			},
+		),
+	)
 }
 
 func sendError(rw http.ResponseWriter, code int, context interface{}) {
@@ -805,5 +814,7 @@ func sendError(rw http.ResponseWriter, code int, context interface{}) {
 			}{
 				siteInfo,
 				context,
-			}))
+			},
+		),
+	)
 }

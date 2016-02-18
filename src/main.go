@@ -41,6 +41,7 @@ func setupHandlers(router *mux.Router, isAdmin, isSubdir bool) {
 	SetHandler(GET, "/hidden", httpManageHidden, isAdmin, isSubdir)
 	SetHandler(GET, "/hidden/page/{page}", httpManageHidden, isAdmin, isSubdir)
 	SetHandler(GET, "/blacklist", httpBlacklist, isAdmin, isSubdir)
+	SetHandler(GET, "/robots.txt", httpRobots, isAdmin, isSubdir)
 	SetHandler(GET, "/{otherwise}", func(rw http.ResponseWriter, req *http.Request) {
 		sendError(rw, 404, "Not found")
 	}, isAdmin, isSubdir)
