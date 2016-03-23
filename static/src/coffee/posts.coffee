@@ -27,7 +27,7 @@ editPost = (id) ->
 	nickspan = document.querySelector "##{pid} .nickname"
 	nick = nickspan.innerHTML
 	tripcodebar = ""
-	if !window.adminMode
+	if !window.crOpts.adminMode
 		if nickspan.parentNode.querySelector('span.tripcode')?.innerHTML.length > 0
 			# visible tripcode
 			tripcodebar = "<input class='full short inline verysmall' type='text' name='tripcode' placeholder='Tripcode (required)' required />"
@@ -71,7 +71,7 @@ editPost = (id) ->
         <textarea class="full small editor" name="text" required placeholder="Retreiving content..."></textarea>
         #{tagsbar}
         <div class="center">
-            <div class="chars-count" data-maxlen="#{maxlen}"></div>
+            <div class="chars-count" data-maxlen="#{window.crOpts.maxlen}"></div>
             <input type="Submit" value="Edit post"/><button type="button" onclick="Posts.cancelForm(#{id});">Cancel</button>
             <input type="button" class="button" onclick="Posts.showPreview('edit#{id}')" value="Preview" />
         </div>
@@ -94,7 +94,7 @@ deletePost = (id) ->
 	nick = nickspan.innerHTML
 	original[id] = post.innerHTML
 	tripcodebar = ""
-	if !window.adminMode
+	if !window.crOpts.adminMode
 		purge = ""
 		if nickspan.parentNode.querySelector('span.tripcode')?.innerHTML.length > 0
 			# visible tripcode

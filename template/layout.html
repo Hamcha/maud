@@ -28,12 +28,14 @@
     <meta name="msapplication-TileColor" content="#555555" />
 
     <script>
+        window.crOpts = {
     {{#IsAdmin}}
-        window.adminMode = true;
+            adminMode: true,
     {{/IsAdmin}}
-        window.domain = "{{#Info}}{{FullVersionDomain}}{{/Info}}";
-        window.maxlen = {{#Info}}{{MaxPostLength}}{{/Info}};
-        window.basepath = "{{BasePath}}";
+            domain: "{{#Info}}{{FullVersionDomain}}{{/Info}}",
+            maxlen: {{#Info}}{{MaxPostLength}}{{/Info}},
+            basepath: "{{BasePath}}"
+        };
     </script>
 </head>
 <body>

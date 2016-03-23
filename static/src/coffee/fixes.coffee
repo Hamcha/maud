@@ -117,7 +117,7 @@ if toggle?
 		box.focus()
 
 # Unhide post actions to admins
-if window.adminMode
+if window.crOpts.adminMode
 	con.style.display = "inline-block" for con in document.querySelectorAll ".postactions"
 
 # Setup onhover event for postIdQuote
