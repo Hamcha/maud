@@ -1,3 +1,5 @@
+'use strict'
+
 # <img> fixes
 fromList(document.querySelectorAll "img").map (e) ->
 	# ALT fix - Set titles to alt text (xkcd style)

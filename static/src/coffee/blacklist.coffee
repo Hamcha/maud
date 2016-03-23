@@ -1,3 +1,5 @@
+'use strict'
+
 # Allows editing blacklist rule 'name' in HTML element #bl_name
 original = {}
 

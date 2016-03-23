@@ -1,3 +1,5 @@
+'use strict'
+
 safeButton = document.getElementById "safeBtn"
 unless Cookies.enabled
 	safeButton.onclick = -> alert "Cookies are not enabled, Safe mode not available."

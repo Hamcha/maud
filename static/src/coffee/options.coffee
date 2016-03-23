@@ -1,3 +1,5 @@
+'use strict'
+
 window.OptionUtils =
 	showOptions: ->
 		div = document.getElementById 'overlay'

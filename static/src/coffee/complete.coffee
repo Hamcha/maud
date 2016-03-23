@@ -1,3 +1,5 @@
+'use strict'
+
 ###
   AJAX tags autocomplete plugin (requires qwest)
   How to use:

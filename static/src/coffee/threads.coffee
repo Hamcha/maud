@@ -1,3 +1,5 @@
+'use strict'
+
 return unless window.localStorage?
 
 window.Threads =

@@ -1,3 +1,5 @@
+'use strict'
+
 pad = (n) -> ("0"+n).slice(-2)
 plur = (x, n) -> if n > 1 then x+"s" else x
 

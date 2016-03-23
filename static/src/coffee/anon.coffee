@@ -1,3 +1,5 @@
+'use strict'
+
 anons = ["Rock", "Boulder", "Pebble", "Mineral", "Stone"]
 
 randomAnon = -> anons[Math.floor(Math.random()*anons.length)]

@@ -1,3 +1,5 @@
+'use strict'
+
 editorAdd = (elem, tag) ->
 	# get the textarea and the selection
 	txt = elem.parentElement.parentElement.text

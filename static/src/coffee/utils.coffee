@@ -1,3 +1,5 @@
+'use strict'
+
 window.fromList = (x) -> Array.prototype.slice.call x
 
 window.insertAfter = (newNode, node) ->

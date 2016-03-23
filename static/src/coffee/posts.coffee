@@ -1,3 +1,5 @@
+'use strict'
+
 original = []
 
 # post edit
