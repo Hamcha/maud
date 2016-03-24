@@ -103,7 +103,7 @@ if toggle?
 	toggle = document.getElementById "tagsearchbtn"
 	toggle.onclick = ->
 		toggle.outerHTML = """
-		    <form id="tagsearch-form" class="ac_wrapper" style="display: inline-block" method="POST" action="#{basepath}tagsearch">
+		    <form id="tagsearch-form" class="ac_wrapper" style="display: inline-block" method="POST" action="#{window.crOpts.basepath}tagsearch">
 			<input class="ac_input" data-ac_search="on" type="search" name="tags" id="tagsearch" placeholder="Filter by tag" required title="Insert tags (each starting with '#')" autocomplete="off" />
 			<input type="submit" value="Search" />
 		    </form>"""
@@ -113,7 +113,7 @@ if toggle?
 			tagsrc.value = escapeHTML tagsrc.value.trim().replace(/[\s#]+$/g, '')
 			return true
 		box = document.getElementById "tagsearch"
-		AC.toggleAutocomplete box, "#{basepath}taglist"
+		AC.toggleAutocomplete box, "#{window.crOpts.basepath}taglist"
 		box.focus()
 
 # Unhide post actions to admins
