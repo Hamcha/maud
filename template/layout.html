@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <title>{{Title}}</title>
-    <meta name="referrer" content="none" />
+    <meta name="referrer" content="no-referrer" />
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=yes, target-densitydpi=device-dpi, minimal-ui" />
     <link href="/static/css/screen.css" rel="stylesheet" type="text/css" />
     <!-- Standard favicon (all browsers) -->
@@ -27,17 +27,6 @@
     <meta name="msapplication-square150x150logo" content="/static/images/favicons/ms150.png" />
     <meta name="msapplication-square310x310logo" content="/static/images/favicons/ms310.png" />
     <meta name="msapplication-TileColor" content="#555555" />
-
-    <script>
-        window.crOpts = {
-    {{#IsAdmin}}
-            adminMode: true,
-    {{/IsAdmin}}
-            domain: "{{#Info}}{{FullVersionDomain}}{{/Info}}",
-            maxlen: {{#Info}}{{MaxPostLength}}{{/Info}},
-            basepath: "{{BasePath}}"
-        };
-    </script>
 </head>
 <body>
     <div id="container">
@@ -82,6 +71,7 @@
     </nav></footer>
     <script src="/static/lib/qwest.min.js"></script>
     <script src="/static/lib/cookies.min.js"></script>
+    <script src="/vars.js"></script>
     <script src="/static/js/utils.js"></script>
     <script src="/static/js/options.js"></script>
     <script src="/static/js/fixes.js"></script>
