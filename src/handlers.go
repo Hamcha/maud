@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"math/rand"
@@ -729,7 +730,33 @@ func httpRobots(rw http.ResponseWriter, req *http.Request) {
 	fmt.Fprintln(rw, "User-agent: *\nDisallow: /thread/*/edit\nDisallow: /thread/*/delete")
 }
 
+func httpVars(rw http.ResponseWriter, req *http.Request) {
+	vars := map[string]interface{}{
+		"domain":   siteInfo.FullVersionDomain,
+		"maxlen":   siteInfo.MaxPostLength,
+		"basepath": "/",
+	}
+
+	if ok, val := isAdmin(req); ok {
+		vars["adminMode"] = true
+		vars["basepath"] = val.BasePath
+	}
+
+	jsonVars, err := json.Marshal(vars)
+	if err != nil {
+		sendError(rw, 500, err.Error())
+		return
+	}
+	fmt.Fprintln(rw, "window.crOpts = "+string(jsonVars))
+}
+
+func sendCSPHeaders(rw http.ResponseWriter, req *http.Request) {
+	head := rw.Header()
+	head.Add("Content-Security-Policy", "script-src 'self'")
+}
+
 func send(rw http.ResponseWriter, req *http.Request, name, title string, context interface{}) {
+	sendCSPHeaders(rw, req)
 	if len(title) > 0 {
 		title = " ~ " + title
 	}
@@ -770,6 +797,7 @@ func send(rw http.ResponseWriter, req *http.Request, name, title string, context
 }
 
 func stiki(rw http.ResponseWriter, req *http.Request, name string) {
+	sendCSPHeaders(rw, req)
 	basepath := "/"
 	ok, val := isAdmin(req)
 	if ok {
