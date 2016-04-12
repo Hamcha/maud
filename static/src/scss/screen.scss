@@ -96,6 +96,18 @@ hr {
 
 ol { margin: 0; }
 
+section.sec-header {
+	font-size: 0.95em;
+	padding: 0.4em 0.6em;
+}
+
+.no-select {
+    user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+}
+
 /* Buttons and links */
 
 a[href].noborder { border: 0; }
@@ -103,10 +115,11 @@ a[href].noborder { border: 0; }
 button, input[type="submit"], input[type="button"],
 a.button, a.button:visited, a.article, a.article:visited,
 a[href].button, a[href].button:visited {
+	@extend .no-select;
 	font-family: "Source Sans Pro", sans-serif;
 	text-decoration: none; background-color: transparent;
 	border: 1px solid #ccc; color: #fff;
-	padding: 3px 5px; margin: 0; margin-right: 3px;
+	padding: 3px 10px; margin: 0; margin-right: 3px;
 	display: inline-block; cursor: pointer;
 	font-size: 1.2em; font-weight: 300;
 	@include transition-property(all);
@@ -134,6 +147,7 @@ a[href], a[href]:visited {
 }
 
 .pages {
+	@extend .no-select;
 	text-align: center;
 	padding: 0.5em;
 
@@ -150,8 +164,9 @@ a[href], a[href]:visited {
 	}
 }
 
-
 a.nolink { border: 0; }
+
+.sec-button { text-transform: uppercase; font-size: 0.8em; padding: 0.4em 0.8em; }
 
 /* Tag search */
 
@@ -207,6 +222,7 @@ a.nolink { border: 0; }
 }
 
 .right {
+	@extend .no-select;
 	position: absolute; right: 0; top: 0;
 	text-align: right;  padding: 0.5em;
 
@@ -383,7 +399,6 @@ input.inline { display: inline-block; padding: 3px; margin-right: 5px; }
 		@extend a[href].button;
 		border-color: #666;
 		font-size: 1em;
-		min-width: 1em;
 		text-align: center;
 		margin-top: 5px;
 	}
@@ -398,8 +413,8 @@ input.inline { display: inline-block; padding: 3px; margin-right: 5px; }
 
 .error {
 	.fullimage { width: 100%; max-width: 650px; }
-	header p { 
-		display: inline-block; 
+	header p {
+		display: inline-block;
 		font-size: 2em;
 		font-weight: 900;
 		margin: 0;
@@ -456,6 +471,7 @@ ul.ac_list {
 
 /* Options dialog */
 #overlay {
+	@extend .no-select;
 	visibility: hidden;
 	position: fixed;
 	left: 0px;

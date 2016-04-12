@@ -38,7 +38,7 @@ makePageLists = ->
 		width = Math.min getViewport().width, 650
 		insPage = (i) ->
 			pageHTML += if page == i then "<b>#{i}</b> " else "<a href=\"#{baseurl}/page/#{i}\">#{i}</a> "
-		insDots = -> pageHTML += "..."
+		insDots = -> pageHTML += "<span class=\"page-dots\">&middot;&middot;&middot;</span> "
 
 		# m = max number of buttons to output (at least 7)
 		# we leave 50px for the "PAGE" text and account 30px per button.
