@@ -27,7 +27,6 @@ nav, section, article {
 
 header {
 	position: relative;
-	background: #000;
 	font-size: 2em;
 	height: 150px;
 	background-color: #000, #000;
@@ -53,6 +52,7 @@ nav.upper {
 	padding: 0; font-size: 0.9em;
 	background: none; margin-top: 5px;
 	a[href], a[href]:visited {
+		@extend .no-select;
 		background: rgba(0,0,0,0.5);
 		display: inline-block;
 		color: #fff; border: 0; text-transform: uppercase;
