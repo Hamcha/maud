@@ -81,6 +81,7 @@ type Tag struct {
 
 type TagData struct {
 	Name          string
+	URLName       string
 	LastUpdate    int64
 	LastThread    ThreadInfo
 	LastIndex     int64

@@ -39,8 +39,10 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 			return
 		}
 
+		name := htmlFullEscape(tags[i].Name)
 		tagdata[i] = TagData{
-			Name:          htmlFullEscape(tags[i].Name),
+			Name:          name,
+			URLName:       url.QueryEscape(name),
 			LastUpdate:    tags[i].LastUpdate,
 			StrLastUpdate: strdate(tags[i].LastUpdate),
 			LastThread: ThreadInfo{
@@ -151,8 +153,10 @@ func httpAllTags(rw http.ResponseWriter, req *http.Request) {
 			return
 		}
 
+		name := htmlFullEscape(tags[i].Name)
 		tagdata[i] = TagData{
-			Name:          htmlFullEscape(tags[i].Name),
+			Name:          name,
+			URLName:       url.QueryEscape(name),
 			LastUpdate:    tags[i].LastUpdate,
 			StrLastUpdate: strdate(tags[i].LastUpdate),
 			LastThread: ThreadInfo{
