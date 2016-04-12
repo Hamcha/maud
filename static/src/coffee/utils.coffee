@@ -25,3 +25,20 @@ window.getViewport = ->
 		a = 'client'
 		e = document.documentElement || document.body
 	return { width: e["#{a}Width"], height: e["#{a}Height"] }
+
+mergeProps = (a, b) ->
+	for key, val of b
+		# Style is picky, can't recurse
+		if key is "style"
+			a.style[prop] = value for prop, value of val
+		else if typeof val is "object" and a[key]?
+			a[key] = mergeProps a[key], val
+		else
+			a[key] = val
+	return a
+
+window.createElementEx = (elemName, elemProps) ->
+	element = document.createElement elemName
+	if elemProps?
+		element = mergeProps element, elemProps
+	return element

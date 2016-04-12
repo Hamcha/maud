@@ -14,16 +14,16 @@ Hidden =
 		this
 
 	tags: -> x for x in @splitted when x[0] is '#'
-	
+
 	threads: -> x for x in @splitted when x[0] isnt '#'
-	
+
 	# Removes a set of elements from the hidden cookie
 	remove: (what...) ->
 		for w in what
 			@splitted.splice @splitted.indexOf(w), 1
 			@value = @splitted.join @sep
 		@update()
-	
+
 	# Adds a set of elements to the hidden cookie
 	add: (what...) ->
 		for w in what
@@ -31,40 +31,40 @@ Hidden =
 			@splitted.push w
 		@value = @splitted.join @sep
 		@update()
-	
+
 	# Resets the hidden cookie
 	clear: ->
 		@value = ""
 		@splitted = []
 		@update()
-	
+
 	# Removes all threads from the hidden cookie
 	clearThreads: ->
 		@splitted = @tags()
 		@value = @splitted.join @sep
 		@update()
-	
+
 	# Removes all tags from the hidden cookie
 	clearTags: ->
 		@splitted = @threads()
 		@value = @splitted.join @sep
 		@update()
-	
+
 	# Returns the index of the hidden element `what`, or null
 	get: (what) ->
 		i = @splitted.indexOf what
 		return null if i < 0
 		@splitted[i]
-	
+
 	isEmpty: -> @value.length is 0
-	
+
 	# Syncs the actual cookie with this object
 	update: ->
 		if @isEmpty()
 			@expire()
 		else
 			Cookies.set 'crHidden', @value, { expires: Infinity }
-	
+
 	expire: -> Cookies.expire 'crHidden'
 
 # find out if the cookies is set and, if so, wrap it

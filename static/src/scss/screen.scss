@@ -388,7 +388,7 @@ textarea.editor { min-height: 150px; }
 input.short { max-width: 150px; }
 input.inline { display: inline-block; padding: 3px; margin-right: 5px; }
 
-#editorButtons, #editorRight {
+.editorButtonCont {
 	&.small {
 		font-size: 0.9em;
 		margin: 0 6px;
@@ -404,7 +404,7 @@ input.inline { display: inline-block; padding: 3px; margin-right: 5px; }
 	}
 }
 
-#editorRight {
+.editorButtonContRight {
 	&.small { margin: 0 4px; }
 	float: right; margin: 0 4px;
 }
