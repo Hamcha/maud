@@ -112,11 +112,11 @@
         <input type="hidden" name="htrip" value="" />
 
         <!-- Editor buttons -->
-        <div id="editorRight" class="small">
+        <div id="editorRight" class="small editorButtonCont editorButtonContRight">
             <a target="_blank" href="/stiki/formatting" rel="help">?</a>
         </div>
-        <div id="editorButtons" class="small"></div>
-        <textarea class="full verysmall" name="text" required placeholder="Post content (Markdown, HTML and BBCode are supported)"></textarea>
+        <div id="editorButtons" class="small editorButtonCont"></div>
+        <textarea class="full verysmall" name="text" id="reply-form-text" required placeholder="Post content (Markdown, HTML and BBCode are supported)"></textarea>
         {{#NeedsCaptcha}}{{#Captcha}}
         <span style="display: inline-block; margin: 5px">{{Question}}&nbsp;</span>
         <img src="{{ImgPath}}" height="250px" alt="captcha"/>
@@ -128,7 +128,7 @@
             <div class="center">
                 <div class="chars-count" data-maxlen="{{#Info}}{{MaxPostLength}}{{/Info}}"></div>
                 <input type="submit" value="Reply" />
-                <input type="button" class="button" onclick="Posts.showPreview('reply-form')" value="Preview" />
+                <input type="button" class="button" id="preview-post" style="display: none;" value="Preview" />
             </div>
             <div class="right">
                 <a class="homelink noborder" href="{{BasePath}}" rel="bookmark">
@@ -138,5 +138,4 @@
         </div>
     </form>
 </section>
-<script src="/static/js/editor.js"></script>
 {{/Data}}
