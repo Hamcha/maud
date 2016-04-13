@@ -6,7 +6,7 @@ fromList(document.querySelectorAll "img").map (e) ->
 	e.title = e.alt if e.alt != ""
 
 # Handle hash changes
-window.onhashchange = ->
+onhashchange = ->
 	return unless location.hash.length > 0
 	# Post selected
 	if location.hash[1] is 'p'
@@ -14,7 +14,8 @@ window.onhashchange = ->
 		doc = document.querySelector location.hash
 		doc.className = "post post-selected" if doc?
 
-window.onhashchange()
+window.addEventListener "hashchange", onhashchange
+onhashchange()
 
 # Make page lists
 makePageLists = ->
@@ -92,20 +93,17 @@ imgsetup = (btn) ->
 imgsetup imgbtn for imgbtn in lightimagebtn
 
 # Tag search / Fulltext search buttons (in pages which have it)
-toggle = document.getElementById "tagsearch-form"
-if toggle?
-	toggle.outerHTML = '<a class="button" id="tagsearchbtn" rel="search">Tag search</a>'
-	toggle = document.getElementById "tagsearchbtn"
-	toggle.onclick = ->
-		toggle.outerHTML = """
-		    <form id="tagsearch-form" class="ac_wrapper" style="display: inline-block" method="POST" action="#{window.crOpts.basepath}tagsearch">
-			<input class="ac_input" data-ac_search="on" type="search" name="tags" id="tagsearch" placeholder="Filter by tag" required title="Insert tags (each starting with '#')" autocomplete="off" />
-			<input type="submit" value="Search" />
-		    </form>"""
+toggleForm = document.getElementById "tagsearch-form"
+if toggleForm?
+	toggle = window.createElementEx "a", { className: "button", id: "tagsearchbtn", rel: "search" }
+	toggle.appendChild document.createTextNode "Tag search"
+	toggleForm.parentElement.replaceChild toggle, toggleForm
+	toggle.addEventListener "click", ->
+		toggle.parentElement.replaceChild toggleForm, toggle
 		toggle = document.getElementById('tagsearch-form')
-		toggle.onsubmit = ->
+		toggle.addEventListener "submit", ->
 			tagsrc = toggle.elements[0]
-			tagsrc.value = escapeHTML tagsrc.value.trim().replace(/[\s#]+$/g, '')
+			tagsrc.value = escapeHTML tagsrc.value.trim().replace /[\s#]+$/g, ''
 			return true
 		box = document.getElementById "tagsearch"
 		AC.toggleAutocomplete box, "#{window.crOpts.basepath}taglist"
@@ -117,7 +115,7 @@ if window.crOpts.adminMode
 
 # Setup onhover event for postIdQuote
 fromList(document.querySelectorAll('.postIdQuote')).map (e) ->
-	e.onmouseover = (ev) ->
+	e.addEventListener "mouseover", (ev) ->
 		postNum = e.innerHTML[10..]
 		refId = if postNum == '0' then 'thread' else "p#{postNum}"
 		ref = document.getElementById refId
@@ -128,11 +126,9 @@ fromList(document.querySelectorAll('.postIdQuote')).map (e) ->
 			else
 				# post is at least partially hidden
 				quoted = document.getElementById "#{refId}_quoted"
-				unless quoted?
-					quoted = document.createElement 'article'
+				if not quoted?
+					quoted = window.createElementEx 'article', { className: "post quoted", id: "#{refId}_quoted" }
 					quoted.innerHTML = ref.innerHTML
-					quoted.className =  'post quoted'
-					quoted.id = "#{refId}_quoted"
 					document.getElementById('quoted_posts').appendChild quoted
 				quoted.style.top = "#{Math.max 0, ev.clientY - ref.clientHeight}px"
 				quoted.style.left = "#{ev.clientX + 35}px"

@@ -1,7 +1,7 @@
 <nav>
     <a href="#reply-form" class="button">Reply</a>
     <form id="tagsearch-form" class="ac_wrapper" style="display: inline-block" method="POST" action="{{BasePath}}tagsearch">
-        <input class="ac_input" type="search" name="tags" id="tagsearch" placeholder="Filter by tag" required title="Insert tags (each starting with '#')" autocomplete="off" />
+        <input class="ac_input" type="search" name="tags" id="tagsearch" placeholder="Filter by tag" required title="Insert tags (each starting with '#')" data-acsearch="on" autocomplete="off" />
         <input type="submit" value="Search" />
     </form>
     <a href="{{BasePath}}stiki" class="button" rel="prefetch">Stiki</a>
@@ -38,7 +38,7 @@
         <span class="nickname">{{#IsAnon}}<span class="anon">Rock</span>{{/IsAnon}}{{#Nickname}}{{Nickname}}{{/Nickname}}</span>
         <span class="tripcode">{{^HiddenTripcode}}{{Tripcode}}{{/HiddenTripcode}}</span>
         {{/Author}}
-        <a href="#thread" class="date" data-udate="{{Date}}">{{StrDate}}</a> <a class="postId" onclick="Posts.quotePostId(0)">#0</a>
+        <a href="#thread" class="date" data-udate="{{Date}}">{{StrDate}}</a> <a class="postId postQuoteButton" href="#reply-form" data-postid="0">#0</a>
     </h3>
     <div class="right">
         {{#Modified}}<span class="lastedit" data-udate="{{LastModified}}">edited {{StrLastModified}}</span>{{/Modified}}
@@ -70,7 +70,7 @@
         <span class="nickname">{{#IsAnon}}<span class="anon">Rock</span>{{/IsAnon}}{{#Nickname}}{{Nickname}}{{/Nickname}}</span>
         <span class="tripcode">{{^HiddenTripcode}}{{Tripcode}}{{/HiddenTripcode}}</span>
         {{/Author}}
-        <a href="#p{{Num}}" class="date" data-udate="{{Date}}">{{StrDate}}</a> <a class="postId" onclick="Posts.quotePostId({{Num}})">#{{Num}}</a>
+        <a href="#p{{Num}}" class="date" data-udate="{{Date}}">{{StrDate}}</a> <a class="postId postQuoteButton" href="#reply-form" data-postid="{{Num}}">#{{Num}}</a>
     </h3>
     <div class="right">
         {{#Modified}}<span class="lastedit" data-udate="{{LastModified}}">edited {{StrLastModified}}</span>{{/Modified}}

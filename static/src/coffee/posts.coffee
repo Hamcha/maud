@@ -154,6 +154,7 @@ editPost = (id) ->
 			name:        "tags",
 			placeholder: "Tags (separated by #)",
 			className:   "full small",
+			dataset:     { acsearch: false },
 			value:       tags
 		}
 	original[id] = post.innerHTML
@@ -300,13 +301,13 @@ replyPreSubmit = (elem, threadUrl, curPostCount) ->
 
 # post quote by id
 quotePostId = (id) ->
-	text = document.querySelector "#reply-form textarea[name='text']"
-	if text.value.length > 0 and text.value[text.value.length - 1] isnt "\n"
-		text.value += "\n>> ##{id}\n"
-	else
-		text.value += ">> ##{id}\n"
-	window.location.href = '#reply'
-	text.focus()
+	return () ->
+		text = document.getElementById "reply-form-text"
+		if text.value.length > 0 and text.value[text.value.length - 1] isnt "\n"
+			text.value += "\n>> ##{id}\n"
+		else
+			text.value += ">> ##{id}\n"
+		text.focus()
 
 # remove fallback and set onclick events
 fromList(document.getElementsByClassName 'postEditLink').map (e) ->
@@ -333,6 +334,10 @@ if preview?
 editorButtons = document.getElementById "editorButtons"
 if editorButtons?
 	addEditorButtons editorButtons
+
+# Add quote buttons
+fromList(document.getElementsByClassName 'postQuoteButton').map (e) ->
+	e.addEventListener "click", quotePostId e.dataset.postid
 
 # expose functions
 window.Posts =
