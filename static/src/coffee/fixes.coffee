@@ -126,7 +126,7 @@ fromList(document.querySelectorAll('.postIdQuote')).map (e) ->
 			else
 				# post is at least partially hidden
 				quoted = document.getElementById "#{refId}_quoted"
-				if not quoted?
+				unless quoted?
 					quoted = window.createElementEx 'article', { className: "post quoted", id: "#{refId}_quoted" }
 					quoted.innerHTML = ref.innerHTML
 					document.getElementById('quoted_posts').appendChild quoted
