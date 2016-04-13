@@ -84,9 +84,13 @@ func (f *proxyMutator) mutator(data modules.PostMutatorData) {
 	(*data.Post).Content = rawcontent
 
 	// Force 'img-src: self' in CSP
-	addImgSrcCSPRule(data.ResponseWriter)
+	f.addImgSrcCSPRule(data.ResponseWriter)
 }
 
-func addImgSrcCSPRule(rw *http.ResponseWriter) {
-	(*rw).Header().Add("Content-Security-Policy", "img-src: self")
+func (f *proxyMutator) addImgSrcCSPRule(rw *http.ResponseWriter) {
+	head := (*rw).Header()
+	if !strings.Contains(head.Get("Content-Security-Policy"), "img-src") {
+		head.Add("Content-Security-Policy", "img-src 'self' "+f.domain)
+		head.Add("Content-Security-Policy", "media-src 'self' "+f.domain)
+	}
 }
