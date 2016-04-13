@@ -2,7 +2,7 @@
 
 safeButton = document.getElementById "safeBtn"
 unless Cookies.enabled
-	safeButton.onclick = -> alert "Cookies are not enabled, Safe mode not available."
+	safeButton.addEventListener 'click', -> alert "Cookies are not enabled, Safe mode not available."
 	return
 
 # Wrapper for the cookie used for hiding.
@@ -79,7 +79,7 @@ if crHidden?.get "#nsfw"
 	safeButton.innerHTML = "EXIT SAFE MODE"
 	safeButton.style.boxShadow = "0 0 0 1px green inset"
 	safeButton.onclick = ->
-		crHidden.remove '#nsfw'
+		crHidden?.remove '#nsfw'
 		location.reload true
 		return
 else
@@ -115,18 +115,14 @@ fromList(document.querySelectorAll 'div.hiding').map (e) ->
 	a.appendChild document.createTextNode "Hide"
 	e.appendChild a
 
-window.Hiding =
-	unhideAllThreads: -> crHidden.clearThreads()
-	unhideAllTags: -> crHidden.clearTags()
-
 if location.pathname == "/hidden"
 	fromList(document.querySelectorAll "a.unhideurl").map (e) ->
 		e.addEventListener "click", toggleHide e.dataset.arg
 
 	unhidealltheads = document.getElementById "unhideallthreads"
 	if unhidealltheads?
-		unhidealltheads.addEventListener "click", -> crHidden.clearThreads()
+		unhidealltheads.addEventListener "click", -> crHidden?.clearThreads()
 
 	unhidetags = document.getElementById "unhidealltags"
 	if unhidealltags?
-		unhidetags.addEventListener "click", -> crHidden.clearTags()
+		unhidetags.addEventListener "click", -> crHidden?.clearTags()

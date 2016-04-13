@@ -57,10 +57,6 @@ addEditorButtons = (container) ->
 		button.innerHTML = element.text
 		container.appendChild button
 
-window.onload = ->
-	if AC
-		AC.toggleAutocomplete (document.querySelector '#reply-form .ac_input'), '/taglist'
-
 cancelForm = (id) ->
 	return ->
 		pid = if id == 0 then "thread" else "p#{id}"
@@ -292,7 +288,7 @@ deletePost = (id) ->
 	return
 
 # check form before submitting
-replyPreSubmit = (elem, threadUrl, curPostCount) ->
+replyPreSubmit = (elem, threadUrl) ->
 	nick = document.querySelector("##{elem.id} input[name='nickname']").value
 	if nick.indexOf('#') > 0 and nick.indexOf('#') == nick.length - 1
 		alert "Tripcode must have at least 1 character."
@@ -335,12 +331,14 @@ editorButtons = document.getElementById "editorButtons"
 if editorButtons?
 	addEditorButtons editorButtons
 
-# Add quote buttons
-fromList(document.getElementsByClassName 'postQuoteButton').map (e) ->
-	e.addEventListener "click", quotePostId e.dataset.postid
+# Bind submit button
+if location.pathname[1...8] == 'thread/'
+	# Add quote buttons
+	fromList(document.getElementsByClassName 'postQuoteButton').map (e) ->
+		e.addEventListener "click", quotePostId e.dataset.postid
 
-# expose functions
-window.Posts =
-	cancelForm: cancelForm
-	replyPreSubmit: replyPreSubmit
-	quotePostId: quotePostId
+	document.getElementById('reply-form')?.addEventListener 'submit', (event) ->
+		replyPreSubmit(event.target, window.location.pathname.split('/')[2])
+
+	document.getElementById('reply-form')?.addEventListener 'submit', (event) ->
+		replyPreSubmit(event.target, window.location.pathname.split('/')[2])
