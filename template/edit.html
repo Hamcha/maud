@@ -10,10 +10,10 @@
             <span style="color: #ccc; display: inline-block; width: auto; font-size: 0.9em;">editing {{Thread}}/#p{{Post}}</span>
         </div>
         <!-- Editor buttons -->
-        <div id="editorRight" class="small">
+        <div id="editorRight" class="small editorButtonCont editorButtonContRight">
             <a target="_blank" href="/stiki/formatting" rel="help">?</a>
         </div>
-        <div id="editorButtons" class="small"></div>
+        <div id="editorButtons" class="small editorButtonCont"></div>
         <textarea class="full small editor" name="text" required>{{{Content}}}</textarea>
         {{#IsOP}}
         <input class="full small ac_input" type="text" name="tags" placeholder="Tags (separated by #)" value="{{{Tags}}}" autocomplete="off"/>
@@ -26,11 +26,3 @@
     </form>
 {{/Data}}
 </section>
-<script src="/static/js/editor.js"></script>
-<script>
-window.onload = function () {
-    if (AC) {
-        AC.toggleAutocomplete(document.querySelector('#edit-form .ac_input'), '/taglist');
-    }
-}
-</script>

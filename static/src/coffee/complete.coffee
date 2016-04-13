@@ -70,7 +70,10 @@ updateAutocompleteList = (list, txt, data, opts = {}) ->
 	prevent = false
 	if opts?.search isnt off
 		searchanchor = (form, tag, list) ->
-			a = window.createElementEx "a", { href: "#", className: "noborder rightanchor" }
+			a = window.createElementEx "a", {
+				href: "#",
+				className: "noborder rightanchor"
+			}
 			a.addEventListener "click", ->
 				updateTags form, tag, list
 				prevent = true
@@ -84,15 +87,21 @@ updateAutocompleteList = (list, txt, data, opts = {}) ->
 	for el in data when el.trim().length > 0
 		if el[0..txt.length-1] == txt and count++ < limit
 			li = window.createElementEx "li", { title: el, style: { cursor: "pointer" } }
-			li.addEventListener "click", ->
-				return if prevent
-				updateTags list.parentNode, el, list
+			do (el) ->
+				li.addEventListener "click", ->
+					return if prevent
+					updateTags list.parentNode, el, list
 			span = window.createElementEx "span"
 			span.appendChild document.createTextNode el
 			li.appendChild span
 			if searchanchor?
-				li.appendChild searchanchor list.parentNode, el, list
+				li.appendChild searchanchor(list.parentNode, el, list)
 			list.appendChild li
+
+# Activate Autocomplete on every ac_input
+window.addEventListener 'load', ->
+	fromList(document.querySelectorAll '.ac_input').map (e) ->
+		toggleAutocomplete e, "#{window.crOpts.basepath}taglist"
 
 window.AC =
 	toggleAutocomplete: toggleAutocomplete

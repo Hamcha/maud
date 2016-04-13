@@ -51,6 +51,13 @@ cancelForm = (name) ->
 	elem = document.getElementById "bl_#{name}"
 	elem.innerHTML = original[name]
 
+# Bind events
+document.getElementById('blacklist-edit-btn').addEventListener 'click', (event) ->
+	blacklistEdit(event.target.dataset.name)
+
+document.getElementById('blacklist-unban-btn').addEventListener 'click', (event) ->
+	blacklistUnban(event.target.dataset.name)
+
 
 window.Blacklist =
 	edit: blacklistEdit

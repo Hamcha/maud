@@ -25,9 +25,9 @@
     </table>
     {{/Blacklist}}
     <div class="right">
-        <a class="noborder hide" href="#bl_{{Name}}" onclick='Blacklist.edit("{{Name}}")'>Edit</a>
+        <a id='blacklist-edit-btn' class="noborder hide" href="#bl_{{Name}}" data-name="{{Name}}">Edit</a>
         &nbsp;
-        <a class="noborder hide" href="#bl_{{Name}}" onclick='Blacklist.unban("{{Name}}")'>Unban</a>
+        <a id='blacklist-unban-btn' class="noborder hide" href="#bl_{{Name}}" data-name="{{Name}}">Unban</a>
     </div>
 </article>
 {{/BLData}}

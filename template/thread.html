@@ -107,7 +107,7 @@
 <div id="quoted_posts" class="post"></div>
 <hr />
 <section class="form">
-    <form id="reply-form" onsubmit="return Posts.replyPreSubmit(this, '{{#Thread}}{{ShortUrl}}', {{Messages}}{{/Thread}})" method="POST" action="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/reply">
+    <form id="reply-form" method="POST" action="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/reply">
         <input class="full verysmall" type="text" name="nickname" placeholder="Nickname#Tripcode (optional)" />
         <input type="hidden" name="htrip" value="" />
 

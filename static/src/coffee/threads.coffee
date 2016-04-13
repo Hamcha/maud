@@ -2,20 +2,19 @@
 
 return unless window.localStorage?
 
-window.Threads =
-	markAllRead: ->
-		window.fromList(document.querySelectorAll 'article.thread-item').map (thread) ->
-			date = thread.querySelector('span.date').dataset.udate
-			lreplyAnchor = thread.querySelector 'a.last-reply'
-			[surl, _, lpage] = lreplyAnchor.pathname.split('/')[2..4]
-			lpost = lreplyAnchor.hash
-			if lpost.length < 3
-				# shouldn't happen, but for insurance we put post = 0
-				lpost = 0
-			else
-				lpost = lpost[2..] # strip the initial "#p"
-			lpage = '1' unless lpage?
-			window.localStorage.setItem "lview_#{surl}", "#{date}##{lpost}##{lpage}"
+markAllRead = ->
+	window.fromList(document.querySelectorAll 'article.thread-item').map (thread) ->
+		date = thread.querySelector('span.date').dataset.udate
+		lreplyAnchor = thread.querySelector 'a.last-reply'
+		[surl, _, lpage] = lreplyAnchor.pathname.split('/')[2..4]
+		lpost = lreplyAnchor.hash
+		if lpost.length < 3
+			# shouldn't happen, but for insurance we put post = 0
+			lpost = 0
+		else
+			lpost = lpost[2..] # strip the initial "#p"
+		lpage = '1' unless lpage?
+		window.localStorage.setItem "lview_#{surl}", "#{date}##{lpost}##{lpage}"
 
 pageIs =
 	thread: window.location.pathname[1...8] == 'thread/'
@@ -62,6 +61,9 @@ if pageIs.thread
 		surl = window.location.pathname.split('/')[2]
 		window.localStorage.setItem "lview_#{surl}", "#{date}##{npost}##{page}"
 else if pageIs.home or pageIs.threads
+	# Bind "Mark All Read" button
+	document.getElementById('mark-all-read').addEventListener 'click', markAllRead
+
 	# In home/all-threads: for each thread, check if already viewed or not
 	window.fromList(document.querySelectorAll 'article.thread-item').map (thread) ->
 		# get last-modified date
