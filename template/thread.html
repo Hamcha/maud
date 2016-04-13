@@ -27,7 +27,7 @@
 <section class="tags">
 {{#Tags}}<a href="{{BasePath}}tag/{{.}}" class="tag" rel="tag">#{{{.}}}</a> {{/Tags}}
 </section>
-<article itemscope itemtype="http://schema.org/DiscussionForumPosting" class="thread" id="thread" data-tags="{{#Tags}} #{{.}}{{/Tags}}">
+<article itemid="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}#p0" itemscope itemtype="http://schema.org/DiscussionForumPosting" class="thread" id="thread" data-tags="{{#Tags}} #{{.}}{{/Tags}}">
     <h2 itemprop="headline" class="thread-title">{{Title}}</h2>
     {{/Thread}}
     {{#HasOP}}
@@ -66,7 +66,7 @@
 <div id="replies">
 {{#Posts}}
 {{#Data}}
-<article itemscope itemtype="http://schema.org/DiscussionForumPosting" class="post" id="p{{Num}}">
+<article itemid="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}#p{{Num}}" itemscope itemtype="http://schema.org/DiscussionForumPosting" class="post" id="p{{Num}}">
     <h3 class="post-author">
         {{#Author}}
         <span itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -74,7 +74,7 @@
             <span class="tripcode">{{^HiddenTripcode}}{{Tripcode}}{{/HiddenTripcode}}</span>
         </span>
         {{/Author}}
-        <a itemprop="url" href="#p{{Num}}" itemprop="dateCreated" datetime="{{SchemaDate}}" class="date" data-udate="{{Date}}">{{StrDate}}</a> <a class="postId postQuoteButton" href="#reply-form" data-postid="{{Num}}">#{{Num}}</a>
+        <a href="#p{{Num}}" itemprop="dateCreated" datetime="{{SchemaDate}}" class="date" data-udate="{{Date}}">{{StrDate}}</a> <a class="postId postQuoteButton" href="#reply-form" data-postid="{{Num}}">#{{Num}}</a>
     </h3>
     <div class="right">
         {{#Modified}}<span class="lastedit" itemprop="dateModified" datetime="{{SchemaLastModified}}" data-udate="{{LastModified}}">edited {{StrLastModified}}</span>{{/Modified}}
