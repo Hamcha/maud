@@ -40,7 +40,8 @@
             <span class="tripcode">{{^HiddenTripcode}}{{Tripcode}}{{/HiddenTripcode}}</span>
         </span>
         {{/Author}}
-        <a href="#thread" itemprop="dateCreated" datetime="{{SchemaDate}}" class="date" data-udate="{{Date}}">{{StrDate}}</a> <a class="postId postQuoteButton" href="#reply-form" data-postid="0">#0</a>
+        <span style="display: none;" itemprop="dateCreated" datetime="{{SchemaDate}}">{{StrDate}}</span>
+        <a href="#thread" class="date" data-udate="{{Date}}">{{StrDate}}</a> <a class="postId postQuoteButton" href="#reply-form" data-postid="0">#0</a>
     </h3>
     <div class="right">
         {{#Modified}}<span class="lastedit" itemprop="dateModified" datetime="{{SchemaLastModified}}" data-udate="{{LastModified}}">edited {{StrLastModified}}</span>{{/Modified}}
@@ -74,7 +75,8 @@
             <span class="tripcode">{{^HiddenTripcode}}{{Tripcode}}{{/HiddenTripcode}}</span>
         </span>
         {{/Author}}
-        <a href="#p{{Num}}" itemprop="dateCreated" datetime="{{SchemaDate}}" class="date" data-udate="{{Date}}">{{StrDate}}</a> <a class="postId postQuoteButton" href="#reply-form" data-postid="{{Num}}">#{{Num}}</a>
+        <span style="display: none;" itemprop="dateCreated" datetime="{{SchemaDate}}">{{StrDate}}</span>
+        <a href="#p{{Num}}" class="date" data-udate="{{Date}}">{{StrDate}}</a> <a class="postId postQuoteButton" href="#reply-form" data-postid="{{Num}}">#{{Num}}</a>
     </h3>
     <div class="right">
         {{#Modified}}<span class="lastedit" itemprop="dateModified" datetime="{{SchemaLastModified}}" data-udate="{{LastModified}}">edited {{StrLastModified}}</span>{{/Modified}}
