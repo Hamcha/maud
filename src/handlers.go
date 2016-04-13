@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"../mustache"
 	. "./data"
@@ -250,7 +251,9 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		postsInfo[index].Modified = posts[index].LastModified != 0
 		postsInfo[index].Editable = !postsInfo[index].IsDeleted && (isAdmin || !posts[index].Author.HiddenTripcode && len(posts[index].Author.Tripcode) > 0)
 		postsInfo[index].StrDate = strdate(posts[index].Date)
+		postsInfo[index].SchemaDate = time.Unix(posts[index].Date, 0).Format(time.RFC3339)
 		postsInfo[index].StrLastModified = strdate(posts[index].LastModified)
+		postsInfo[index].SchemaLastModified = time.Unix(posts[index].LastModified, 0).Format(time.RFC3339)
 		postsInfo[index].IsAnon = len(posts[index].Author.Nickname) < 1 && (len(posts[index].Author.Tripcode) < 1 || posts[index].Author.HiddenTripcode)
 	}
 

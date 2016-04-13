@@ -48,14 +48,16 @@ type Post struct {
 }
 
 type PostInfo struct {
-	PostId          int
-	Data            Post
-	StrDate         string
-	StrLastModified string
-	IsDeleted       bool
-	Editable        bool
-	Modified        bool
-	IsAnon          bool
+	PostId             int
+	Data               Post
+	StrDate            string
+	SchemaDate         string
+	StrLastModified    string
+	SchemaLastModified string
+	IsDeleted          bool
+	Editable           bool
+	Modified           bool
+	IsAnon             bool
 }
 
 type SiteInfo struct {
