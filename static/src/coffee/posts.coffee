@@ -74,7 +74,7 @@ showPreview = (where) ->
 	return () ->
 		form = document.getElementById where
 		text = (document.getElementById where + "-text").value
-		if not text
+		unless text
 			return if form.firstChild.className == 'errmsg'
 			errmsg = window.createElementEx "p", { className: "errmsg", id: "#{where}-preview" }
 			errmsg.appendChild document.createTextNode "Please insert some content."
@@ -97,7 +97,7 @@ createPreview = (where, content) ->
 	o.className = o.className.replace "post-selected", "" for o in document.querySelectorAll ".post-selected"
 	# if preview post already exists, just update it
 	prevpost = document.getElementById "#{where}-preview"
-	if not prevpost?
+	unless prevpost?
 		prevpost = window.createElementEx "article", { id: "#{where}-preview" }
 		form = document.getElementById(where)
 		form.insertBefore prevpost, form.firstChild
