@@ -17,7 +17,7 @@ var (
 	db        Database
 	maudRoot  string
 	siteInfo  SiteInfo
-	csp       CSP
+	csp       map[string]string
 )
 
 func setupHandlers(router *mux.Router, isAdmin, isSubdir bool) {
@@ -81,12 +81,11 @@ func main() {
 	maudRoot = filepath.Dir(maudExec)
 
 	// Setup CSP
-	csp = CSP{
-		"script-src": []string{`'self'`},
-		//"style-src":  []string{`'self'`, "https://fonts.googleapis.com/", "https://fonts.gstatic.com/"},
-		//"media-src":  []string{`'self'`},
-		//"object-src": []string{`'none'`},
-		//"font-src":   []string{`'self'`, "https://fonts.googleapis.com/", "https://fonts.gstatic.com/"},
+	csp = map[string]string{
+		"script-src": "'self'",
+		//"style-src":  "'self' https://fonts.googleapis.com/ https://fonts.gstatic.com/",
+		"font-src": "'self' https://fonts.googleapis.com/ https://fonts.gstatic.com/",
+		//"object-src": "'none'",
 	}
 
 	// Command line parameters
