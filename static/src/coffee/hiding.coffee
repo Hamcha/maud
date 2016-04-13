@@ -94,24 +94,39 @@ else
 		return
 
 toggleHide = (elem) ->
-	# check if this element is already hidden: if so,
-	# unhide it, else hide it.
-	if crHidden?.get elem
-		crHidden.remove elem
-	else
-		if crHidden?
-			crHidden.add elem
+	return () ->
+		# check if this element is already hidden: if so,
+		# unhide it, else hide it.
+		if crHidden?.get elem
+			crHidden.remove elem
 		else
-			crHidden = Hidden.new elem
-			crHidden.update()
-		location.reload true
-		return
+			if crHidden?
+				crHidden.add elem
+			else
+				crHidden = Hidden.new elem
+				crHidden.update()
+			location.reload true
+			return
 
 # Bind click events on threads and tags
 fromList(document.querySelectorAll 'div.hiding').map (e) ->
-        e.innerHTML = """<a class="noborder hide" href="" onclick="Hiding.toggleHide('#{e.dataset.arg}')">Hide</a>"""
+	a = window.createElementEx "a", { className: "noborder hide", href: "" }
+	a.addEventListener "click", toggleHide e.dataset.arg
+	a.appendChild document.createTextNode "Hide"
+	e.appendChild a
 
 window.Hiding =
-	toggleHide: toggleHide
 	unhideAllThreads: -> crHidden.clearThreads()
 	unhideAllTags: -> crHidden.clearTags()
+
+if location.pathname == "/hidden"
+	fromList(document.querySelectorAll "a.unhideurl").map (e) ->
+		e.addEventListener "click", toggleHide e.dataset.arg
+
+	unhidealltheads = document.getElementById "unhideallthreads"
+	if unhidealltheads?
+		unhidealltheads.addEventListener "click", -> crHidden.clearThreads()
+
+	unhidetags = document.getElementById "unhidealltags"
+	if unhidealltags?
+		unhidetags.addEventListener "click", -> crHidden.clearTags()
