@@ -17,6 +17,7 @@ var (
 	db        Database
 	maudRoot  string
 	siteInfo  SiteInfo
+	csp       CSP
 )
 
 func setupHandlers(router *mux.Router, isAdmin, isSubdir bool) {
@@ -72,12 +73,21 @@ func dontListDirs(h http.Handler) http.HandlerFunc {
 }
 
 func main() {
-	// get executable path
+	// Get executable path
 	maudExec, err := filepath.Abs(os.Args[0])
 	if err != nil {
 		panic(err)
 	}
 	maudRoot = filepath.Dir(maudExec)
+
+	// Setup CSP
+	csp = CSP{
+		"script-src": []string{`'self'`},
+		//"style-src":  []string{`'self'`, "https://fonts.googleapis.com/", "https://fonts.gstatic.com/"},
+		//"media-src":  []string{`'self'`},
+		//"object-src": []string{`'none'`},
+		//"font-src":   []string{`'self'`, "https://fonts.googleapis.com/", "https://fonts.gstatic.com/"},
+	}
 
 	// Command line parameters
 	bind := flag.String("port", ":8080", "Address to bind to")

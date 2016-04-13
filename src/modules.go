@@ -25,7 +25,6 @@ func InitFormatters() {
 	formatters = append(formatters, bbcode.Provide())
 	formatters = append(formatters, markdown.Provide())
 
-
 	// Lightifier
 	lightifier := lightify.Provide()
 	lightmutator := modules.PostMutator{
@@ -44,16 +43,17 @@ func InitFormatters() {
 	}
 }
 
-func applyPostMutator(m modules.PostMutator, thread *Thread, post *Post, req *http.Request) {
+func applyPostMutator(m modules.PostMutator, thread *Thread, post *Post, rw *http.ResponseWriter, req *http.Request) {
 	if m.Condition(req) {
-		m.Mutator(postMutatorArgs(thread, post, req))
+		m.Mutator(postMutatorArgs(thread, post, rw, req))
 	}
 }
 
-func postMutatorArgs(thread *Thread, post *Post, req *http.Request) modules.PostMutatorData {
+func postMutatorArgs(thread *Thread, post *Post, rw *http.ResponseWriter, req *http.Request) modules.PostMutatorData {
 	return modules.PostMutatorData{
-		Thread:  thread,
-		Post:    post,
-		Request: req,
+		Thread:         thread,
+		Post:           post,
+		Request:        req,
+		ResponseWriter: rw,
 	}
 }

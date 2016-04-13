@@ -242,7 +242,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		posts[index].Content = parseContent(posts[index].Content, posts[index].ContentType)
 		// Modules for changing content based on a condition, e.g. Lightify
 		for _, m := range postmutators {
-			applyPostMutator(m, &thread, &posts[index], req)
+			applyPostMutator(m, &thread, &posts[index], &rw, req)
 		}
 		postsInfo[index].Data = posts[index]
 		postsInfo[index].IsDeleted = posts[index].ContentType == "deleted" || posts[index].ContentType == "admin-deleted"
@@ -359,7 +359,7 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 
 		content := parseContent(post.Content, post.ContentType)
 		for _, m := range postmutators {
-			applyPostMutator(m, &v, &post, req)
+			applyPostMutator(m, &v, &post, &rw, req)
 		}
 		short, isbroken := shortify(content)
 
@@ -400,7 +400,7 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 			lp.StrDate = strdate(reply.Date)
 			content = parseContent(reply.Content, reply.ContentType)
 			for _, m := range postmutators {
-				applyPostMutator(m, &v, &reply, req)
+				applyPostMutator(m, &v, &reply, &rw, req)
 			}
 			lp.ShortContent, lp.HasBroken = shortify(content)
 			lp.Number = count - 1
@@ -756,7 +756,7 @@ func httpVars(rw http.ResponseWriter, req *http.Request) {
 
 func sendCSPHeaders(rw http.ResponseWriter, req *http.Request) {
 	head := rw.Header()
-	head.Add("Content-Security-Policy", "script-src 'self'")
+	head.Add("Content-Security-Policy", csp.String())
 }
 
 func send(rw http.ResponseWriter, req *http.Request, name, title string, context interface{}) {
