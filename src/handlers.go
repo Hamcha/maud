@@ -760,7 +760,9 @@ func httpVars(rw http.ResponseWriter, req *http.Request) {
 
 func sendCSPHeaders(rw http.ResponseWriter, req *http.Request) {
 	head := rw.Header()
-	head.Add("Content-Security-Policy", csp.String())
+	for name, vals := range csp {
+		head.Add("Content-Security-Policy", name+" "+vals)
+	}
 }
 
 func send(rw http.ResponseWriter, req *http.Request, name, title string, context interface{}) {
