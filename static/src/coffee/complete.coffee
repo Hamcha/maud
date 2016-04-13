@@ -36,8 +36,8 @@ toggleAutocomplete = (elem, url, opts) ->
 	ul.style.zIndex = 10
 	ul.id = 'ac_list'
 	insertAfter ul, elem
-	search = if elem.dataset?.ac_search == 'on' then on else off
-	elem.onkeyup = (e) ->
+	search = if elem.dataset?.acsearch == 'on' then on else off
+	elem.addEventListener "keyup", (e) ->
 		curTag =
 			if elem.value.indexOf sep > 0
 				elem.value[elem.value.lastIndexOf(sep) + 1..].trim()
@@ -52,43 +52,47 @@ toggleAutocomplete = (elem, url, opts) ->
 		ul.style.left = "#{elem.offsetLeft}px"
 		ul.style.visibility = if ul.innerHTML.length > 0 then 'visible' else 'hidden'
 
+updateTags = (form, tag, list) ->
+	# input to append the tags to
+	el = form.querySelector '.ac_input'
+	v = el.value
+	if v.lastIndexOf(sep) > 0
+		el.value = v[0..v.lastIndexOf(sep)-1] + "#{sep}#{tag} #"
+	else
+		el.value = "#{sep}#{tag} #"
+	el.selectionStart = el.value.length
+	el.focus()
+	list.style.visibility = 'hidden'
+
 updateAutocompleteList = (list, txt, data, opts = {}) ->
 	count = 0
-	searchanchor = if opts?.search is off then -> "" else (utargs) -> """
-		<a href='#' class='noborder rightanchor' onclick='(function () {
-		           AC.updateTags(#{utargs});
-		           AC.prevent = true; // this is a quite ugly hack
-			   var form = document.getElementById("#{list.parentNode.id}");
-			   form.onsubmit && form.onsubmit() && form.submit();
-		   })()'>
-		       search &raquo;
-		</a>
-	"""
-	list.innerHTML =
-		(for el in data when el.trim().length > 0
-			if el[0..txt.length-1] == txt and count++ < limit
-				utargs = """ "#{list.parentNode.id}","#{el}","#{list.id}" """
-				"""
-				<li title='#{el}' style='cursor:pointer' onclick='AC.prevent || AC.updateTags(#{utargs})'>
-				    <span>#{el}</span>
-				    #{searchanchor utargs}
-				</li>
-				"""
-		).join("\n").trim()
+	searchanchor = null
+	prevent = false
+	if opts?.search isnt off
+		searchanchor = (form, tag, list) ->
+			a = window.createElementEx "a", { href: "#", className: "noborder rightanchor" }
+			a.addEventListener "click", () ->
+				updateTags form, tag, list
+				prevent = true
+				form = list.parentNode
+				form.onsubmit() if form.onsubmit?
+				form.submit()
+			a.appendChild document.createTextNode "search »"
+			return a
 
+	list.removeChild list.firstChild while list.firstChild?
+	for el in data when el.trim().length > 0
+		if el[0..txt.length-1] == txt and count++ < limit
+			li = window.createElementEx "li", { title: el, style: { cursor: "pointer" } }
+			li.addEventListener "click", () ->
+				return if prevent
+				updateTags list.parentNode, el, list
+			span = window.createElementEx "span"
+			span.appendChild document.createTextNode el
+			li.appendChild span
+			if searchanchor?
+				li.appendChild searchanchor list.parentNode, el, list
+			list.appendChild li
 
-# expose AutoComplete functions
 window.AC =
 	toggleAutocomplete: toggleAutocomplete
-
-	updateTags: (formId, tag, listId) ->
-		# input to append the tags to
-		el = document.getElementById(formId).querySelector '.ac_input'
-		v = el.value
-		if v.lastIndexOf(sep) > 0
-			el.value = v[0..v.lastIndexOf(sep)-1] + "#{sep}#{tag} #"
-		else
-			el.value = "#{sep}#{tag} #"
-		el.selectionStart = el.value.length
-		el.focus()
-		document.getElementById(listId).style.visibility = 'hidden'
