@@ -94,7 +94,7 @@ else
 		return
 
 toggleHide = (elem) ->
-	return () ->
+	return ->
 		# check if this element is already hidden: if so,
 		# unhide it, else hide it.
 		if crHidden?.get elem
