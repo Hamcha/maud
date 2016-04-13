@@ -27,21 +27,23 @@
 <section class="tags">
 {{#Tags}}<a href="{{BasePath}}tag/{{.}}" class="tag" rel="tag">#{{{.}}}</a> {{/Tags}}
 </section>
-<article class="thread" id="thread" data-tags="{{#Tags}} #{{.}}{{/Tags}}">
-    <h2 class="thread-title">{{Title}}</h2>
+<article itemscope itemtype="http://schema.org/DiscussionForumPosting" class="thread" id="thread" data-tags="{{#Tags}} #{{.}}{{/Tags}}">
+    <h2 itemprop="headline" class="thread-title">{{Title}}</h2>
     {{/Thread}}
     {{#HasOP}}
     {{#ThreadPost}}
     {{#Data}}
     <h3 class="thread-author">
         {{#Author}}
-        <span class="nickname">{{#IsAnon}}<span class="anon">Rock</span>{{/IsAnon}}{{#Nickname}}{{Nickname}}{{/Nickname}}</span>
-        <span class="tripcode">{{^HiddenTripcode}}{{Tripcode}}{{/HiddenTripcode}}</span>
+        <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+            <span class="nickname" itemprop="name">{{#IsAnon}}<span class="anon">Rock</span>{{/IsAnon}}{{#Nickname}}{{Nickname}}{{/Nickname}}</span>
+            <span class="tripcode">{{^HiddenTripcode}}{{Tripcode}}{{/HiddenTripcode}}</span>
+        </span>
         {{/Author}}
-        <a href="#thread" class="date" data-udate="{{Date}}">{{StrDate}}</a> <a class="postId postQuoteButton" href="#reply-form" data-postid="0">#0</a>
+        <a href="#thread" itemprop="dateCreated" datetime="{{SchemaDate}}" class="date" data-udate="{{Date}}">{{StrDate}}</a> <a class="postId postQuoteButton" href="#reply-form" data-postid="0">#0</a>
     </h3>
     <div class="right">
-        {{#Modified}}<span class="lastedit" data-udate="{{LastModified}}">edited {{StrLastModified}}</span>{{/Modified}}
+        {{#Modified}}<span class="lastedit" itemprop="dateModified" datetime="{{SchemaLastModified}}" data-udate="{{LastModified}}">edited {{StrLastModified}}</span>{{/Modified}}
         <div id="p0_btn" class="postactions" {{^Editable}}style='display: none'{{/Editable}}>
             {{#IsAdmin}}
             <a class="postBanLink ban noborder" href="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/post/{{Num}}/ban">
@@ -56,7 +58,7 @@
             </a>
         </div>
     </div>
-    <div class="thread-content type{{ContentType}}">{{{Content}}}</div>
+    <div itemprop="articleBody" class="thread-content type{{ContentType}}">{{{Content}}}</div>
     {{/Data}}
     {{/ThreadPost}}
     {{/HasOP}}
@@ -64,16 +66,18 @@
 <div id="replies">
 {{#Posts}}
 {{#Data}}
-<article class="post" id="p{{Num}}">
+<article itemscope itemtype="http://schema.org/DiscussionForumPosting" class="post" id="p{{Num}}">
     <h3 class="post-author">
         {{#Author}}
-        <span class="nickname">{{#IsAnon}}<span class="anon">Rock</span>{{/IsAnon}}{{#Nickname}}{{Nickname}}{{/Nickname}}</span>
-        <span class="tripcode">{{^HiddenTripcode}}{{Tripcode}}{{/HiddenTripcode}}</span>
+        <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+            <span class="nickname" itemprop="name">{{#IsAnon}}<span class="anon">Rock</span>{{/IsAnon}}{{#Nickname}}{{Nickname}}{{/Nickname}}</span>
+            <span class="tripcode">{{^HiddenTripcode}}{{Tripcode}}{{/HiddenTripcode}}</span>
+        </span>
         {{/Author}}
-        <a href="#p{{Num}}" class="date" data-udate="{{Date}}">{{StrDate}}</a> <a class="postId postQuoteButton" href="#reply-form" data-postid="{{Num}}">#{{Num}}</a>
+        <a itemprop="url" href="#p{{Num}}" itemprop="dateCreated" datetime="{{SchemaDate}}" class="date" data-udate="{{Date}}">{{StrDate}}</a> <a class="postId postQuoteButton" href="#reply-form" data-postid="{{Num}}">#{{Num}}</a>
     </h3>
     <div class="right">
-        {{#Modified}}<span class="lastedit" data-udate="{{LastModified}}">edited {{StrLastModified}}</span>{{/Modified}}
+        {{#Modified}}<span class="lastedit" itemprop="dateModified" datetime="{{SchemaLastModified}}" data-udate="{{LastModified}}">edited {{StrLastModified}}</span>{{/Modified}}
         <div id="p{{Num}}_btn" class="postactions" {{^Editable}}style='display: none'{{/Editable}}>
             {{#IsAdmin}}
             <a class="postBanLink ban noborder" href="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/post/{{Num}}/ban">
@@ -88,7 +92,7 @@
             </a>
         </div>
     </div>
-    <div class="post-content type{{ContentType}}">{{{Content}}}</div>
+    <div itemprop="articleBody" class="post-content type{{ContentType}}">{{{Content}}}</div>
 </article>
 {{/Data}}
 {{/Posts}}
