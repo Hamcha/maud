@@ -1,6 +1,8 @@
 package data
 
 import (
+	"bytes"
+
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -22,6 +24,9 @@ type Counter struct {
 	Name string
 	Seq  int64
 }
+
+// Content Security Policy
+type CSP map[string][]string
 
 type PageInfo struct {
 	Page     int
@@ -113,4 +118,19 @@ type User struct {
 	Tripcode       string
 	HiddenTripcode bool
 	Ip             string
+}
+
+func (c CSP) String() string {
+	var buf bytes.Buffer
+
+	for k, v := range c {
+		buf.WriteString(k)
+		for _, vv := range v {
+			buf.WriteRune(' ')
+			buf.WriteString(vv)
+		}
+		buf.WriteString("; ")
+	}
+
+	return buf.String()
 }

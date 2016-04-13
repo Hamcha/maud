@@ -1,20 +1,21 @@
 package proxy
 
 import (
-	"../.."
 	"log"
 	"net/http"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
+
+	"../../../modules"
 )
 
 func Provide(root, domain string) modules.PostMutator {
 	pm := new(proxyMutator)
 	pm.init(root, domain)
 	return modules.PostMutator{
-		Condition: condition,
+		Condition: isProxyEnabled,
 		Mutator:   pm.mutator,
 	}
 }
@@ -37,7 +38,7 @@ func (f *proxyMutator) init(root, domain string) {
 	log.Printf("Module initialized: Proxy (root: " + root + ", domain: " + domain + ")")
 }
 
-func condition(req *http.Request) bool {
+func isProxyEnabled(req *http.Request) bool {
 	_, err := req.Cookie("crUseProxy")
 	return err == nil
 }
@@ -81,4 +82,11 @@ func (f *proxyMutator) mutator(data modules.PostMutatorData) {
 		}
 	}
 	(*data.Post).Content = rawcontent
+
+	// Force 'img-src: self' in CSP
+	addImgSrcCSPRule(data.ResponseWriter)
+}
+
+func addImgSrcCSPRule(rw *http.ResponseWriter) {
+	(*rw).Header().Add("Content-Security-Policy", "img-src: self")
 }

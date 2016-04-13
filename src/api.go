@@ -242,7 +242,7 @@ func apiPreview(rw http.ResponseWriter, req *http.Request) {
 	var fakepost Post
 	fakepost.Content = content
 	for _, m := range postmutators {
-		applyPostMutator(m, nil, &fakepost, req)
+		applyPostMutator(m, nil, &fakepost, &rw, req)
 	}
 	content = fakepost.Content
 
