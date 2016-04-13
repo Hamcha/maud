@@ -3,7 +3,7 @@
 original = []
 
 editorAdd = (elem, tag) ->
-	return () ->
+	return ->
 		# get the textarea and the selection
 		txt = elem.parentElement.parentElement.text
 		cursor = txt.selectionStart
@@ -17,7 +17,7 @@ editorAdd = (elem, tag) ->
 		txt.focus()
 
 quoteText = (elem) ->
-	return () ->
+	return ->
 		txt = elem.parentElement.parentElement.text
 		unless window.getSelection()?.toString()?.length > 0
 			txt.value = txt.value[0..txt.selectionStart] + "> " + txt.value[txt.selectionStart+1..]
@@ -57,12 +57,12 @@ addEditorButtons = (container) ->
 		button.innerHTML = element.text
 		container.appendChild button
 
-window.onload = () ->
+window.onload = ->
 	if AC
 		AC.toggleAutocomplete (document.querySelector '#reply-form .ac_input'), '/taglist'
 
 cancelForm = (id) ->
-	return () ->
+	return ->
 		pid = if id == 0 then "thread" else "p#{id}"
 		post = document.getElementById pid
 		post.innerHTML = original[id]
@@ -71,7 +71,7 @@ cancelForm = (id) ->
 
 # post preview
 showPreview = (where) ->
-	return () ->
+	return ->
 		form = document.getElementById where
 		text = (document.getElementById where + "-text").value
 		unless text
@@ -301,7 +301,7 @@ replyPreSubmit = (elem, threadUrl, curPostCount) ->
 
 # post quote by id
 quotePostId = (id) ->
-	return () ->
+	return ->
 		text = document.getElementById "reply-form-text"
 		if text.value.length > 0 and text.value[text.value.length - 1] isnt "\n"
 			text.value += "\n>> ##{id}\n"

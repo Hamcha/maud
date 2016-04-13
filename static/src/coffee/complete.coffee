@@ -71,7 +71,7 @@ updateAutocompleteList = (list, txt, data, opts = {}) ->
 	if opts?.search isnt off
 		searchanchor = (form, tag, list) ->
 			a = window.createElementEx "a", { href: "#", className: "noborder rightanchor" }
-			a.addEventListener "click", () ->
+			a.addEventListener "click", ->
 				updateTags form, tag, list
 				prevent = true
 				form = list.parentNode
@@ -84,7 +84,7 @@ updateAutocompleteList = (list, txt, data, opts = {}) ->
 	for el in data when el.trim().length > 0
 		if el[0..txt.length-1] == txt and count++ < limit
 			li = window.createElementEx "li", { title: el, style: { cursor: "pointer" } }
-			li.addEventListener "click", () ->
+			li.addEventListener "click", ->
 				return if prevent
 				updateTags list.parentNode, el, list
 			span = window.createElementEx "span"
