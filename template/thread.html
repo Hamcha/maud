@@ -1,6 +1,6 @@
 <nav>
     <a href="#reply-form" class="button">Reply</a>
-    <form id="tagsearch-form" class="ac_wrapper" style="display: inline-block" method="POST" action="{{BasePath}}tagsearch">
+    <form id="tagsearch-form" class="ac_wrapper" method="POST" action="{{BasePath}}tagsearch">
         <input class="ac_input" type="search" name="tags" id="tagsearch" placeholder="Filter by tag" required title="Insert tags (each starting with '#')" data-acsearch="on" autocomplete="off" />
         <input type="submit" value="Search" />
     </form>
@@ -40,22 +40,22 @@
             <span class="tripcode">{{^HiddenTripcode}}{{Tripcode}}{{/HiddenTripcode}}</span>
         </span>
         {{/Author}}
-        <span style="display: none;" itemprop="dateCreated" datetime="{{SchemaDate}}">{{StrDate}}</span>
+        <span class="metadata" itemprop="dateCreated" datetime="{{SchemaDate}}">{{StrDate}}</span>
         <a href="#thread" class="date" data-udate="{{Date}}">{{StrDate}}</a> <a class="postId postQuoteButton" href="#reply-form" data-postid="0">#0</a>
     </h3>
     <div class="right">
         {{#Modified}}<span class="lastedit" itemprop="dateModified" datetime="{{SchemaLastModified}}" data-udate="{{LastModified}}">edited {{StrLastModified}}</span>{{/Modified}}
-        <div id="p0_btn" class="postactions" {{^Editable}}style='display: none'{{/Editable}}>
+        <div id="p0_btn" class="postactions{{^Editable}} unavailable{{/Editable}}" >
             {{#IsAdmin}}
             <a class="postBanLink ban noborder" href="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/post/{{PostId}}/ban">
-                <img alt="Edit" src="/static/images/ban.svg" style="height: 20px;" />
+                <img alt="Ban" src="/static/images/ban.svg" class="post-ban-icon" />
             </a>
             {{/IsAdmin}}
             <a class="postEditLink edit noborder" data-postid="0" href="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/post/{{PostId}}/edit">
-                <img alt="Edit" src="/static/images/edit.svg" style="height: 20px;" />
+                <img alt="Edit" src="/static/images/edit.svg" class="post-edit-icon" />
             </a>
             <a class="postDeleteLink delete noborder" data-postid="0" href="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/post/{{PostId}}/delete">
-                <img alt="Delete" src="/static/images/delete.svg" style="height: 18px;" />
+                <img alt="Delete" src="/static/images/delete.svg" class="post-delete-icon" />
             </a>
         </div>
     </div>
@@ -75,22 +75,22 @@
             <span class="tripcode">{{^HiddenTripcode}}{{Tripcode}}{{/HiddenTripcode}}</span>
         </span>
         {{/Author}}
-        <span style="display: none;" itemprop="dateCreated" datetime="{{SchemaDate}}">{{StrDate}}</span>
+        <span class="metadata" itemprop="dateCreated" datetime="{{SchemaDate}}">{{StrDate}}</span>
         <a href="#p{{PostId}}" class="date" data-udate="{{Date}}">{{StrDate}}</a> <a class="postId postQuoteButton" href="#reply-form" data-postid="{{PostId}}">#{{PostId}}</a>
     </h3>
     <div class="right">
         {{#Modified}}<span class="lastedit" itemprop="dateModified" datetime="{{SchemaLastModified}}" data-udate="{{LastModified}}">edited {{StrLastModified}}</span>{{/Modified}}
-        <div id="p{{PostId}}_btn" class="postactions" {{^Editable}}style='display: none'{{/Editable}}>
+        <div id="p{{PostId}}_btn" class="postactions{{^Editable}} unavailable{{/Editable}}">
             {{#IsAdmin}}
             <a class="postBanLink ban noborder" href="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/post/{{PostId}}/ban">
-                <img alt="Edit" src="/static/images/ban.svg" style="height: 20px;" />
+                <img alt="Edit" src="/static/images/ban.svg" class="post-ban-icon" />
             </a>
             {{/IsAdmin}}
             <a class="postEditLink edit noborder" data-postid="{{PostId}}" href="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/post/{{PostId}}/edit">
-                <img alt="Edit" src="/static/images/edit.svg" style="height: 20px;" />
+                <img alt="Edit" src="/static/images/edit.svg" class="post-edit-icon" />
             </a>
             <a class="postDeleteLink delete noborder" data-postid="{{PostId}}" href="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/post/{{PostId}}/delete">
-                <img alt="Delete" src="/static/images/delete.svg" style="height: 18px;" />
+                <img alt="Delete" src="/static/images/delete.svg" class="post-delete-icon" />
             </a>
         </div>
     </div>
@@ -124,21 +124,21 @@
         <div id="editorButtons" class="small editorButtonCont"></div>
         <textarea class="full verysmall" name="text" id="reply-form-text" required placeholder="Post content (Markdown, HTML and BBCode are supported)"></textarea>
         {{#NeedsCaptcha}}{{#Captcha}}
-        <span style="display: inline-block; margin: 5px">{{Question}}&nbsp;</span>
+        <span class="captcha-question">{{Question}}&nbsp;</span>
         <img src="{{ImgPath}}" height="250px" alt="captcha"/>
         <input class="full verysmall" name="captcha" type="text" placeholder="{{Question}}"/>
         <input name="question" type="hidden" value="{{Question}}"/>
         {{/Captcha}}{{/NeedsCaptcha}}
-        <input type="text" name="ferrarelle" style="display: none;" placeholder="Leave empty" />
-        <div style="position: relative;">
+        <input type="text" name="ferrarelle" class="metadata" placeholder="Leave empty" />
+        <div class="relativePos">
             <div class="center">
                 <div class="chars-count" data-maxlen="{{#Info}}{{MaxPostLength}}{{/Info}}"></div>
                 <input type="submit" value="Reply" />
-                <input type="button" class="button" id="preview-post" style="display: none;" value="Preview" />
+                <input type="button" class="button unavailable" id="preview-post" value="Preview" />
             </div>
             <div class="right">
                 <a class="homelink noborder" href="{{BasePath}}" rel="bookmark">
-                    <img src="/static/images/home.svg" style="height: 18px; width: 18px;" alt="Home" title="Back to home" />
+                    <img src="/static/images/home.svg" class="home-button" alt="Home" title="Back to home" />
                 </a>
             </div>
         </div>

@@ -1,6 +1,6 @@
 <nav>
     <a href="{{BasePath}}new" class="button">New thread</a>
-    <form id="tagsearch-form" class="ac_wrapper" style="display: inline-block" method="POST" action="{{BasePath}}tagsearch">
+    <form id="tagsearch-form" class="ac_wrapper" method="POST" action="{{BasePath}}tagsearch">
         <input class="ac_input" type="search" name="tags" id="tagsearch" placeholder="Filter by tag" required title="Insert tags (each starting with '#')" data-acsearch="on" autocomplete="off" />
         <input type="submit" value="Search" />
     </form>
@@ -11,10 +11,10 @@
     {{/IsAdmin}}
 </nav>
 <hr />
-<article class="hidden2 thread">
-    <div style="margin-right: 6em;">All threads, ordered by latest reply</div>
-    <a href='' class="noborder hide right" style="padding: 0.3em" onclick="Threads.markAllRead()">Mark all read</a>
-</article>
+<section class="hidden2 thread sec-header">
+    <div class="leftContent">All threads, ordered by latest reply</div>
+    <a href='' id='mark-all-read' class="noborder hide right rightContent">Mark all read</a>
+</section>
 {{#Data}}
 {{#Last}}
 {{#Thread}}
@@ -22,7 +22,7 @@
     <h3 class="thread-name"><a href="{{BasePath}}thread/{{ShortUrl}}" class="nolink">{{Title}}</a></h3>
     <div>Last reply:
         <a class="last-reply" href="{{BasePath}}thread/{{ShortUrl}}/page/{{Page}}#p{{LastMessage}}">
-			#{{LastMessage}} - 
+			#{{LastMessage}} -
             {{#LastPost}}{{#Data}}
             {{#Author}}
             <span class="nickname">{{Nickname}}</span>

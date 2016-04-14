@@ -77,13 +77,13 @@ crHidden?.update()
 # Setup Safe mode button
 if crHidden?.get "#nsfw"
 	safeButton.innerHTML = "EXIT SAFE MODE"
-	safeButton.style.boxShadow = "0 0 0 1px green inset"
+	safeButton.className = "foot-on-button"
 	safeButton.onclick = ->
 		crHidden?.remove '#nsfw'
 		location.reload true
 		return
 else
-	safeButton.style.boxShadow = "0 0 0 1px darkred inset"
+	safeButton.className = "foot-off-button"
 	safeButton.onclick = ->
 		if crHidden?
 			crHidden.add '#nsfw'
