@@ -464,6 +464,10 @@ input.inline { display: inline-block; padding: 3px; margin-right: 5px; }
 	font-size: 1.1em; font-weight: 300;
 }
 
+.chars-count-padding {
+	padding: 0 0 0.5em 0;
+}
+
 /* Autocomplete */
 .ac_wrapper {
 	position: relative;
@@ -558,10 +562,16 @@ ul.ac_list {
 	margin: 10px;
 }
 
+/* Formatting page fixes */
+
+.formatting-reference td { padding: 5px; font-size: 1.2em; }
+.other-reference td { padding: 5px; font-size: 1.2em; min-width: 215px; }
+.formatting-gray { color: #bbb; }
+
 /* Utils (since we can't inline) */
 
-.alignLeft { text-align: left; }
-.relativePos { position: relative; }
-.inlineBlock { display: inline-block; }
+.alignLeft { text-align: left !important; }
+.relativePos { position: relative !important; }
+.inlineBlock { display: inline-block !important; }
 .metadata, .unavailable { display: none !important; }
 .underline { border-bottom: 1px dotted #fff; }
