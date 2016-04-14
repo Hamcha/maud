@@ -1,5 +1,4 @@
 {{#Data}}
-<script src='/static/js/blacklist.js'></script>
 <nav>
     Blacklist
 </nav>
@@ -25,9 +24,9 @@
     </table>
     {{/Blacklist}}
     <div class="right">
-        <a id='blacklist-edit-btn' class="noborder hide" href="#bl_{{Name}}" data-name="{{Name}}">Edit</a>
+        <a class="noborder hide blacklist-edit-btn" href="#bl_{{Name}}" data-name="{{Name}}">Edit</a>
         &nbsp;
-        <a id='blacklist-unban-btn' class="noborder hide" href="#bl_{{Name}}" data-name="{{Name}}">Unban</a>
+        <a class="noborder hide blacklist-unban-btn" href="#bl_{{Name}}" data-name="{{Name}}">Unban</a>
     </div>
 </article>
 {{/BLData}}
@@ -64,4 +63,5 @@
         </div>
     </form>
 </section>
+<script src='/static/js/blacklist.js'></script>
 {{/Data}}
