@@ -259,32 +259,77 @@ deletePost = (id) ->
 	nickspan = document.querySelector "##{pid} .nickname"
 	nick = nickspan.innerHTML
 	original[id] = post.innerHTML
-	tripcodebar = ""
+	tripcodebar = null
+
 	if !window.crOpts.adminMode
-		purge = ""
 		if nickspan.parentNode.querySelector('span.tripcode')?.innerHTML.length > 0
 			# visible tripcode
-			tripcodebar = "<input class='full short inline verysmall' type='text' name='tripcode' placeholder='Tripcode (required)' required />"
+			tripcodebar = window.createElementEx "input", {
+				type:        "text",
+				name:        "tripcode",
+				placeholder: "Tripcode (required)",
+				required:    true,
+				className:   "full short inline verysmall"
+			}
 		else
-			# hidden tripcode
+			# hidden tripcode (post-author contains <span class="anon"></span> instead of nick)
 			htrip = JSON.parse(window.localStorage?.getItem 'crLatestPost')?.htrip
-			tripcodebar = "<input type='hidden' name='tripcode' value='#{htrip}' required />"
+			tripcodebar = window.createElementEx "input", {
+				type:     "text",
+				name:     "tripcode",
+				required: true,
+				value:    htrip
+			}
 
-	else
-		purge = '<button name="deletetype" value="purge" type="submit">Purge</button>'
-	post.innerHTML = """
-<section id="#{id}" class="form"><a name="delete" class="noborder"></a>
-    <form method="POST" action="#{window.stripPage(location.pathname) + "/post/" + id + "/delete"}">
-        <div>
-            <span class="full verysmall nickname" style="display: inline-block; border: 0; width: auto">#{nick}</span>
-            #{tripcodebar}
-            <span style="color: #ccc; display: inline-block; width: auto; font-size: 0.9em;">deleting ##{id}</span>
-        </div>
-        <div class="center">
-            <button name="deletetype" value="soft" type="submit">Delete</button>#{purge}<button type="button" onclick="Posts.cancelForm(#{id});">Cancel</button>
-        </div>
-  </form>
-</section>"""
+	purge = null
+	if window.crOpts.adminMode
+		purge = window.createElementEx "button", { name: "deletetype", value: "purge", type: "submit" }
+		purge.appendChild document.createTextNode "Purge"
+
+	section = window.createElementEx "section", { id: id, className: "form" }
+	adel = window.createElementEx "a", { name: "delete", className: "noborder" }
+	section.appendChild adel
+
+	delform = window.createElementEx "form", { method: "POST" }
+	delform.action = window.stripPage(location.pathname) + "/post/" + id + "/delete"
+	section.appendChild delform
+
+	nickbar = document.createElement "div"
+	delform.appendChild nickbar
+
+	nickname = window.createElementEx "span", {
+		className: "full verysmall nickname",
+		style: { display: "inline-block", border: "0", width: "auto" }
+	}
+	nickname.innerHTML = nick
+	nickbar.appendChild nickname
+
+	if tripcodebar?
+		nickbar.appendChild tripcodebar
+
+	deletingNo = window.createElementEx "span", {
+		style: { display: "inline-block", color: "#ccc", fontSize: "0.9em", width: "auto" }
+	}
+	deletingNo.appendChild document.createTextNode "deleting #{idname}"
+	nickbar.appendChild deletingNo
+
+	centerButtonCont = window.createElementEx "div", { className: "center" }
+	delform.appendChild centerButtonCont
+
+	submit = window.createElementEx "button", { name: "deletetype", value: "soft", type: "submit" }
+	submit.appendChild document.createTextNode "Delete"
+	centerButtonCont.appendChild submit
+
+	centerButtonCont.appendChild purge if purge?
+
+	cancel = window.createElementEx "button", { type: "button" }
+	cancel.addEventListener "click", cancelForm id
+	cancel.appendChild document.createTextNode "Cancel"
+	centerButtonCont.appendChild cancel
+
+	post.removeChild post.firstChild while post.firstChild?
+	post.appendChild section
+
 	return
 
 # check form before submitting
