@@ -2,7 +2,6 @@ package proxy
 
 import (
 	"errors"
-	"github.com/bamiaux/rez"
 	"image"
 	"image/color"
 	"image/draw"
@@ -14,13 +13,18 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strconv"
+
+	"github.com/bamiaux/rez"
 )
 
 type Proxy struct {
 	Root      string
 	MaxWidth  int
 	MaxHeight int
-	client    http.Client
+
+	client     http.Client
+	contentLen int64
 }
 
 type ImageData struct {
@@ -40,7 +44,25 @@ type AsyncImageResult struct {
 	Error error
 }
 
-var ErrFormatNotSupported = errors.New("Format not supported")
+var (
+	errFormatNotSupported  = errors.New("Format not supported")
+	errFileSizeNotMatching = errors.New("File size doesn't match Content-Length")
+)
+
+/*
+func (p Proxy) GetContentAsync(contentURL string) <-chan AsyncContentResult {
+	ch := make(chan AsyncContentResult)
+
+	go func() {
+		url, err := p.GetContent(contentURL)
+		ch <- AsyncContentResult{
+			Path:  url,
+			Error: err,
+		}
+	}()
+
+	return ch
+}
 
 // GetContent retrieves a content from a remote server and returns
 // the relative path to it
@@ -64,9 +86,25 @@ func (p Proxy) GetContent(contentURL string) (string, error) {
 
 	return contentPath, err
 }
+*/
+
+func (p Proxy) GetImageAsync(contentURL string) <-chan AsyncImageResult {
+	ch := make(chan AsyncImageResult)
+
+	go func() {
+		url, data, err := p.GetImage(contentURL)
+		ch <- AsyncImageResult{
+			Path:  url,
+			Data:  data,
+			Error: err,
+		}
+	}()
+
+	return ch
+}
 
 // GetImage retrieves an image from a remote server, makes it a thumbnail
-// and returs the relative path to it in addition to some metadata
+// and returns the relative path to it in addition to some metadata.
 // If the thumbnail already exists then it just returns its path and metadata
 func (p Proxy) GetImage(contentURL string) (string, ImageData, error) {
 	data := ImageData{}
@@ -116,12 +154,23 @@ func (p Proxy) GetImage(contentURL string) (string, ImageData, error) {
 
 	// If image does not exist then fetch it and make a thumbnail
 	if os.IsNotExist(err) {
+		tried := false
+	try_fetch_thumb:
 		data, err = p.FetchThumb(contentURL)
 
 		// If the format is not supported, fetch as standard file
-		if err == ErrFormatNotSupported {
+		switch err {
+		case errFormatNotSupported:
 			err = p.Fetch(contentURL)
 			return contentPath, ImageData{}, err
+		case errFileSizeNotMatching:
+			// The image was downloaded incorrectly; try again
+			if !tried {
+				tried = true
+				goto try_fetch_thumb
+			} else {
+				return contentPath, data, err
+			}
 		}
 	}
 
@@ -136,26 +185,17 @@ func (p Proxy) Fetch(contentURL string) error {
 		return err
 	}
 	defer resp.Body.Close()
+	p.saveContentLength(resp)
 
-	// Get static path
-	path := getPathURL(contentURL)
-	ospath := p.Root + filepath.FromSlash(path)
-
-	// Create the directory tree
-	err = os.MkdirAll(filepath.Dir(ospath), 0701)
-	if err != nil {
-		return err
-	}
-
-	// Create the file
-	file, err := os.Create(ospath)
+	file, err := p.createLocalFile(contentURL)
 	if err != nil {
 		return err
 	}
 	defer file.Close()
 
 	_, err = io.Copy(file, resp.Body)
-	return err
+
+	return p.checkContentLength(file)
 }
 
 // FetchThumb retreives the resources at `contentURL`, makes it a thumbnail
@@ -176,8 +216,10 @@ func (p Proxy) FetchThumb(contentURL string) (ImageData, error) {
 	case "image/png", "image/jpeg":
 		break
 	default:
-		return data, ErrFormatNotSupported
+		return data, errFormatNotSupported
 	}
+
+	p.saveContentLength(resp)
 
 	// Get image data
 	srcimg, _, err := image.Decode(resp.Body)
@@ -211,18 +253,7 @@ func (p Proxy) FetchThumb(contentURL string) (ImageData, error) {
 		return data, err
 	}
 
-	// Get static path
-	path := getPathURL(contentURL)
-	ospath := p.Root + filepath.FromSlash(path)
-
-	// Create the directory tree
-	err = os.MkdirAll(filepath.Dir(ospath), 0701)
-	if err != nil {
-		return data, err
-	}
-
-	// Create the file
-	file, err := os.Create(ospath)
+	file, err := p.createLocalFile(contentURL)
 	if err != nil {
 		return data, err
 	}
@@ -246,41 +277,62 @@ func (p Proxy) FetchThumb(contentURL string) (ImageData, error) {
 		err = png.Encode(file, resizeimg)
 	}
 
+	if err != nil {
+		return data, err
+	}
+
+	err = p.checkContentLength(file)
+
 	return data, err
 }
 
-func getPathURL(rawURL string) string {
-	urldata, _ := url.Parse(rawURL)
-	return "/" + urldata.Host + urldata.Path
+func (p Proxy) createLocalFile(contentURL string) (file *os.File, err error) {
+	// Get static path
+	path := getPathURL(contentURL)
+	ospath := p.Root + filepath.FromSlash(path)
+
+	// Create the directory tree
+	err = os.MkdirAll(filepath.Dir(ospath), 0701)
+	if err != nil {
+		return
+	}
+
+	// Create the file
+	file, err = os.Create(ospath)
+	if err != nil {
+		return
+	}
+
+	return
 }
 
-func (p Proxy) GetContentAsync(contentURL string) <-chan AsyncContentResult {
-	ch := make(chan AsyncContentResult)
-
-	go func() {
-		url, err := p.GetContent(contentURL)
-		ch <- AsyncContentResult{
-			Path:  url,
-			Error: err,
+// saveContentLength saves the Content-Length header field of `resp`
+// for a successive call to checkContentLength. p.contentLen is set to -1
+// if no Content-Length header is found.
+func (p Proxy) saveContentLength(resp *http.Response) {
+	if cl := resp.Header.Get("Content-Length"); len(cl) > 0 {
+		var err error
+		p.contentLen, err = strconv.ParseInt(cl, 10, 64)
+		if err != nil {
+			p.contentLen = -1
 		}
-	}()
-
-	return ch
+	}
 }
 
-func (p Proxy) GetImageAsync(contentURL string) <-chan AsyncImageResult {
-	ch := make(chan AsyncImageResult)
-
-	go func() {
-		url, data, err := p.GetImage(contentURL)
-		ch <- AsyncImageResult{
-			Path:  url,
-			Data:  data,
-			Error: err,
+// checkContentLength checks that the promised Content-Length from the
+// previous `resp` passed to `saveContentLength` matches with the actual
+// size of `file` and returns an error if it doesn't. The check is skipped
+// if p.contentLen < 0 (saveContentLength wasn't called or failed).
+// p.contentLen is reset after calling this function.
+func (p Proxy) checkContentLength(file *os.File) error {
+	if p.contentLen > 0 {
+		s, _ := os.Stat(file.Name())
+		if p.contentLen != s.Size() {
+			return errFileSizeNotMatching
 		}
-	}()
-
-	return ch
+	}
+	p.contentLen = -1
+	return nil
 }
 
 func provideImg(src image.Image, rect image.Rectangle) image.Image {
@@ -311,4 +363,9 @@ func provideImg(src image.Image, rect image.Rectangle) image.Image {
 		src = newsrc
 		return image.NewRGBA(rect)
 	}
+}
+
+func getPathURL(rawURL string) string {
+	urldata, _ := url.Parse(rawURL)
+	return "/" + urldata.Host + urldata.Path
 }
