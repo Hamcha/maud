@@ -18,7 +18,7 @@
         <td>{{Criteria}}</td>
         <td>{{IP}}</td>
         <td>{{UserAgent}}</td>
-        <td style="text-align: left;">{{Reason}}</td>
+        <td class="alignLeft">{{Reason}}</td>
         <td>{{Action}}</td>
     </tr>
     </table>
@@ -38,7 +38,7 @@
         </div>
         <input class='full' type='text' name='rulename' placeholder='Ban rule name (required)' required autofocus />
         <input class='full small' type='text' name='reason' placeholder='Ban reason (optional)' />
-        <div style='margin: 10px'>
+        <div class="bl-formMargin">
             <span class='formlabel'>Ban criteria: </span>
             <input id='all' type='radio' name='criteria' value='all' checked/>
             <label for='all'>All</label>
@@ -51,14 +51,9 @@
             <input id='captcha' type='radio' name='banaction' value='captcha'/>
             <label for='captcha'>Captcha</label>
         </div>
-        <div style='position: relative'>
+        <div class="relativePos">
             <div class='center'>
                 <button type='submit'>Add a rule</button>
-            </div>
-            <div class="right">
-                <a class="homelink noborder" href="{{BasePath}}" rel="bookmark">
-                    <img src="/static/images/home.svg" style="height: 18px;" alt="Home" title="Back to home" />
-                </a>
             </div>
         </div>
     </form>

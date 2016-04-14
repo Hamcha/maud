@@ -36,7 +36,7 @@ addEditorButtons = (container) ->
 		{ tag:    "u",       text: "<u>u</u>" },
 		{ tag:    "s",       text: "<s>strike</s>" },
 		{ tag:    "img",     text: "img" },
-		{ tag:    "url",     text: "<span style=\"border-bottom: 1px dotted #fff\">url</span>" },
+		{ tag:    "url",     text: "<span class=\"underline\">url</span>" },
 		{ tag:    "spoiler", text: "spoiler" },
 		{ tag:    "youtube", text: "youtube" },
 		{ tag:    "html",    text: "html" },
@@ -150,9 +150,9 @@ editPost = (id) ->
 			name:        "tags",
 			placeholder: "Tags (separated by #)",
 			className:   "full small",
-			dataset:     { acsearch: false },
 			value:       tags
 		}
+		tagsbar.dataset.acsearch = false
 	original[id] = post.innerHTML
 
 	# Editor
@@ -324,7 +324,7 @@ fromList(document.getElementsByClassName 'postDeleteLink').map (e) ->
 
 preview = document.getElementById "preview-post"
 if preview?
-	preview.style.display = ""
+	preview.className = "button"
 	preview.addEventListener "click", showPreview "reply-form"
 
 editorButtons = document.getElementById "editorButtons"

@@ -36,7 +36,7 @@
                 <img class="head" src="/static/images/header.png" alt="Crunchy Rocks"/>
             </a>
             <div id="secureSign">
-                <img src="/static/images/sec.svg" alt="Enhanced Security OK" style="height: 20px" />
+                <img src="/static/images/sec.svg" alt="Enhanced Security OK" class="es-button" />
             </div>
         </header>
         <main>{{{content}}}</main>
@@ -44,14 +44,14 @@
     <footer>{{{Footer}}}<br />
     <nav class="upper">
     {{^IsLight}}
-            <a href="//{{#Info}}{{LightVersionDomain}}{{/Info}}{{UrlPath}}" style="box-shadow: 0 0 0 1px darkred inset;" rel="alternate">LIGHT VERSION</a>
+            <a href="//{{#Info}}{{LightVersionDomain}}{{/Info}}{{UrlPath}}" class="foot-off-button" rel="alternate">LIGHT VERSION</a>
     {{/IsLight}}
     {{#IsLight}}
-            <a href="//{{#Info}}{{FullVersionDomain}}{{/Info}}{{UrlPath}}" style="box-shadow: 0 0 0 1px green inset;" rel="alternate">EXIT LIGHT VERSION</a>
+            <a href="//{{#Info}}{{FullVersionDomain}}{{/Info}}{{UrlPath}}" class="foot-on-button" rel="alternate">EXIT LIGHT VERSION</a>
     {{/IsLight}}
             <a id="safeBtn" href="#">SAFE MODE</a>
             <span id="siteOptions">
-                <a id='siteOptionsShow' href="#overlay" style="box-shadow: 0 0 0 1px #777 inset;">SITE OPTIONS</a>
+                <a id='siteOptionsShow' href="#overlay" class="opt-button">SITE OPTIONS</a>
                 <div id="overlay">
                     <div>
                         <h2>Site options</h2>
@@ -65,7 +65,7 @@
                             <input name="option" type="checkbox" id="useProxy"/>
                             <label for="useProxy">Use enhanced security (see stiki page)</label>
                         </form>
-                        <a id='siteOptionsHide' href="#overlay" class="button" style="border: 1px solid #ccc; padding: 0.1em 1em;">Exit</a>
+                        <a id='siteOptionsHide' href="#overlay" class="button overlay-button">Exit</a>
                     </div>
                 </div>
             </span>

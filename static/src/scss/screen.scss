@@ -67,6 +67,8 @@ nav.upper {
 	}
 }
 
+.es-button { height: 20px; }
+
 img.head { width: 100%; max-width: 410px; margin-top: 10px; }
 
 span#siteOptions {
@@ -90,6 +92,11 @@ footer {
 	font-size: 0.85rem;
 }
 
+.foot-off-button { box-shadow: 0 0 0 1px darkred inset; }
+.foot-on-button { box-shadow: 0 0 0 1px green inset; }
+.opt-button { box-shadow: 0 0 0 1px #777 inset; }
+.overlay-button { border: 1px solid #ccc; padding: 0.1em 1em; }
+
 hr {
 	background: transparent;
 	padding: 3px; margin: 2px 0; border: 0;
@@ -98,8 +105,15 @@ hr {
 ol { margin: 0; }
 
 section.sec-header {
-	font-size: 0.95em;
-	padding: 0.4em 0.6em;
+	font-size: 0.95rem;
+	padding: 0.4rem 0.6rem;
+
+	.leftContent {
+		margin-right: 6rem;
+	}
+	.rightContent {
+		width: 6rem; padding: 0.3rem; margin-right: 0.2rem;
+	}
 }
 
 .no-select {
@@ -209,6 +223,9 @@ a.nolink { border: 0; }
 
 .post, .thread {
 	position: relative;
+	.post-ban-icon { height: 20px; }
+	.post-edit-icon { height: 20px; }
+	.post-delete-icon { height: 18px; }
 	&.highlighted {
 		background-color: rgba(100,100,100,.4);
 	}
@@ -410,6 +427,14 @@ input.inline { display: inline-block; padding: 3px; margin-right: 5px; }
 	float: right; margin: 0 4px;
 }
 
+.captcha-question {
+	display: inline-block; margin: 5px;
+}
+
+.home-button {
+	height: 18px; width: 18px;
+}
+
 /* Errors */
 
 .error {
@@ -437,6 +462,7 @@ input.inline { display: inline-block; padding: 3px; margin-right: 5px; }
 /* Autocomplete */
 .ac_wrapper {
 	position: relative;
+	display: inline-block;
 }
 
 ul.ac_list {
@@ -523,3 +549,14 @@ ul.ac_list {
 .bl-edit {
 	color: #ccc; display: inline-block; width: auto; font-size: 0.9em;
 }
+
+.bl-formMargin {
+	margin: 10px;
+}
+
+/* Utils (since we can't inline) */
+
+.alignLeft { text-align: left; }
+.relativePos { position: relative; }
+.metadata, .unavailable { display: none !important; }
+.underline { border-bottom: 1px dotted #fff; }
