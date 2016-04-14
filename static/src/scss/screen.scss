@@ -123,6 +123,8 @@ section.sec-header {
     -webkit-user-select: none;
 }
 
+.nsfwIcon { height: 0.9em; width: 0.9em; padding-top: 0.1em; }
+
 /* Buttons and links */
 
 a[href].noborder { border: 0; }
@@ -441,6 +443,9 @@ input.inline { display: inline-block; padding: 3px; margin-right: 5px; }
 }
 
 /* Errors */
+
+.error-header { line-height: 40pt; vertical-align: middle; }
+.error-subline { font-size: 40%; }
 
 .error {
 	.fullimage { width: 100%; max-width: 650px; }

@@ -31,7 +31,8 @@ if pageIs.tagSearch or pageIs.threads or pageIs.home
 		thread.title = "#{tags.join ' #'}"[1..]
 		if 'nsfw' in tags
 			title = thread.querySelector('.thread-name, .thread-title')
-			title.innerHTML = "<img src=\"/static/images/nsfw.svg\" alt=\"NSFW\" style=\"height: 0.9em; width: 0.9em; padding-top: 0.1em;\" /> " + title.innerHTML
+			img = window.createElementEx "img", { src: "/static/images/nsfw.svg", alt: "NSFW", className: "nsfwIcon" }
+			title.insertBefore img, title.firstChild
 
 
 return unless SiteOptions?.dehighlight or SiteOptions?.jumptolastread
