@@ -1,4 +1,4 @@
-<section><h2 style="padding: 2px 5px;">Creating a new thread</h2></section>
+<section><h2 class="editor-header">Creating a new thread</h2></section>
 <section class="form">
     <form id="reply-form" class="ac_wrapper" method="POST" action="{{BasePath}}new">
         <input class="full small" type="text" name="nickname" placeholder="Nickname#Tripcode (optional)" autofocus />
@@ -13,16 +13,16 @@
 
         <textarea class="full small" id="reply-form-text" name="text" required placeholder="Thread text (BBCode / Markdown)"></textarea>
         {{#Data}}{{#Captcha}}
-        <span style="display: inline-block; margin: 5px">{{Question}}&nbsp;</span>
+        <span class="captcha-question">{{Question}}&nbsp;</span>
         <img src="{{ImgPath}}" height="250px" alt="captcha"/>
         <input class="full verysmall" name="captcha" type="text" placeholder="{{Question}}"/>
         <input name="question" type="hidden" value="{{Question}}"/>
         {{/Captcha}}{{/Data}}
-        <input type="text" name="ferrarelle" style="display: none;" placeholder="Leave empty" />
+        <input type="text" name="ferrarelle" class="metadata" placeholder="Leave empty" />
         <div class="center">
             <div class="chars-count" data-maxlen="{{#Info}}{{MaxPostLength}}{{/Info}}"></div>
             <input type="submit" value="Create thread" />
-            <input type="button" id="preview-post" class="button" style="display: none;" value="Preview" />
+            <input type="button" id="preview-post" class="button unavailable" value="Preview" />
         </div>
     </form>
 </section>
