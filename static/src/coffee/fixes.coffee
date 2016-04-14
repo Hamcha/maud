@@ -75,7 +75,7 @@ charsCount = (id) ->
 		text.onkeyup = ->
 			remaining = div.dataset.maxlen - text.value.length
 			div.innerHTML = "#{remaining} characters left"
-			div.style.padding = "0 0 0.5em 0"
+			div.className = "chars-count chars-count-padding"
 			text.style.borderColor = if remaining < 0 then "#E33" else ""
 
 charsCount "reply-form"
@@ -111,7 +111,7 @@ if toggleForm?
 
 # Unhide post actions to admins
 if window.crOpts.adminMode
-	con.style.display = "inline-block" for con in document.querySelectorAll ".postactions"
+	con.className += " inlineBlock" for con in document.querySelectorAll ".postactions"
 
 # Setup onhover event for postIdQuote
 fromList(document.querySelectorAll('.postIdQuote')).map (e) ->

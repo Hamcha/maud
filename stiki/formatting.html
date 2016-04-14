@@ -1,15 +1,11 @@
 <article class="thread">
 <h2 class="thread-title"><a href="/stiki" class="noborder">BBCode reference guide</a></h2>
 <p class="thread-content">
-    <style>
-    .reference td { padding: 5px; font-size: 1.2em; }
-    gray { color: #bbb; }
-    </style>
-    <table class="reference">
+    <table class="formatting-reference">
     <tr>
         <td>
             <a class='noborder' href='#bb-bold' id='bb-bold'>
-                <code>[b]<gray>bold text</gray>[/b]</code>
+                <code>[b]<span class="formatting-gray">bold text</span>[/b]</code>
             </a>
         </td>
         <td><b>bold text</b></td>
@@ -17,7 +13,7 @@
     <tr>
         <td>
             <a class='noborder' href='#bb-italic' id='bb-italic'>
-                <code>[i]<gray>italic text</gray>[/i]</code>
+                <code>[i]<span class="formatting-gray">italic text</span>[/i]</code>
             </a>
         </td>
         <td><i>italic text</i></td>
@@ -25,7 +21,7 @@
     <tr>
         <td>
             <a class='noborder' href='#bb-underlined' id='bb-underlined'>
-                <code>[u]<gray>underlined text</gray>[/u]</code>
+                <code>[u]<span class="formatting-gray">underlined text</span>[/u]</code>
             </a>
         </td>
         <td><u>underlined text</u></td>
@@ -33,7 +29,7 @@
     <tr>
         <td>
             <a class='noborder' href='#bb-striked' id='bb-striked'>
-                <code>[s]<gray>striked</gray>[/s]</code>
+                <code>[s]<span class="formatting-gray">striked</span>[/s]</code>
             </a>
         </td>
         <td><s>striked</s></td>
@@ -41,7 +37,7 @@
     <tr>
         <td>
             <a class='noborder' href='#bb-img' id='bb-img'>
-                <code>[img]<gray>http://imgu..</gray>[/img]</code>
+                <code>[img]<span class="formatting-gray">http://imgu..</span>[/img]</code>
             </a>
         </td>
         <td><img src="https://crunchy.rocks/static/images/favicons/favicon.ico" width="32" /></td>
@@ -49,7 +45,7 @@
     <tr>
         <td>
             <a class='noborder' href='#bb-url' id='bb-url'>
-                <code>[url]<gray>http://curio..</gray>[/url]</code>
+                <code>[url]<span class="formatting-gray">http://curio..</span>[/url]</code>
             </a>
         </td>
         <td><a href="http://curiously.moe/">http://curiously.moe/</a></td>
@@ -57,7 +53,7 @@
     <tr>
         <td>
             <a class='noborder' href='#bb-url-param' id='bb-url-param'>
-                <code>[url=<gray>https://p..</gray>]<gray>Link!</gray>[/url]</code>
+                <code>[url=<span class="formatting-gray">https://p..</span>]<span class="formatting-gray">Link!</span>[/url]</code>
             </a>
         </td>
         <td><a href="https://www.pokepon.center/">Link!</a></td>
@@ -65,8 +61,8 @@
     <tr>
         <td>
             <a class='noborder' href='#bb-pre' id='bb-pre'>
-                <code>[pre]<gray>code (even [b]BBCode tags[/b]<br>
-                    and line breaks)</gray>[/pre]</code>
+                <code>[pre]<span class="formatting-gray">code (even [b]BBCode tags[/b]<br>
+                    and line breaks)</span>[/pre]</code>
             </a>
         </td>
         <td><pre>code (even [b]BBCode tags[/b]<br>and line breaks)</pre></td>
@@ -74,7 +70,7 @@
     <tr>
         <td>
             <a class='noborder' href='#bb-spoiler' id='bb-spoiler'>
-                <code>[spoiler]<gray>spooky!</gray>[/spoiler]</code>
+                <code>[spoiler]<span class="formatting-gray">spooky!</span>[/spoiler]</code>
             </a>
         </td>
         <td><span class="spoiler">spooky!</span></td>
@@ -82,25 +78,25 @@
     <tr>
         <td>
             <a class='noborder' href='#bb-youtube' id='bb-youtube'>
-                <code>[youtube]<gray>http...</gray>[/youtube]</code>
+                <code>[youtube]<span class="formatting-gray">http...</span>[/youtube]</code>
             </a></td>
         <td></td>
     </tr>
     <tr>
         <td>
             <a class='noborder' href='#bb-html' id='bb-html'>
-                <code>[html]<gray>Raw HTML code</gray>[/html]</code>
+                <code>[html]<span class="formatting-gray">Raw HTML code</span>[/html]</code>
             </a>
         </td>
-        <td><em><gray>(HTML result)</gray></em></td>
+        <td><em><span class="formatting-gray">(HTML result)</span></em></td>
     </tr>
     <tr>
         <td>
             <a class='noborder' href='#bb-video' id='bb-video'>
-                <code>[video]<gray>http://...video.webm</gray>[/video]</code>
+                <code>[video]<span class="formatting-gray">http://...video.webm</span>[/video]</code>
             </a>
             <br/>
-            <small><gray>--&gt; <a href="/stiki/video-tag">More on [video] tag</a></gray></small>
+            <small><span class="formatting-gray">--&gt; <a href="/stiki/video-tag">More on [video] tag</a></span></small>
         </td>
         <td><video src="http://video.webmfiles.org/big-buck-bunny_trailer.webm" height="100" controls>[Your browser is unable to play this video]</video></td>
     </tr>
@@ -110,14 +106,11 @@
 <article class="thread">
 <h2 class="thread-title">Markdown reference guide</h2>
 <p class="thread-content">
-    <style>
-    .reference td { padding: 5px; font-size: 1.2em; }
-    </style>
-    <table class="reference">
+    <table class="formatting-reference">
     <tr>
         <td>
             <a class='noborder' href='#md-bold' id='md-bold'>
-                <code>**<gray>bold text</gray>**</code>
+                <code>**<span class="formatting-gray">bold text</span>**</code>
             </a>
         </td>
         <td><b>bold text</b></td>
@@ -125,7 +118,7 @@
     <tr>
         <td>
             <a class='noborder' href='#md-italic' id='md-italic'>
-                <code>*<gray>italic text</gray>*</code>
+                <code>*<span class="formatting-gray">italic text</span>*</code>
             </a>
         </td>
         <td><i>italic text</i></td>
@@ -133,7 +126,7 @@
     <tr>
         <td>
             <a class='noborder' href='#md-striked' id='md-striked'>
-                <code>~~<gray>striked text</gray>~~</code>
+                <code>~~<span class="formatting-gray">striked text</span>~~</code>
             </a>
         </td>
         <td><s>striked text</s></td>
@@ -141,7 +134,7 @@
     <tr>
         <td>
             <a class='noborder' href='#md-url' id='md-url'>
-                <code>[<gray>best database</gray>](<gray>https://..</gray>)</code>
+                <code>[<span class="formatting-gray">best database</span>](<span class="formatting-gray">https://..</span>)</code>
             </a>
         </td>
         <td><a href="https://olegdb.org/">best database</a></td>
@@ -149,7 +142,7 @@
     <tr>
         <td>
             <a class='noborder' href='#md-embed' id='md-embed'>
-                <code>![<gray>favicon</gray>](<gray>https://..</gray>)</code>
+                <code>![<span class="formatting-gray">favicon</span>](<span class="formatting-gray">https://..</span>)</code>
             </a>
         </td>
         <td><img src="https://crunchy.rocks/static/images/favicons/favicon.ico" alt="favicon" width="32" /></td>
@@ -168,10 +161,7 @@
 <article class="thread">
 <h2 class="thread-title">Other formatting</h2>
 <p class="thread-content">
-    <style>
-    .reference td { padding: 5px; font-size: 1.2em; min-width: 215px; }
-    </style>
-    <table class="reference">
+    <table class="other-reference">
     <tr>
         <td>
             <a class='noborder' href='#other-quote' id='other-quote'>
@@ -186,7 +176,7 @@
                 <code>&gt;&gt; #10</code>
             </a>
         </td>
-        <td><a href="#" class="postIdQuote">&gt;&gt; #10</a>&nbsp;&nbsp;<gray>(quotes a post)</gray></td>
+        <td><a href="#" class="postIdQuote">&gt;&gt; #10</a>&nbsp;&nbsp;<span class="formatting-gray">(quotes a post)</span></td>
     </tr>
     </table>
 </p>

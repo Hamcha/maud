@@ -1,4 +1,4 @@
-<section><h2 style="padding: 2px 5px;">Banning user</h2></section>
+<section><h2 class="editor-header">Banning user</h2></section>
 <section class="form">
 {{#Data}}
     <form method="POST" action="{{BasePath}}blacklist/new">
@@ -8,7 +8,7 @@
         </div>
         <input class='full' type='text' name='rulename' placeholder='Ban rule name (required)' required autofocus />
         <input class='full small' type='text' name='reason' placeholder='Ban reason (optional)' />
-        <div style='margin: 10px'>
+        <div class="bl-formMargin">
             <span class='formlabel'>Ban criteria: </span>
             <input id='all' type='radio' name='criteria' value='all' checked/>
             <label for='all'>All</label>
