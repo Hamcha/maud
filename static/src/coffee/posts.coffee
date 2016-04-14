@@ -172,7 +172,7 @@ editPost = (id) ->
 		className: "full verysmall nickname",
 		style: { display: "inline-block", border: "0", width: "auto" }
 	}
-	nickname.appendChild document.createTextNode nick
+	nickname.innerHTML = nick
 	nickbar.appendChild nickname
 
 	if tripcodebar?

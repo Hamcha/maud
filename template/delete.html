@@ -1,13 +1,13 @@
-<section><h2 style="padding: 2px 5px;">Deleting post</h2></section>
+<section><h2 class="editor-header">Deleting post</h2></section>
 <section class="form">
 {{#Data}}
-    <form method="POST" action="{{BasePath}}thread/{{Thread}}/post/{{Post}}/delete">
+    <form method="POST" class="ac_wrapper" action="{{BasePath}}thread/{{Thread}}/post/{{Post}}/delete">
         <div>
-            <span class="full verysmall nickname" style="display: inline-block; border: 0; width: auto">{{Nickname}}</span>
+            <span class="full verysmall nickname editor-nick">{{Nickname}}</span>
             {{^IsAdmin}}
 			<input class="full short inline verysmall" type="text" name="tripcode" placeholder="Tripcode (required)" required />
             {{/IsAdmin}}
-            <span style="color: #ccc; display: inline-block; width: auto; font-size: 0.9em;">deleting {{Thread}}/#p{{Post}}</span>
+            <span class="editor-info">deleting {{Thread}}/#p{{Post}}</span>
         </div>
         <div class="center">
             <button name="deletetype" value="soft" type="submit">Delete</button>

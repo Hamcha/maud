@@ -215,7 +215,8 @@ a.nolink { border: 0; }
 
 .last-update {
 	font-family: "Raleway", sans-serif;
-	font-size: 0.9em;
+	font-size: 0.8rem;
+	padding: 0.1rem 0.3rem;
 	font-weight: 200;
 }
 
@@ -427,6 +428,10 @@ input.inline { display: inline-block; padding: 3px; margin-right: 5px; }
 	float: right; margin: 0 4px;
 }
 
+.editor-header { padding: 2px 5px; }
+.editor-nick { display: inline-block; border: 0; width: auto; }
+.editor-info { color: #ccc; display: inline-block; width: auto; font-size: 0.9em; }
+
 .captcha-question {
 	display: inline-block; margin: 5px;
 }
@@ -462,7 +467,6 @@ input.inline { display: inline-block; padding: 3px; margin-right: 5px; }
 /* Autocomplete */
 .ac_wrapper {
 	position: relative;
-	display: inline-block;
 }
 
 ul.ac_list {
@@ -558,5 +562,6 @@ ul.ac_list {
 
 .alignLeft { text-align: left; }
 .relativePos { position: relative; }
+.inlineBlock { display: inline-block; }
 .metadata, .unavailable { display: none !important; }
 .underline { border-bottom: 1px dotted #fff; }
