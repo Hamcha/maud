@@ -11,11 +11,10 @@
     {{/IsAdmin}}
 </nav>
 <hr />
-<nav>
-    All hidden threads
-    &nbsp;&nbsp;
-    <a href="{{BasePath}}hidden" class="button" id="unhideallthreads">Unhide all</a>
-</nav>
+<section class="sec-header">
+    <span class="leftContent">All hidden threads</span>
+    <a href="{{BasePath}}hidden" class="noborder hide right rightContent" id="unhideallthreads">Unhide all</a>
+</section>
 {{#Data}}
 {{#Last}}
 {{#Thread}}
@@ -39,11 +38,10 @@
 {{/Thread}}
 {{/Last}}
 <hr />
-<article class="hidden2">
-    All hidden tags
-    &nbsp;&nbsp;
-    <a href="{{BasePath}}hidden" class="button" id="unhidealltags">Unhide all</a>
-</article>
+<section class="sec-header hidden2">
+    <span class="leftContent">All hidden tags</span>
+    <a href="{{BasePath}}hidden" class="noborder hide right rightContent" id="unhidealltags">Unhide all</a>
+</section>
 {{#Tags}}
 <article class="tag-item thread">
     <h3 class="tag-name"><a href="{{BasePath}}tag/{{Name}}" class="nolink">{{{Name}}}</a></h3>
