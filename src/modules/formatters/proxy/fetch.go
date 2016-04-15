@@ -154,23 +154,20 @@ func (p Proxy) GetImage(contentURL string) (string, ImageData, error) {
 
 	// If image does not exist then fetch it and make a thumbnail
 	if os.IsNotExist(err) {
-		tried := false
-	try_fetch_thumb:
 		data, err = p.FetchThumb(contentURL)
 
 		// If the format is not supported, fetch as standard file
-		switch err {
-		case errFormatNotSupported:
+		if err == errFormatNotSupported {
 			err = p.Fetch(contentURL)
-			return contentPath, ImageData{}, err
-		case errFileSizeNotMatching:
-			// The image was downloaded incorrectly; try again
-			if !tried {
-				tried = true
-				goto try_fetch_thumb
-			} else {
-				return contentPath, data, err
+			if err == nil {
+				return contentPath, ImageData{}, errFormatNotSupported
 			}
+		}
+
+		if err == errFileSizeNotMatching {
+			// The image was downloaded incorrectly: better luck next time
+			os.Remove(contentPath)
+			return contentPath, ImageData{}, err
 		}
 	}
 
