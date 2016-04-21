@@ -33,6 +33,7 @@ type PageInfo struct {
 type Post struct {
 	Id           bson.ObjectId "_id"
 	ThreadId     bson.ObjectId
+	Num          int32
 	Author       User
 	Content      string
 	Date         int64
