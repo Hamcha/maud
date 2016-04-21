@@ -1,15 +1,16 @@
 package main
 
 import (
-	. "./data"
 	"errors"
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 	"html"
 	"net/url"
 	"sort"
 	"strings"
 	"time"
+
+	. "./data"
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 )
 
 type Database struct {
@@ -53,6 +54,7 @@ func (db Database) NewThread(user User, title, content string, tags []string) (s
 	post := Post{
 		Id:          pid,
 		ThreadId:    tid,
+		Num:         0,
 		Author:      user,
 		Content:     content,
 		Date:        now,
@@ -78,16 +80,24 @@ func (db Database) NewThread(user User, title, content string, tags []string) (s
 // Returns the number of posts in the thread (after this was inserted) and any error
 // which may have happened during the transaction.
 func (db Database) ReplyThread(thread *Thread, user User, content string) (int, error) {
+	lastPost, err := db.GetPost(thread.LastReply)
+	if err != nil {
+		return 0, err
+	}
+
+	lastPostId := lastPost.Num
+
 	post := Post{
 		Id:          bson.NewObjectId(),
 		ThreadId:    thread.Id,
+		Num:         lastPostId + 1,
 		Author:      user,
 		Content:     content,
 		Date:        time.Now().UTC().Unix(),
 		ContentType: "bbcode",
 	}
 
-	err := db.database.C("posts").Insert(post)
+	err = db.database.C("posts").Insert(post)
 	if err != nil {
 		return 0, err
 	}
@@ -243,7 +253,11 @@ func (db Database) GetPosts(thread *Thread, limit, offset int) ([]Post, error) {
 }
 
 func (db Database) PostCount(thread *Thread) (int, error) {
-	return db.database.C("posts").Find(bson.M{"threadid": thread.Id}).Count()
+	lastPost, err := db.GetPost(thread.LastReply)
+	if err != nil {
+		return 0, err
+	}
+	return int(lastPost.Num) + 1, nil
 }
 
 type ByThreads []Tag
@@ -393,7 +407,7 @@ func (db Database) PurgePost(post Post) (error, bool) {
 			return err, false
 		}
 	} else {
-		// Just decrement the post count
+		// Decrement the post count
 		err = db.database.C("threads").UpdateId(thread.Id, bson.M{
 			"$inc": bson.M{
 				"messages": -1,
@@ -402,6 +416,18 @@ func (db Database) PurgePost(post Post) (error, bool) {
 		if err != nil {
 			return err, false
 		}
+
+		// Decrement post# in all posts after the purged one
+		// FIXME
+		db.database.C("posts").Bulk().UpdateAll(bson.M{
+			"threadid": thread.Id,
+			"num":      bson.M{"$gt": post.Num},
+		}, bson.M{
+			"$inc": bson.M{
+				"num": -1,
+			},
+		})
+		// TODO: error checking
 	}
 
 	// Remove post from database
