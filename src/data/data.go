@@ -44,7 +44,6 @@ type Post struct {
 }
 
 type PostInfo struct {
-	PostId          int
 	Data            Post
 	StrDate         string
 	StrLastModified string

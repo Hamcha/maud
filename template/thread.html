@@ -44,14 +44,14 @@
         {{#Modified}}<span class="lastedit" data-udate="{{LastModified}}">edited {{StrLastModified}}</span>{{/Modified}}
         <div id="p0_btn" class="postactions" {{^Editable}}style='display: none'{{/Editable}}>
             {{#IsAdmin}}
-            <a class="postBanLink ban noborder" href="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/post/{{PostId}}/ban">
+            <a class="postBanLink ban noborder" href="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/post/{{Num}}/ban">
                 <img alt="Edit" src="/static/images/ban.svg" style="height: 20px;" />
             </a>
             {{/IsAdmin}}
-            <a class="postEditLink edit noborder" data-postid="0" href="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/post/{{PostId}}/edit">
+            <a class="postEditLink edit noborder" data-postid="0" href="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/post/{{Num}}/edit">
                 <img alt="Edit" src="/static/images/edit.svg" style="height: 20px;" />
             </a>
-            <a class="postDeleteLink delete noborder" data-postid="0" href="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/post/{{PostId}}/delete">
+            <a class="postDeleteLink delete noborder" data-postid="0" href="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/post/{{Num}}/delete">
                 <img alt="Delete" src="/static/images/delete.svg" style="height: 18px;" />
             </a>
         </div>
@@ -63,27 +63,27 @@
 </article>
 <div id="replies">
 {{#Posts}}
-<article class="post" id="p{{PostId}}">
+<article class="post" id="p{{Num}}">
     {{#Data}}
     <h3 class="post-author">
         {{#Author}}
         <span class="nickname">{{#IsAnon}}<span class="anon">Rock</span>{{/IsAnon}}{{#Nickname}}{{Nickname}}{{/Nickname}}</span>
         <span class="tripcode">{{^HiddenTripcode}}{{Tripcode}}{{/HiddenTripcode}}</span>
         {{/Author}}
-        <a href="#p{{PostId}}" class="date" data-udate="{{Date}}">{{StrDate}}</a> <a class="postId" onclick="Posts.quotePostId({{PostId}})">#{{PostId}}</a>
+        <a href="#p{{Num}}" class="date" data-udate="{{Date}}">{{StrDate}}</a> <a class="postId" onclick="Posts.quotePostId({{Num}})">#{{Num}}</a>
     </h3>
     <div class="right">
         {{#Modified}}<span class="lastedit" data-udate="{{LastModified}}">edited {{StrLastModified}}</span>{{/Modified}}
-        <div id="p{{PostId}}_btn" class="postactions" {{^Editable}}style='display: none'{{/Editable}}>
+        <div id="p{{Num}}_btn" class="postactions" {{^Editable}}style='display: none'{{/Editable}}>
             {{#IsAdmin}}
-            <a class="postBanLink ban noborder" href="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/post/{{PostId}}/ban">
+            <a class="postBanLink ban noborder" href="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/post/{{Num}}/ban">
                 <img alt="Edit" src="/static/images/ban.svg" style="height: 20px;" />
             </a>
             {{/IsAdmin}}
-            <a class="postEditLink edit noborder" data-postid="{{PostId}}" href="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/post/{{PostId}}/edit">
+            <a class="postEditLink edit noborder" data-postid="{{Num}}" href="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/post/{{Num}}/edit">
                 <img alt="Edit" src="/static/images/edit.svg" style="height: 20px;" />
             </a>
-            <a class="postDeleteLink delete noborder" data-postid="{{PostId}}" href="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/post/{{PostId}}/delete">
+            <a class="postDeleteLink delete noborder" data-postid="{{Num}}" href="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}/post/{{Num}}/delete">
                 <img alt="Delete" src="/static/images/delete.svg" style="height: 18px;" />
             </a>
         </div>
