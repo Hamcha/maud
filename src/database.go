@@ -418,8 +418,7 @@ func (db Database) PurgePost(post Post) (error, bool) {
 		}
 
 		// Decrement post# in all posts after the purged one
-		// FIXME
-		db.database.C("posts").Bulk().UpdateAll(bson.M{
+		_, err = db.database.C("posts").UpdateAll(bson.M{
 			"threadid": thread.Id,
 			"num":      bson.M{"$gt": post.Num},
 		}, bson.M{
@@ -427,7 +426,9 @@ func (db Database) PurgePost(post Post) (error, bool) {
 				"num": -1,
 			},
 		})
-		// TODO: error checking
+		if err != nil {
+			return err, false
+		}
 	}
 
 	// Remove post from database
