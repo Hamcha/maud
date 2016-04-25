@@ -16,11 +16,6 @@ window.onhashchange = ->
 
 window.onhashchange()
 
-# Fix greentext on old posts
-#TODO: move this to server parsing
-fromList(document.querySelectorAll ".type blockquote p").map (e) ->
-	e.innerHTML = "> " + e.innerHTML.split("\n").join "<br />> "
-
 # Make page lists
 makePageLists = ->
 	pageDivs = document.querySelectorAll ".pages"
