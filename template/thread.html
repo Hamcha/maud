@@ -63,8 +63,8 @@
 </article>
 <div id="replies">
 {{#Posts}}
+{{#Data}}
 <article class="post" id="p{{Num}}">
-    {{#Data}}
     <h3 class="post-author">
         {{#Author}}
         <span class="nickname">{{#IsAnon}}<span class="anon">Rock</span>{{/IsAnon}}{{#Nickname}}{{Nickname}}{{/Nickname}}</span>
@@ -89,8 +89,8 @@
         </div>
     </div>
     <div class="post-content type{{ContentType}}">{{{Content}}}</div>
-    {{/Data}}
 </article>
+{{/Data}}
 {{/Posts}}
 </div>
 {{#Pages}}
