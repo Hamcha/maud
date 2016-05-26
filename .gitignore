@@ -5,6 +5,7 @@ static/build.js
 .sass-cache
 node_modules
 info.json
+admin.json
 dep
 grunt
 mustache/.git
