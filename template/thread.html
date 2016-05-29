@@ -66,8 +66,8 @@
 </article>
 <div id="replies">
 {{#Posts}}
+{{#Data}}
 <article itemid="{{BasePath}}thread/{{#Thread}}{{ShortUrl}}{{/Thread}}#p{{Num}}" itemscope itemtype="http://schema.org/DiscussionForumPosting" class="post" id="p{{Num}}">
-    {{#Data}}
     <h3 class="post-author">
         {{#Author}}
         <span itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -95,8 +95,8 @@
         </div>
     </div>
     <div itemprop="articleBody" class="post-content type{{ContentType}}">{{{Content}}}</div>
-    {{/Data}}
 </article>
+{{/Data}}
 {{/Posts}}
 </div>
 {{#Pages}}
