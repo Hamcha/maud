@@ -42,7 +42,6 @@ type Post struct {
 }
 
 type PostInfo struct {
-	PostId             int
 	Data               Post
 	StrDate            string
 	SchemaDate         string
