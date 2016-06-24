@@ -110,7 +110,10 @@ func (p Proxy) GetImage(contentURL string) (string, ImageData, error) {
 	data := ImageData{}
 
 	// Get static path
-	contentPath := getPathURL(contentURL)
+	contentPath, err := getPathURL(contentURL)
+	if err != nil {
+		return contentPath, data, err
+	}
 	ospath := p.Root + filepath.FromSlash(contentPath)
 
 	// Check if file exists
@@ -285,7 +288,10 @@ func (p Proxy) FetchThumb(contentURL string) (ImageData, error) {
 
 func (p Proxy) createLocalFile(contentURL string) (file *os.File, err error) {
 	// Get static path
-	path := getPathURL(contentURL)
+	path, err := getPathURL(contentURL)
+	if err != nil {
+		return
+	}
 	ospath := p.Root + filepath.FromSlash(path)
 
 	// Create the directory tree
@@ -362,7 +368,10 @@ func provideImg(src image.Image, rect image.Rectangle) image.Image {
 	}
 }
 
-func getPathURL(rawURL string) string {
-	urldata, _ := url.Parse(rawURL)
-	return "/" + urldata.Host + urldata.Path
+func getPathURL(rawURL string) (string, error) {
+	if urldata, err := url.Parse(rawURL); err == nil {
+		return "/" + urldata.Host + urldata.Path, nil
+	} else {
+		return rawURL, err
+	}
 }
