@@ -1,11 +1,14 @@
 package maudtext
 
 import (
-	".."
-	"github.com/gorilla/mux"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
+	"unicode"
+
+	modules ".."
+	"github.com/gorilla/mux"
 )
 
 func Provide(postsPerPage int) modules.PostMutator {
@@ -28,23 +31,59 @@ func (mt *maudtextMutator) maudtext(data modules.PostMutatorData) {
 	vars := mux.Vars(data.Request)
 	threadUrl, threadok := vars["thread"]
 
+	const postQuotePrefix = "&gt;&gt;#"
+	// Accept whichever number of spaces between >> and # (but none between # and digits!)
+	pqPrefixRgx := regexp.MustCompile(`&gt;&gt;\s*#`)
+
 	for idx := range lines {
 		line := strings.TrimSpace(lines[idx])
-		if len(line) < 5 || line[:4] != "&gt;" {
+		if len(line) < 5 {
 			continue
 		}
-		// find out if this is a post quote (^>>\s*#[0-9]+\s*$) or a line quote
 		stripped := strings.Replace(line, " ", "", -1)
 		stripped = strings.TrimSuffix(stripped, "<br/>")
-		if threadok && len(stripped) > 9 && stripped[:9] == "&gt;&gt;#" {
-			if num, err := strconv.ParseInt(stripped[9:], 10, 32); err == nil {
-				// valid post quote
-				lines[idx] = "<a href=\"" + mt.getLink(int(num), threadUrl) +
-					"\" class=\"postIdQuote\">&gt;&gt; #" + strconv.Itoa(int(num)) + "</a><br/>"
+		if line[:4] == "&gt;" {
+			// find out if this is a post quote (^>>\s*#[0-9]+\s*$) or a line quote
+			if len(stripped) < 10 || stripped[:9] != postQuotePrefix {
+				// line quote
+				lines[idx] = "<span class=\"purpletext\">&gt; " + line[4:] + "</span>"
 				continue
 			}
 		}
-		lines[idx] = "<span class=\"purpletext\">&gt; " + line[4:] + "</span>"
+		if !threadok {
+			// can only insert post quotes if thread is valid
+			continue
+		}
+
+		// First, split string by the '>>#' delimiter
+		split := pqPrefixRgx.Split(line, -1)
+		if len(split) < 2 {
+			continue
+		}
+		textBefore := split[0]
+		// Drop the first element, as it's before the '>>#'
+		split = split[1:]
+		out := ""
+		for _, s := range split {
+			idx := 0
+			// If this string starts with a digit, it was a valid post quote
+			for i, ch := range s {
+				if !unicode.IsDigit(ch) {
+					break
+				}
+				idx = i
+			}
+			idx++
+			num, err := strconv.ParseInt(s[:idx], 10, 32)
+			if err != nil {
+				out += `&gt;&gt; #` + s
+				continue
+			}
+			// Insert the link, plus all extra characters we found after the digits, if any
+			out += `<a href="` + mt.getLink(int(num), threadUrl) +
+				`" class="postIdQuote">&gt;&gt; #` + s[:idx] + `</a>` + s[idx:]
+		}
+		lines[idx] = textBefore + out
 	}
 
 	(*data.Post).Content = strings.Join(lines, "\n")
