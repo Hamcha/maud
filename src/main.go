@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -99,13 +100,19 @@ func main() {
 	// Load Site info file
 	err = loadJson("info.json", &siteInfo)
 	if err != nil {
-		panic(err)
+		fmt.Println("-------------------------------------------------")
+		fmt.Printf("[ ERROR ] info.json was not found or could not be read in directory\r\n\r\n\t%s\r\n\r\n"+
+			"Have you forgot to create one from info.json.sample?\n", maudRoot)
+		fmt.Println("-------------------------------------------------")
+		log.Println("[ FATAL ] Could not start maud: aborting.")
+		return
 	}
 
 	// Load Admin config file
 	err = loadJson(*adminfile, &adminConf)
 	if err != nil {
-		log.Println("[ WARNING ] Admin file is missing or malformed, Maud will run without administrators.")
+		log.Printf("[ WARNING ] Admin file %s is missing or malformed, "+
+			"Maud will run without administrators.\r\n", *adminfile)
 	}
 
 	// Initialize formatters, database and other modules
