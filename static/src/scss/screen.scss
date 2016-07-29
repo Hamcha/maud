@@ -242,6 +242,10 @@ a.nolink { border: 0; }
 	}
 }
 
+.transparent {
+	pointer-events: none;
+}
+
 .right {
 	@extend .no-select;
 	position: absolute; right: 0; top: 0;
