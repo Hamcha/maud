@@ -244,6 +244,9 @@ a.nolink { border: 0; }
 
 .transparent {
 	pointer-events: none;
+	a {
+		pointer-events: all;
+	}
 }
 
 .right {
