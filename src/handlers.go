@@ -754,6 +754,7 @@ func httpVars(rw http.ResponseWriter, req *http.Request) {
 		sendError(rw, 500, err.Error())
 		return
 	}
+	req.Header.Set("Content-Type", "application/javascript")
 	fmt.Fprintln(rw, "window.crOpts = "+string(jsonVars))
 }
 
