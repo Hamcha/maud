@@ -7,9 +7,9 @@ import (
 	"./modules/formatters/bbcode"
 	"./modules/formatters/lightify"
 	"./modules/formatters/markdown"
-	"./modules/formatters/proxy"
 	// Mutators
 	"./modules/maudtext"
+	"./modules/proxy"
 	// Go libs
 	"net/http"
 )

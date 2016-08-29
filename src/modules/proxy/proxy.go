@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"../../../modules"
+	"../../modules"
 )
 
 func Provide(root, domain string) modules.PostMutator {

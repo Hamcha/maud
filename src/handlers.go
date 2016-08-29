@@ -248,7 +248,8 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		postsInfo[index].Data = posts[index]
 		postsInfo[index].IsDeleted = posts[index].ContentType == "deleted" || posts[index].ContentType == "admin-deleted"
 		postsInfo[index].Modified = posts[index].LastModified != 0
-		postsInfo[index].Editable = !postsInfo[index].IsDeleted && (isAdmin || !posts[index].Author.HiddenTripcode && len(posts[index].Author.Tripcode) > 0)
+		postsInfo[index].Editable = !postsInfo[index].IsDeleted &&
+			(isAdmin || !posts[index].Author.HiddenTripcode && len(posts[index].Author.Tripcode) > 0)
 		postsInfo[index].StrDate = strdate(posts[index].Date)
 		postsInfo[index].SchemaDate = time.Unix(posts[index].Date, 0).Format(time.RFC3339)
 		postsInfo[index].StrLastModified = strdate(posts[index].LastModified)
