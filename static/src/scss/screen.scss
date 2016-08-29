@@ -585,5 +585,6 @@ ul.ac_list {
 .alignLeft { text-align: left !important; }
 .relativePos { position: relative !important; }
 .inlineBlock { display: inline-block !important; }
-.metadata, .unavailable { display: none !important; }
+.metadata { display: none !important; }
+.unavailable { display: none; }
 .underline { border-bottom: 1px dotted #fff; }

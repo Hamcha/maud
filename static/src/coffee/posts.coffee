@@ -135,10 +135,11 @@ editPost = (id) ->
 			# hidden tripcode (post-author contains <span class="anon"></span> instead of nick)
 			htrip = JSON.parse(window.localStorage?.getItem 'crLatestPost')?.htrip
 			tripcodebar = window.createElementEx "input", {
-				type:     "text",
-				name:     "tripcode",
-				required: true,
-				value:    htrip
+				type:      "text",
+				name:      "tripcode",
+				required:  true,
+				value:     htrip,
+				className: "unavailable"
 			}
 
 	# if post is OP, allow editing thread tags
