@@ -91,6 +91,5 @@ func (f *proxyMutator) addImgSrcCSPRule(rw *http.ResponseWriter) {
 	head := (*rw).Header()
 	if !strings.Contains(head.Get("Content-Security-Policy"), "img-src") {
 		head.Add("Content-Security-Policy", "img-src 'self' "+f.domain)
-		head.Add("Content-Security-Policy", "media-src 'self' "+f.domain)
 	}
 }
