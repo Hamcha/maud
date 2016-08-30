@@ -125,20 +125,20 @@ editPost = (id) ->
 		if nickspan.parentNode.querySelector('span.tripcode')?.innerHTML.length > 0
 			# visible tripcode
 			tripcodebar = window.createElementEx "input", {
-				type:        "text",
-				name:        "tripcode",
-				placeholder: "Tripcode (required)",
-				required:    true,
+				type:        "text"
+				name:        "tripcode"
+				placeholder: "Tripcode (required)"
+				required:    true
 				className:   "full short inline verysmall"
 			}
 		else
 			# hidden tripcode (post-author contains <span class="anon"></span> instead of nick)
 			htrip = JSON.parse(window.localStorage?.getItem 'crLatestPost')?.htrip
 			tripcodebar = window.createElementEx "input", {
-				type:      "text",
-				name:      "tripcode",
-				required:  true,
-				value:     htrip,
+				type:      "text"
+				name:      "tripcode"
+				required:  true
+				value:     htrip
 				className: "unavailable"
 			}
 
@@ -147,10 +147,10 @@ editPost = (id) ->
 	tags = post.dataset?.tags
 	if idname is "OP"
 		tagsbar = window.createElementEx "input", {
-			type:        "text",
-			name:        "tags",
-			placeholder: "Tags (separated by #)",
-			className:   "full small",
+			type:        "text"
+			name:        "tags"
+			placeholder: "Tags (separated by #)"
+			className:   "full small"
 			value:       tags
 		}
 		tagsbar.dataset.acsearch = false
@@ -198,16 +198,16 @@ editPost = (id) ->
 	editform.appendChild editorEditButtons
 
 	textarea = window.createElementEx "textarea", {
-		className:   "full small editor",
-		name:        "text",
-		id:          "edit#{id}-text",
-		required:    true,
+		className:   "full small editor"
+		name:        "text"
+		id:          "edit#{id}-text"
+		required:    true
 		placeholder: "Retreiving content..."
 	}
 	editform.appendChild textarea
 
 	if tagsbar?
-		section.appendChild tagsbar
+		editform.appendChild tagsbar
 
 	centerButtonCont = window.createElementEx "div", { className: "center" }
 	editform.appendChild centerButtonCont
