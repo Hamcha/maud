@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/binary"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -12,6 +13,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"../mustache"
 	. "./data"
@@ -289,6 +291,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		NeedsCaptcha bool
 		IsAdmin      bool
 		Captcha      CaptchaData
+		EmojiLink    string
 	}{
 		thread,
 		threadPost,
@@ -298,6 +301,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		requiresCaptcha,
 		isAdmin,
 		captchaData,
+		emojiLink(threadUrl),
 	})
 }
 
@@ -854,4 +858,30 @@ func sendError(rw http.ResponseWriter, code int, context interface{}) {
 			},
 		),
 	)
+}
+
+// Emoji short url checker and redirector
+
+func emojiRedir(req *http.Request) (bool, string) {
+	path := []byte(req.URL.Path[1:])
+	var data []byte
+	for len(path) > 0 {
+		r, size := utf8.DecodeRune(path)
+		pos := -1
+		for i, emoji := range emojis {
+			if emoji == r {
+				pos = i
+				break
+			}
+		}
+		if pos < 0 {
+			return false, ""
+		}
+
+		data = append(data, byte(pos))
+		path = path[size:]
+	}
+	num, _ := binary.Varint(data)
+
+	return true, toB64(num)
 }

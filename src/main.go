@@ -46,6 +46,10 @@ func setupHandlers(router *mux.Router, isAdmin, isSubdir bool) {
 	SetHandler(GET, "/vars.js", httpVars, isAdmin, isSubdir)
 	SetHandler(GET, "/robots.txt", httpRobots, isAdmin, isSubdir)
 	SetHandler(GET, "/{otherwise}", func(rw http.ResponseWriter, req *http.Request) {
+		if isEmoji, surl := emojiRedir(req); isEmoji {
+			http.Redirect(rw, req, "/thread/"+surl, http.StatusMovedPermanently)
+			return
+		}
 		sendError(rw, 404, "Not found")
 	}, isAdmin, isSubdir)
 
