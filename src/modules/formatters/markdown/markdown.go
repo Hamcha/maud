@@ -12,10 +12,11 @@
 package markdown
 
 import (
-	"../.."
 	"log"
 	"regexp"
 	"strings"
+
+	modules "../.."
 )
 
 type mdPair struct {
@@ -48,6 +49,7 @@ func Provide() modules.Formatter {
 	return &markdownFormatter{}
 }
 
+// Format takes a markdown string as input and returns an HTML string.
 // Allowed markdown snippets:
 //   *italic*
 //   **bold**

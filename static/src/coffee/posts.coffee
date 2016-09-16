@@ -20,13 +20,34 @@ quoteText = (elem) ->
 	return ->
 		txt = elem.parentElement.parentElement.text
 		unless window.getSelection()?.toString()?.length > 0
+			# if no text is selected, just add '>' where the cursor is
 			txt.value = txt.value[0..txt.selectionStart] + "> " + txt.value[txt.selectionStart+1..]
 			txt.focus()
 			return
+		# insert newline if we're not already at a line beginning
 		separator = if txt.selectionStart > 0 and txt.value[txt.selectionStart - 1] isnt "\n" then "\n" else ""
 		txt.value = txt.value[0...txt.selectionStart] + separator + "> #{window.getSelection()}\n" + txt.value[txt.selectionEnd+1..]
-		txt.selectionStart = txt.selectionEnd = txt.value.length + 1
+		txt.selectionStart = txt.selectionEnd = text.selectionEnd + "> #{window.getSelection()}\n".length
 		txt.focus()
+
+# post quote by id
+quotePostId = (id) ->
+	return ->
+		text = document.getElementById "reply-form-text"
+		sstart = text.selectionStart
+		send = text.selectionEnd
+		slen = send - sstart
+		if sstart == 0
+			sep = if text.value[sstart] is "\n" then "" else "\n"
+			if slen == 0
+				text.value = ">> ##{id}" + sep + text.value
+			else
+				text.value = ">> ##{id}" + sep + text.value[send..]
+		else
+			sep = if text.value[sstart-1] is "\n" then "" else "\n"
+			text.value = text.value[0..sstart-1] + sep + ">> ##{id}\n" + text.value[send..]
+		text.selectionStart = text.selectionEnd = send + ">> ##{id}\n".length
+		text.focus()
 
 # Setup editor buttons
 addEditorButtons = (container) ->
@@ -340,16 +361,6 @@ replyPreSubmit = (elem, threadUrl) ->
 		alert "Tripcode must have at least 1 character."
 		return false
 	return true
-
-# post quote by id
-quotePostId = (id) ->
-	return ->
-		text = document.getElementById "reply-form-text"
-		if text.value.length > 0 and text.value[text.value.length - 1] isnt "\n"
-			text.value += "\n>> ##{id}\n"
-		else
-			text.value += ">> ##{id}\n"
-		text.focus()
 
 # remove fallback and set onclick events
 fromList(document.getElementsByClassName 'postEditLink').map (e) ->
