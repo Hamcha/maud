@@ -36,7 +36,7 @@ toggleAutocomplete = (elem, url, opts) ->
 	ul.style.zIndex = 10
 	ul.id = 'ac_list'
 	insertAfter ul, elem
-	search = if elem.dataset?.acsearch == 'on' then on else off
+	search = elem.dataset?.acsearch == 'on'
 	elem.addEventListener "keyup", (e) ->
 		curTag =
 			if elem.value.indexOf sep > 0
