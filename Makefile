@@ -1,14 +1,14 @@
 all: maud
 
 maud: grunt dep
-	go build -o maud ./src
+	go install github.com/hamcha/maud/maud
 
 grunt:
 	grunt build
 	touch grunt
 
 run: all
-	./maud
+	maud
 
 dep:
 	go get github.com/gorilla/mux

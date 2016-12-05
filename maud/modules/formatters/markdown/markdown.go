@@ -16,7 +16,7 @@ import (
 	"regexp"
 	"strings"
 
-	modules "../.."
+	"github.com/hamcha/maud/maud/modules"
 )
 
 type mdPair struct {

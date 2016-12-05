@@ -13,12 +13,13 @@
 package bbcode
 
 import (
-	"../.."
 	"log"
 	"net/url"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/hamcha/maud/maud/modules"
 )
 
 var bbElements map[string]func(string, string) string
@@ -68,7 +69,7 @@ func init() {
 		 * 2) (short link) https://youtu.be/qRC4Vk6kisY
 		 * 3) (video code) qrC4Vk6kisY
 		 * If a query parameter 't=XXmYYs' is found, it's converted to
-		 * 'start=NNs', which is the parameter accepted by the
+		 * 'start=NN', (in seconds) which is the parameter accepted by the
 		 * youtube embed API.
 		 */
 		yturl, err := url.Parse(con)
@@ -85,7 +86,7 @@ func init() {
 			// Either short link (w/o start time) or video code
 			if idx := strings.LastIndex(con, "/"); idx > 0 {
 				// Short link
-				videoCode = yturl.Path
+				videoCode = con[idx+1:]
 			} else {
 				// Video code
 				videoCode = con
@@ -97,7 +98,9 @@ func init() {
 				videoCode = q
 			} else {
 				// Short link
-				videoCode = yturl.Path
+				idx := strings.LastIndex(con, "/")
+				qidx := strings.LastIndex(con, "?")
+				videoCode = con[idx+1 : qidx]
 			}
 			// Check for start time
 			if rawtime := query.Get("t"); len(rawtime) > 0 {
@@ -106,7 +109,7 @@ func init() {
 				}
 			}
 		}
-		str := `<iframe  width="560" height="315" src="//www.youtube.com/embed/` + videoCode
+		str := `<iframe width="560" height="315" src="//www.youtube.com/embed/` + videoCode
 		if startTime > 0 {
 			str += "?start=" + strconv.Itoa(int(startTime.Seconds()))
 		}

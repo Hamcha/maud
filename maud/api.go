@@ -10,8 +10,8 @@ import (
 	"strconv"
 	"strings"
 
-	. "./data"
 	"github.com/gorilla/mux"
+	. "github.com/hamcha/maud/maud/data"
 )
 
 // apiNewThread: creates a new thread with its OP.

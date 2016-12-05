@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	. "./data"
+	. "github.com/hamcha/maud/maud/data"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )

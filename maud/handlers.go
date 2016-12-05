@@ -15,9 +15,9 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"../mustache"
-	. "./data"
 	"github.com/gorilla/mux"
+	. "github.com/hamcha/maud/maud/data"
+	"github.com/hamcha/maud/mustache"
 )
 
 func httpHome(rw http.ResponseWriter, req *http.Request) {

@@ -1,10 +1,11 @@
 package lightify
 
 import (
-	"../.."
 	"log"
 	"regexp"
 	"strings"
+
+	"github.com/hamcha/maud/maud/modules"
 )
 
 var (

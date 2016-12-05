@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	. "./data"
 	"github.com/gorilla/mux"
+	. "github.com/hamcha/maud/maud/data"
 )
 
 var (

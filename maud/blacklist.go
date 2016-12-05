@@ -1,13 +1,14 @@
 package main
 
 import (
-	. "./data"
-	"github.com/oschwald/maxminddb-golang"
 	"log"
 	"net"
 	"net/http"
 	"regexp"
 	"strings"
+
+	. "github.com/hamcha/maud/maud/data"
+	"github.com/oschwald/maxminddb-golang"
 )
 
 type BlacklistParams struct {

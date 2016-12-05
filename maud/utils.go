@@ -19,7 +19,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	. "./data"
+	. "github.com/hamcha/maud/maud/data"
 )
 
 var (

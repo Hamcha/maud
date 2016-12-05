@@ -7,8 +7,8 @@ import (
 	"strings"
 	"unicode"
 
-	modules ".."
 	"github.com/gorilla/mux"
+	"github.com/hamcha/maud/maud/modules"
 )
 
 func Provide(postsPerPage int) modules.PostMutator {

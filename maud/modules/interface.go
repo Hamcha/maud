@@ -3,7 +3,7 @@ package modules
 import (
 	"net/http"
 
-	. "../data"
+	. "github.com/hamcha/maud/maud/data"
 )
 
 type Formatter interface {

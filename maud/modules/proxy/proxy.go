@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"../../modules"
+	"github.com/hamcha/maud/maud/modules"
 )
 
 func Provide(root, domain string) modules.PostMutator {

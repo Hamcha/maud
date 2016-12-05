@@ -1,15 +1,15 @@
 package main
 
 import (
-	. "./data"
+	. "github.com/hamcha/maud/maud/data"
+	"github.com/hamcha/maud/maud/modules"
 	// Formatters
-	"./modules"
-	"./modules/formatters/bbcode"
-	"./modules/formatters/lightify"
-	"./modules/formatters/markdown"
+	"github.com/hamcha/maud/maud/modules/formatters/bbcode"
+	"github.com/hamcha/maud/maud/modules/formatters/lightify"
+	"github.com/hamcha/maud/maud/modules/formatters/markdown"
 	// Mutators
-	"./modules/maudtext"
-	"./modules/proxy"
+	"github.com/hamcha/maud/maud/modules/maudtext"
+	"github.com/hamcha/maud/maud/modules/proxy"
 	// Go libs
 	"net/http"
 )
