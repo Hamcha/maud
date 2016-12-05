@@ -23,3 +23,6 @@ clean:
 
 go-clean:
 	rm -f maud
+
+test:
+	go test ./...
