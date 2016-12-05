@@ -105,7 +105,12 @@ func init() {
 			// Check for start time
 			if rawtime := query.Get("t"); len(rawtime) > 0 {
 				if startTime, err = time.ParseDuration(rawtime); err != nil {
-					return con
+					// Try again, maybe the format is not t=XXmYYs but NN (implied seconds)
+					if timeInSeconds, err := strconv.Atoi(rawtime); err == nil {
+						startTime = time.Duration(timeInSeconds)
+					} else {
+						return con
+					}
 				}
 			}
 		}
