@@ -19,10 +19,7 @@ dep:
 	touch dep
 
 clean:
-	rm -f maud dep grunt
-
-go-clean:
-	rm -f maud
+	rm -f dep grunt
 
 test:
 	go test ./...
