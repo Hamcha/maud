@@ -1,6 +1,7 @@
 package maudtext
 
 import (
+	"log"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -17,6 +18,10 @@ func Provide(postsPerPage int) modules.PostMutator {
 		Condition: func(_ *http.Request) bool { return true },
 		Mutator:   mt.maudtext,
 	}
+}
+
+func init() {
+	log.Printf("[ OK ] Module initialized: Maudtext")
 }
 
 type maudtextMutator struct {

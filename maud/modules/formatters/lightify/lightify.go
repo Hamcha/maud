@@ -20,7 +20,7 @@ func init() {
 	derpiRgx = regexp.MustCompile(`(?:img[0-9]\.)?derpicdn\.net`)
 	iframeRgx = regexp.MustCompile(`<iframe [^>]*src=("[^"]+"|'[^']+'|[^'"][^\s]+)[^>]*>`)
 	videoRgx = regexp.MustCompile(`<video [^>]*src=("[^"]+"|'[^']+'|[^'"][^\s]+)[^>]*</video>`)
-	log.Printf("Module initialized: Lightify")
+	log.Printf("[ OK ] Module initialized: Lightify")
 }
 
 type LightifyFormatter struct{}

@@ -40,7 +40,7 @@ func init() {
 		{regexp.MustCompile("(?U)(^|\\\\\\\\|[^\\\\])`(.*[^\\\\])`"), mdConvertTag("code")},
 	}
 	trimEscape = regexp.MustCompile("\\\\([*~\\[!`\\\\])")
-	log.Printf("Module initialized: Markdown")
+	log.Printf("[ OK ] Module initialized: Markdown")
 }
 
 type markdownFormatter struct{}

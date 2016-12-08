@@ -35,7 +35,7 @@ func (f *proxyMutator) init(root, domain string) {
 		Timeout: time.Duration(10 * time.Second),
 	}
 	f.domain = domain
-	log.Printf("Module initialized: Proxy (root: " + root + ", domain: " + domain + ")")
+	log.Printf("[ OK ] Module initialized: Proxy (root: " + root + ", domain: " + domain + ")")
 }
 
 func isProxyEnabled(req *http.Request) bool {

@@ -152,7 +152,7 @@ func init() {
 		return "<pre>" + con + "</pre>"
 	}
 
-	log.Printf("Module initialized: BBCode")
+	log.Printf("[ OK ] Module initialized: BBCode")
 }
 
 type bbCodeFormatter struct{}

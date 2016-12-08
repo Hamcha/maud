@@ -120,8 +120,10 @@ func main() {
 	}
 
 	// Initialize formatters, database and other modules
+	log.Printf("[ INFO ] Connecting to %s/%s ...", *mongo, *dbname)
 	db = InitDatabase(*mongo, *dbname)
 	defer db.Close()
+	log.Printf("[ OK ] Connected.\r\n")
 	InitFormatters()
 
 	// Initialize blacklist
