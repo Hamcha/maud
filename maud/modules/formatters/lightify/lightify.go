@@ -60,7 +60,8 @@ func (f *LightifyFormatter) ReplaceTags(data modules.PostMutatorData) {
 		case len(spl) > 2 && derpiRgx.MatchString(strings.ToLower(spl[2])):
 			continue
 		default:
-			content = strings.Replace(content, match[0], "<a class='toggleImage' target='_blank' href="+url+">[Click to view image]</a>", 1)
+			content = strings.Replace(content, match[0],
+				"<a class='toggleImage' target='_blank' href="+url+">[Click to view image]</a>", 1)
 		}
 	}
 
@@ -71,9 +72,11 @@ func (f *LightifyFormatter) ReplaceTags(data modules.PostMutatorData) {
 		switch {
 		case len(spl) > 2 && strings.HasSuffix(strings.ToLower(spl[2]), "youtube.com"):
 			full := strings.Replace(url, "/embed/", "/watch?v=", 1)
-			content = strings.Replace(content, match[0], "<a target='_blank' href="+full+">[Youtube: "+full+"]</a><br />", 1)
+			content = strings.Replace(content, match[0],
+				"<a target='_blank' href="+full+">[YouTube: "+full+"]</a><br />", 1)
 		default:
-			content = strings.Replace(content, match[0], "<a target='_blank' href="+url+">[Embedded: "+url+"]</a><br />", 1)
+			content = strings.Replace(content, match[0],
+				"<a target='_blank' href="+url+">[Embedded: "+url+"]</a><br />", 1)
 		}
 	}
 
@@ -88,7 +91,8 @@ func (f *LightifyFormatter) ReplaceTags(data modules.PostMutatorData) {
 				continue
 			}
 		}
-		content = strings.Replace(content, match[0], "<a target='_blank' href='"+url+"'>[Video: "+url+"]</a>", 1)
+		content = strings.Replace(content, match[0],
+			"<a target='_blank' href='"+url+"'>[Video: "+url+"]</a>", 1)
 	}
 	(*data.Post).Content = content
 }
