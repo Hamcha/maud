@@ -708,7 +708,7 @@ func httpBanUser(rw http.ResponseWriter, req *http.Request) {
 	send(rw, req, "ban", "Ban user", struct {
 		Ip string
 	}{
-		post.Author.Ip,
+		"^" + strings.Replace(post.Author.Ip, `.`, `\.`, -1),
 	})
 }
 
