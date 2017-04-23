@@ -22,13 +22,17 @@ limit = 10
 #   - minChars
 toggleAutocomplete = (elem, url, opts) ->
 	return unless elem?
+	# Ensure autocomplete is off for this element
+	elem.autocomplete = "off"
 	# get the JSON from the server
-	data = []
-	qwest.post(url, null, { responseType: 'json', async: false })
+	qwest.post(url, null, { responseType: 'json' })
 		.then (resp) ->
-			data = resp
+			setupAutocomplete elem, opts, resp
 		.catch (err) ->
-			console.log 'Error retreiving data'
+			console.log "Error retreiving data: #{err}"
+
+setupAutocomplete = (elem, opts, data) ->
+	data ?= []
 	# element holding the autocomplete data
 	ul = document.createElement 'ul'
 	ul.className = 'ac_list'
@@ -38,11 +42,7 @@ toggleAutocomplete = (elem, url, opts) ->
 	insertAfter ul, elem
 	search = elem.dataset?.acsearch == 'on'
 	elem.addEventListener "keyup", (e) ->
-		curTag =
-			if elem.value.indexOf sep > 0
-				elem.value[elem.value.lastIndexOf(sep) + 1..].trim()
-			else
-				elem.value.trim()
+		curTag = elem.value[elem.value.lastIndexOf(sep)+1 ..].trim()
 		if not opts?.minChars? or curTag.length >= opts.minChars
 			updateAutocompleteList ul, curTag, data, { search: search }
 		else
@@ -51,6 +51,10 @@ toggleAutocomplete = (elem, url, opts) ->
 		ul.style.top = "#{elem.offsetTop + elem.offsetHeight}px"
 		ul.style.left = "#{elem.offsetLeft}px"
 		ul.style.visibility = if ul.innerHTML.length > 0 then 'visible' else 'hidden'
+	elem.addEventListener "focus", (e) ->
+		ul.style.visibility = if ul.innerHTML.length > 0 then 'visible' else 'hidden'
+	elem.addEventListener "blur", (e) ->
+		ul.style.visibility = 'hidden'
 
 updateTags = (form, tag, list) ->
 	# input to append the tags to
