@@ -54,7 +54,7 @@ setupAutocomplete = (elem, opts, data) ->
 	elem.addEventListener "focus", (e) ->
 		ul.style.visibility = if ul.innerHTML.length > 0 then 'visible' else 'hidden'
 	elem.addEventListener "blur", (e) ->
-		ul.style.visibility = 'hidden'
+		setTimeout((() -> ul.style.visibility = 'hidden'), 100)
 
 updateTags = (form, tag, list) ->
 	# input to append the tags to
