@@ -50,15 +50,13 @@ func isProxyEnabled(req *http.Request) bool {
 func (f *proxyMutator) mutator(data modules.PostMutatorData) {
 	rawcontent := data.Post.Content
 	type Content struct {
-		Type     string
-		Original string
-		URL      string
+		Original string // The original HTML tag
+		URL      string // The URL of the external image
 	}
 	imgChans := make(map[Content]<-chan AsyncImageResult)
 	matches := f.imgRgx.FindAllStringSubmatch(rawcontent, -1)
 	for _, match := range matches {
 		content := Content{
-			Type:     "image",
 			Original: match[0],
 			URL:      match[1],
 		}

@@ -9,6 +9,7 @@ import (
 	"image/jpeg"
 	"image/png"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -109,7 +110,7 @@ func (p Proxy) GetImageAsync(contentURL string) <-chan AsyncImageResult {
 func (p Proxy) GetImage(contentURL string) (string, ImageData, error) {
 	data := ImageData{}
 
-	// Get static path
+	// Get the local path to use for this content
 	contentPath, err := getPathURL(contentURL)
 	if err != nil {
 		return contentPath, data, err
@@ -119,10 +120,8 @@ func (p Proxy) GetImage(contentURL string) (string, ImageData, error) {
 	// Check if file exists
 	stat, err := os.Stat(ospath)
 
-	// If the file already exists or has been just fetched then
-	// get its metadata and return it
+	// If the file already exists, get its metadata and return it
 	if err == nil {
-
 		file, err := os.Open(ospath)
 		if err != nil {
 			return contentPath, data, err
@@ -140,6 +139,7 @@ func (p Proxy) GetImage(contentURL string) (string, ImageData, error) {
 		data.Size = stat.Size()
 
 		// Check that width/height are within limits and resize if necessary
+		// (this won't resize the actual image)
 		var ratio float32
 		if data.Width > p.MaxWidth {
 			ratio = float32(data.Width) / float32(p.MaxWidth)
@@ -159,17 +159,14 @@ func (p Proxy) GetImage(contentURL string) (string, ImageData, error) {
 	if os.IsNotExist(err) {
 		data, err = p.FetchThumb(contentURL)
 
-		// If the format is not supported, fetch as standard file
-		if err == errFormatNotSupported {
-			err = p.Fetch(contentURL)
-			if err == nil {
-				return contentPath, ImageData{}, errFormatNotSupported
+		if err != nil {
+			if err != errFormatNotSupported {
+				// The image was downloaded incorrectly: better luck next time
+				// (Note: if err == errFormatNotSupported, The image was not thumbnailified,
+				// but it was correctly fetched)
+				log.Printf("[ WARNING ] proxy failed to fetch %s: %s\n", contentURL, err.Error())
+				os.Remove(contentPath)
 			}
-		}
-
-		if err == errFileSizeNotMatching {
-			// The image was downloaded incorrectly: better luck next time
-			os.Remove(contentPath)
 			return contentPath, ImageData{}, err
 		}
 	}
@@ -179,12 +176,7 @@ func (p Proxy) GetImage(contentURL string) (string, ImageData, error) {
 
 // Fetch retreives the resources at `contentURL` and saves it
 // under p.Root/domain/path/to/file.
-func (p Proxy) Fetch(contentURL string) error {
-	resp, err := p.client.Get(contentURL)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
+func (p *Proxy) saveLocal(resp *http.Response, contentURL string) error {
 	p.saveContentLength(resp)
 
 	file, err := p.createLocalFile(contentURL)
@@ -194,14 +186,19 @@ func (p Proxy) Fetch(contentURL string) error {
 	defer file.Close()
 
 	_, err = io.Copy(file, resp.Body)
+	if err != nil {
+		return err
+	}
 
 	return p.checkContentLength(file)
 }
 
-// FetchThumb retreives the resources at `contentURL`, makes it a thumbnail
-// and saves it under p.Root/domain/path/to/file.
+// FetchThumb performs the following actions:
+// - GETs the resource at `contentURL`
+// - if the content is an image of a supported format, makes it a thumbnail
+// - saves it under p.Root/domain/path/to/file.
 // It returns either the file metadata or an error
-func (p Proxy) FetchThumb(contentURL string) (ImageData, error) {
+func (p *Proxy) FetchThumb(contentURL string) (ImageData, error) {
 	data := ImageData{}
 
 	// Request image
@@ -214,15 +211,23 @@ func (p Proxy) FetchThumb(contentURL string) (ImageData, error) {
 	// Check content type to see if it is a supported format
 	switch resp.Header.Get("Content-Type") {
 	case "image/png", "image/jpeg":
-		break
+		return p.makeThumb(resp.Body, contentURL)
 	default:
-		return data, errFormatNotSupported
+		if err = p.saveLocal(resp, contentURL); err == nil {
+			return data, errFormatNotSupported
+		} else {
+			return data, err
+		}
 	}
+}
 
-	p.saveContentLength(resp)
+// makeThumb takes an encoded image and an URL, resizes the image and saves it to a local file.
+// The given image MUST be a png or a jpeg.
+func (p Proxy) makeThumb(img io.Reader, contentURL string) (ImageData, error) {
+	data := ImageData{}
 
-	// Get image data
-	srcimg, _, err := image.Decode(resp.Body)
+	// Decode the image
+	srcimg, _, err := image.Decode(img)
 	if err != nil {
 		return data, err
 	}
@@ -241,6 +246,7 @@ func (p Proxy) FetchThumb(contentURL string) (ImageData, error) {
 		size.X = int(float32(size.X) / ratio)
 	}
 
+	// Fill the image data
 	data.Width = size.X
 	data.Height = size.Y
 
@@ -281,8 +287,6 @@ func (p Proxy) FetchThumb(contentURL string) (ImageData, error) {
 		return data, err
 	}
 
-	err = p.checkContentLength(file)
-
 	return data, err
 }
 
@@ -305,18 +309,16 @@ func (p Proxy) createLocalFile(contentURL string) (file *os.File, err error) {
 	if err != nil {
 		return
 	}
-
 	return
 }
 
 // saveContentLength saves the Content-Length header field of `resp`
 // for a successive call to checkContentLength. p.contentLen is set to -1
 // if no Content-Length header is found.
-func (p Proxy) saveContentLength(resp *http.Response) {
+func (p *Proxy) saveContentLength(resp *http.Response) {
 	if cl := resp.Header.Get("Content-Length"); len(cl) > 0 {
 		var err error
-		p.contentLen, err = strconv.ParseInt(cl, 10, 64)
-		if err != nil {
+		if p.contentLen, err = strconv.ParseInt(cl, 10, 64); err != nil {
 			p.contentLen = -1
 		}
 	}
@@ -327,7 +329,7 @@ func (p Proxy) saveContentLength(resp *http.Response) {
 // size of `file` and returns an error if it doesn't. The check is skipped
 // if p.contentLen < 0 (saveContentLength wasn't called or failed).
 // p.contentLen is reset after calling this function.
-func (p Proxy) checkContentLength(file *os.File) error {
+func (p *Proxy) checkContentLength(file *os.File) error {
 	if p.contentLen > 0 {
 		s, _ := os.Stat(file.Name())
 		if p.contentLen != s.Size() {
@@ -368,6 +370,8 @@ func provideImg(src image.Image, rect image.Rectangle) image.Image {
 	}
 }
 
+// getPathURL takes an URL and returns a string /host/path.
+// If the URL fails to parse, it returns the raw URL along with an error
 func getPathURL(rawURL string) (string, error) {
 	if urldata, err := url.Parse(rawURL); err == nil {
 		return "/" + urldata.Host + urldata.Path, nil
