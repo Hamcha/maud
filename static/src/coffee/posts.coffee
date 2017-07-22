@@ -2,7 +2,7 @@
 
 original = []
 
-editorAdd = (elem, tag) ->
+editorAdd = (elem, tag, par) ->
 	return ->
 		# get the textarea and the selection
 		txt = elem.parentElement.parentElement.text
@@ -11,8 +11,8 @@ editorAdd = (elem, tag) ->
 		text = txt.value
 		[start, end] = [txt.selectionStart, txt.selectionEnd]
 		txt.value = if start is 0 then "" else text[..start-1]
-		txt.value += "[#{tag}]#{if end > 0 then text[start..end-1] else ""}[/#{tag}]#{text[end..]}"
-		txt.selectionStart = cursor + tag.length + 2
+		txt.value += "[#{tag}#{if par then "=#{par}" else ""}]#{if end > 0 then text[start..end-1] else ""}[/#{tag}]#{text[end..]}"
+		txt.selectionStart = cursor + tag.length + (if par then par.length + 1 else 0) + 2
 		txt.selectionEnd = txt.selectionStart + selectionLen
 		txt.focus()
 
@@ -62,14 +62,14 @@ addEditorButtons = (container) ->
 		{ tag:    "youtube", text: "youtube" },
 		{ tag:    "html",    text: "html" },
 		{ tag:    "video",   text: "video" },
+		{ tag:    "video",   text: "video (looped)", par: "gif" },
 		{ tag:    "pre",     text: "pre" },
-		{ tag:    "video",   text: "video" },
 		{ action: "quote",   text: "&gt;" },
 	]
 	for element in elements
 		button = document.createElement 'a'
 		if element.tag?
-			button.addEventListener "click", editorAdd button, element.tag
+			button.addEventListener "click", editorAdd(button, element.tag, element.par)
 		if element.action?
 			switch element.action
 				when "quote"
