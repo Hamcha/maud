@@ -17,10 +17,10 @@ markAllRead = ->
 		window.localStorage.setItem "lview_#{surl}", "#{date}##{lpost}##{lpage}"
 
 pageIs =
-	thread: window.location.pathname[1...8] == 'thread/'
-	threads: window.location.pathname[1...8] == 'threads'
-	tagSearch: window.location.pathname[1...5] == 'tag/'
-	home: window.location.pathname == '/'
+	thread:    window.location.pathname[...8] == "#{window.crOpts.basepath}thread/"
+	threads:   window.location.pathname[...8] == "#{window.crOpts.basepath}threads"
+	tagSearch: window.location.pathname[...5] == "#{window.crOpts.basepath}tag/"
+	home:      window.location.pathname == window.crOpts.basepath
 
 # mark NSFW threads
 if pageIs.tagSearch or pageIs.threads or pageIs.home

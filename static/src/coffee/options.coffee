@@ -34,8 +34,13 @@ if opts?
 		return unless opt.id?
 		opt.checked = window.SiteOptions[opt.id]
 	# Enable lock-tick if using proxy
-	if Cookies.get('crUseProxy') and location.protocol is 'https:'
-		document.getElementById('secureSign').style.visibility = 'visible'
+	if Cookies.get('crUseProxy')
+		sign = document.getElementById('secureSign')
+		if location.protocol isnt 'https:'
+			img = sign.querySelector('img')
+			img.src = img.src[..-8] + "nosec.svg"
+			img.alt = 'Enchanced Security requested, but protocol is not HTTPS'
+		sign.style.visibility = 'visible'
 else
 	# likely the first time visiting the site
 	window.SiteOptions = reloadOptions()
