@@ -123,8 +123,7 @@ func (db Database) ReplyThread(thread *Thread, user User, content string) (int, 
 // GetThreadList returns a slice of Threads according to the given
 // `tag` string. If `tag` is a single word, return all threads with
 // a tag matching it (i.e. thread.tag ~ /tag/i); else, return all
-// threads with at least 1 tag matching at least 1 of the words in
-// the `tag` string. Separator is "#"
+// threads with all tags listed in the `tag` string. Separator is "#".
 func (db Database) GetThreadList(tag string, limit, offset int, hThreads, hTags []string) (threads []Thread, err error) {
 	var filterByTag bson.M
 	tag, err = url.QueryUnescape(tag)
@@ -134,21 +133,21 @@ func (db Database) GetThreadList(tag string, limit, offset int, hThreads, hTags 
 	}
 	if tag != "" {
 		if idx := strings.Index(tag, "#"); idx > -1 {
-			// tag1,tag2,... means 'union'
+			// #tag1#tag2,... means 'intersection'
 			tags := strings.Split(tag, "#")
-			var tagsRgx []bson.RegEx
+			var tagsFilter []bson.M
 			for i := range tags {
 				t := strings.TrimSpace(tags[i])
 				if len(t) == 0 {
 					continue
 				}
-				tagsRgx = append(tagsRgx, bson.RegEx{t, "i"})
+				tagsFilter = append(tagsFilter, bson.M{"tags": bson.M{"$regex": bson.RegEx{t, "i"}}})
 				// limit query to this number of tags
-				if len(tagsRgx) == 10 {
+				if len(tagsFilter) == 10 {
 					break
 				}
 			}
-			filterByTag = bson.M{"tags": bson.M{"$in": tagsRgx}}
+			filterByTag = bson.M{"$and": tagsFilter}
 		} else {
 			// single tag:
 			filterByTag = bson.M{"tags": bson.RegEx{tag, "i"}}
