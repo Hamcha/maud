@@ -1,6 +1,9 @@
 all: maud
 
-maud: grunt dep
+maud: grunt dep core
+
+.PHONY: core
+core:
 	go install github.com/hamcha/maud/maud
 
 grunt:

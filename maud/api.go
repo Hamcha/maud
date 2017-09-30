@@ -17,31 +17,8 @@ import (
 // apiNewThread: creates a new thread with its OP.
 // POST params: title, text, [nickname, tags]
 func apiNewThread(rw http.ResponseWriter, req *http.Request) {
-	// check if this IP is blacklisted
-	if isBanned, banReason, blAction := checkBlacklist(req); isBanned {
-		switch blAction {
-		case "ban":
-			sendError(rw, 423, banReason)
-			return
-		case "captcha":
-			// require captcha parameter
-			postUserCaptcha := strings.Replace(req.PostFormValue("captcha"), " ", "", -1)
-			postUserCaptcha = strings.ToLower(postUserCaptcha)
-			postCaptchaQuestion := req.PostFormValue("question")
-			found := false
-			postRealCaptcha := ""
-			for idx := range captchas {
-				if captchas[idx].Question == postCaptchaQuestion {
-					postRealCaptcha = captchas[idx].Answer
-					found = true
-					break
-				}
-			}
-			if !found || postUserCaptcha != postRealCaptcha {
-				sendError(rw, 401, "Incorrect captcha.")
-				return
-			}
-		}
+	if checkIPBlacklisted(rw, req) {
+		return
 	}
 	postTitle := req.PostFormValue("title")
 	postNickname := req.PostFormValue("nickname")
@@ -115,31 +92,8 @@ func apiNewThread(rw http.ResponseWriter, req *http.Request) {
 // to save the tripcode for further use.
 // POST params: text, [nickname]
 func apiReply(rw http.ResponseWriter, req *http.Request) {
-	// check if this IP is blacklisted
-	if isBanned, banReason, blAction := checkBlacklist(req); isBanned {
-		switch blAction {
-		case "ban":
-			sendError(rw, 423, banReason)
-			return
-		case "captcha":
-			// require captcha parameter
-			postUserCaptcha := strings.Replace(req.PostFormValue("captcha"), " ", "", -1)
-			postUserCaptcha = strings.ToLower(postUserCaptcha)
-			postCaptchaQuestion := req.PostFormValue("question")
-			found := false
-			postRealCaptcha := ""
-			for idx := range captchas {
-				if captchas[idx].Question == postCaptchaQuestion {
-					postRealCaptcha = captchas[idx].Answer
-					found = true
-					break
-				}
-			}
-			if !found || postUserCaptcha != postRealCaptcha {
-				sendError(rw, 401, "Incorrect captcha.")
-				return
-			}
-		}
+	if checkIPBlacklisted(rw, req) {
+		return
 	}
 	vars := mux.Vars(req)
 	threadUrl := vars["thread"]
@@ -607,4 +561,34 @@ func apiBlacklistGetRaw(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 	fmt.Fprintln(rw, string(ruleJSON))
+}
+
+func checkIPBlacklisted(rw http.ResponseWriter, req *http.Request) bool {
+	if isBanned, banReason, blAction := checkBlacklist(req); isBanned {
+		switch blAction {
+		case "ban":
+			sendError(rw, 423, banReason)
+			return true
+		case "captcha":
+			// require captcha parameter
+			postUserCaptcha := strings.Replace(req.PostFormValue("captcha"), " ", "", -1)
+			postUserCaptcha = strings.ToLower(postUserCaptcha)
+			postCaptchaQuestion := req.PostFormValue("question")
+			found := false
+			postRealCaptcha := ""
+			for idx := range captchas {
+				if captchas[idx].Question == postCaptchaQuestion {
+					postRealCaptcha = captchas[idx].Answer
+					found = true
+					break
+				}
+			}
+			fmt.Printf("found = %v, user = %s, real = %s\n", found, postUserCaptcha, postRealCaptcha)
+			if !found || postUserCaptcha != postRealCaptcha {
+				sendError(rw, 401, "Incorrect captcha.")
+				return true
+			}
+		}
+	}
+	return false
 }
