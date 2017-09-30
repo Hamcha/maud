@@ -760,7 +760,7 @@ func httpVars(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 	rw.Header().Set("Content-Type", "application/javascript")
-	fmt.Fprintln(rw, "window.crOpts = "+string(jsonVars))
+	fmt.Fprintf(rw, "window.crOpts = %s;\nObject.freeze(window.crOpts);\n", string(jsonVars))
 }
 
 func sendCSPHeaders(rw http.ResponseWriter, req *http.Request) {
