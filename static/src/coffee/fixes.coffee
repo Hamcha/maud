@@ -113,7 +113,6 @@ if toggleForm?
 if window.crOpts.adminMode
 	for con in document.querySelectorAll ".postactions"
 		con.classList.remove 'unavailable'
-		console.log con.classList
 		con.classList.add 'inlineBlock'
 
 # Setup onhover event for postIdQuote

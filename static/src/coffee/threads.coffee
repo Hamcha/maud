@@ -2,6 +2,8 @@
 
 return unless window.localStorage?
 
+stripBasepath = (s) -> s[window.crOpts.basepath.length..]
+
 markAllRead = ->
 	window.fromList(document.querySelectorAll 'article.thread-item').map (thread) ->
 		date = thread.querySelector('span.date').dataset.udate
@@ -14,12 +16,13 @@ markAllRead = ->
 		else
 			lpost = lpost[2..] # strip the initial "#p"
 		lpage = '1' unless lpage?
+		console.log "saving lview_#{surl}"
 		window.localStorage.setItem "lview_#{surl}", "#{date}##{lpost}##{lpage}"
 
 pageIs =
-	thread:    window.location.pathname[...8] == "#{window.crOpts.basepath}thread/"
-	threads:   window.location.pathname[...8] == "#{window.crOpts.basepath}threads"
-	tagSearch: window.location.pathname[...5] == "#{window.crOpts.basepath}tag/"
+	thread:    window.location.pathname.startsWith "#{window.crOpts.basepath}thread/"
+	threads:   window.location.pathname.startsWith "#{window.crOpts.basepath}threads"
+	tagSearch: window.location.pathname.startsWith "#{window.crOpts.basepath}tag/"
 	home:      window.location.pathname == window.crOpts.basepath
 
 # mark NSFW threads
@@ -59,7 +62,7 @@ if pageIs.thread
 	date = latest.querySelector('a.date').dataset.udate
 	# id of latest post
 	if date?
-		surl = window.location.pathname.split('/')[2]
+		surl = stripBasepath(window.location.pathname).split('/')[1]
 		window.localStorage.setItem "lview_#{surl}", "#{date}##{npost}##{page}"
 else if pageIs.home or pageIs.threads
 	# Bind "Mark All Read" button
@@ -71,8 +74,8 @@ else if pageIs.home or pageIs.threads
 		date = thread.querySelector('span.date').dataset.udate
 		# compare with locally saved date, if any
 		lreplyAnchor = thread.querySelector 'a.last-reply'
-		splpath = lreplyAnchor.pathname.split '/'
-		surl = splpath[2]
+		splpath = stripBasepath(lreplyAnchor.pathname).split('/')
+		surl = splpath[1]
 		item = window.localStorage.getItem "lview_#{surl}"
 		return unless item?
 		[lview, lpost, lpage] = item.split '#'
@@ -85,5 +88,5 @@ else if pageIs.home or pageIs.threads
 			if SiteOptions.jumptolastread
 				if splpath.length > 3 and lpage?
 					# pathname contains /page/n
-					lreplyAnchor.pathname = splpath[0..2].join('/') + "/page/#{lpage}"
+					lreplyAnchor.pathname = splpath[0..1].join('/') + "/page/#{lpage}"
 				lreplyAnchor.hash = if lpost is 0 then "#thread" else "#p#{lpost}"
