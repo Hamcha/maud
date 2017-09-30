@@ -34,7 +34,7 @@ if opts?
 		return unless opt.id?
 		opt.checked = window.SiteOptions[opt.id]
 	# Enable lock-tick if using proxy
-	if Cookies.get 'crUseProxy'
+	if Cookies.get('crUseProxy') and location.protocol is 'https:'
 		document.getElementById('secureSign').style.visibility = 'visible'
 else
 	# likely the first time visiting the site
