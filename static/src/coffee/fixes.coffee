@@ -111,7 +111,10 @@ if toggleForm?
 
 # Unhide post actions to admins
 if window.crOpts.adminMode
-	con.className += " inlineBlock" for con in document.querySelectorAll ".postactions"
+	for con in document.querySelectorAll ".postactions"
+		con.classList.remove 'unavailable'
+		console.log con.classList
+		con.classList.add 'inlineBlock'
 
 # Setup onhover event for postIdQuote
 fromList(document.querySelectorAll('.postIdQuote')).map (e) ->
