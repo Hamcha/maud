@@ -317,6 +317,8 @@ span.spoiler, span.spoiler a[href], span.spoiler a[href]:visited {
 	background-color: #555; color: #555;
 	&:hover { color: inherit; background-color: inherit; }
 	&:hover * { color: inherit !important; background-color: inherit !important; }
+	&:hover .purpletext { color: #cae !important; }
+	& .purpletext { color: #555; }
 }
 
 .thread-content pre, .post-content pre {
