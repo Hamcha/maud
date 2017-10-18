@@ -583,7 +583,6 @@ func checkIPBlacklisted(rw http.ResponseWriter, req *http.Request) bool {
 					break
 				}
 			}
-			fmt.Printf("found = %v, user = %s, real = %s\n", found, postUserCaptcha, postRealCaptcha)
 			if !found || postUserCaptcha != postRealCaptcha {
 				sendError(rw, 401, "Incorrect captcha.")
 				return true
