@@ -1,6 +1,7 @@
 package maudtext
 
 import (
+	"errors"
 	"log"
 	"net/http"
 	"regexp"
@@ -42,16 +43,43 @@ func (mt *maudtextMutator) maudtext(data modules.PostMutatorData) {
 
 	for idx := range lines {
 		line := strings.TrimSpace(lines[idx])
+
 		if len(line) < 5 {
 			continue
 		}
-		stripped := strings.Replace(line, " ", "", -1)
-		stripped = strings.TrimSuffix(stripped, "<br/>")
-		if line[:4] == "&gt;" {
-			// find out if this is a post quote (^>>\s*#[0-9]+\s*$) or a line quote
+
+		// Skip all leading HTML tags
+		linestart, off, err := skipLeadingTags(line)
+		if err != nil {
+			continue
+		}
+
+		// find out if this is a post quote (^>>\s*#[0-9]+\s*$) or a line quote
+		if line[off:off+4] == "&gt;" {
+			stripped := strings.Replace(line[off:], " ", "", -1)
+			stripped = strings.TrimSuffix(stripped, "<br/>")
 			if len(stripped) < 10 || stripped[:9] != postQuotePrefix {
 				// line quote
-				lines[idx] = "<span class=\"purpletext\">&gt; " + line[4:] + "</span>"
+				if off == 0 {
+					lines[idx] = string(linestart) + `<span class="purpletext">&gt; ` +
+						line[off+4:] + "</span>"
+				} else {
+					// If it's enclosed by HTML tags, find out where is the inmost tag closing
+					// and wrap the purpletext in it.
+					tagclose := 0
+					for i := off + 4; i < len(line); i++ {
+						if line[i] == '<' {
+							tagclose = i
+							break
+						}
+					}
+					if tagclose == 0 {
+						log.Printf("[ ERROR ] Maudtext: Invalid HTML in line: " + line)
+						continue
+					}
+					lines[idx] = string(linestart) + `<span class="purpletext">&gt; ` +
+						line[off+4:tagclose] + "</span>" + line[tagclose:]
+				}
 				continue
 			}
 		}
@@ -100,4 +128,31 @@ func (mt *maudtextMutator) getLink(postNum int, threadUrl string) string {
 	}
 	page := postNum/mt.postsPerPage + 1
 	return "/thread/" + threadUrl + "/page/" + strconv.Itoa(page) + "#p" + strconv.Itoa(postNum)
+}
+
+// skipLeadingTags checks if the given line starts with 1 or more HTML tags and returns
+// (the string of said lines, the length of that string, error), where error != nil if
+// and only if the line starts with invalid HTML.
+func skipLeadingTags(line string) (string, int, error) {
+	linestart := make([]rune, 0)
+	tagsopen := 0
+skiphtmlfor:
+	for _, r := range line {
+		switch r {
+		case '<':
+			tagsopen++
+		case '>':
+			tagsopen--
+			if tagsopen < 0 {
+				log.Printf("[ ERROR ] Maudtext: Invalid HTML in line: " + line)
+				return "", 0, errors.New("Invalid HTML in line")
+			}
+		default:
+			if tagsopen <= 0 {
+				break skiphtmlfor
+			}
+		}
+		linestart = append(linestart, r)
+	}
+	return string(linestart), len(linestart), nil
 }
