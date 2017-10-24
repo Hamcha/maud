@@ -50,7 +50,7 @@ func (mt *maudtextMutator) maudtext(data modules.PostMutatorData) {
 
 		// Skip all leading HTML tags
 		linestart, off, err := skipLeadingTags(line)
-		if err != nil {
+		if err != nil || len(line) < off + 5 {
 			continue
 		}
 
