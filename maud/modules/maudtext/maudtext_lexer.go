@@ -151,8 +151,7 @@ func (mt *maudtextMutator) maudtext(in string) string {
 		return in
 	}
 
-	var processed string
-
+	processed := proc
 	if state == statePostQuote {
 		processed, rem = mt.handlePostQuote(rem, proc)
 	}
