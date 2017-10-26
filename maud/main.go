@@ -133,15 +133,15 @@ func main() {
 	router := mux.NewRouter()
 
 	// Admin mode pages
-	initAdmin()
-	if adminConf.EnablePath {
-		adminPath := router.PathPrefix(adminConf.Path).Subrouter()
-		setupHandlers(adminPath, true, true)
-	}
-	if adminConf.EnableDomain {
-		adminHost := router.Host(adminConf.Domain).Subrouter()
-		setupHandlers(adminHost, true, false)
-	}
+	//initAdmin()
+	//if adminConf.EnablePath {
+	//adminPath := router.PathPrefix(adminConf.Path).Subrouter()
+	//setupHandlers(adminPath, true, true)
+	//}
+	//if adminConf.EnableDomain {
+	//adminHost := router.Host(adminConf.Domain).Subrouter()
+	//setupHandlers(adminHost, true, false)
+	//}
 
 	setupHandlers(router, false, false)
 	http.Handle("/", router)
