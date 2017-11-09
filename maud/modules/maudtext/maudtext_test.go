@@ -87,24 +87,23 @@ func init() {
 }
 
 func TestMaudtext(t *testing.T) {
-	/*
-		shouldMutate(t, inJustGt, outJustGt)
-		shouldMutate(t, inSingleLineQuote, outSingleLineQuote)
-		shouldMutate(t, inSingleLineQuoteWs, outSingleLineQuoteWs)
-		shouldMutate(t, inSingleLineCyrillic, outSingleLineCyrillic)
-		shouldMutate(t, inSingleLineJap, outSingleLineJap)
-		shouldMutate(t, inMultiLineQuote, outMultiLineQuote)
-		shouldMutate(t, inNonQuote, outNonQuote)
-		shouldMutate(t, inMultipleQuotes, outMultipleQuotes)
-		shouldMutate(t, inQuoteInTag, outQuoteInTag)
-		shouldMutate(t, inQuoteInTagWs, outQuoteInTagWs)
-		shouldMutate(t, inQuoteInTags, outQuoteInTags)
-		shouldMutate(t, inNonPostQuote, outNonPostQuote)
-		shouldMutate(t, inSingleLinePostQuote, outSingleLinePostQuote)
-		shouldMutate(t, inSingleLineMultiplePostQuotes, outSingleLineMultiplePostQuotes)
-		shouldMutate(t, inSingleLinePostQuoteWs, outSingleLinePostQuoteWs)
-		shouldMutate(t, inSingleLinePostQuoteTags, outSingleLinePostQuoteTags)
-		shouldMutate(t, inMultiLinePostQuote, outMultiLinePostQuote)*/
+	shouldMutate(t, inJustGt, outJustGt)
+	shouldMutate(t, inSingleLineQuote, outSingleLineQuote)
+	shouldMutate(t, inSingleLineQuoteWs, outSingleLineQuoteWs)
+	shouldMutate(t, inSingleLineCyrillic, outSingleLineCyrillic)
+	shouldMutate(t, inSingleLineJap, outSingleLineJap)
+	shouldMutate(t, inMultiLineQuote, outMultiLineQuote)
+	shouldMutate(t, inNonQuote, outNonQuote)
+	shouldMutate(t, inMultipleQuotes, outMultipleQuotes)
+	shouldMutate(t, inQuoteInTag, outQuoteInTag)
+	shouldMutate(t, inQuoteInTagWs, outQuoteInTagWs)
+	shouldMutate(t, inQuoteInTags, outQuoteInTags)
+	shouldMutate(t, inNonPostQuote, outNonPostQuote)
+	shouldMutate(t, inSingleLinePostQuote, outSingleLinePostQuote)
+	shouldMutate(t, inSingleLineMultiplePostQuotes, outSingleLineMultiplePostQuotes)
+	shouldMutate(t, inSingleLinePostQuoteWs, outSingleLinePostQuoteWs)
+	shouldMutate(t, inSingleLinePostQuoteTags, outSingleLinePostQuoteTags)
+	shouldMutate(t, inMultiLinePostQuote, outMultiLinePostQuote)
 	shouldMutate(t, inSingleLinePostQuoteTagsTrailing, outSingleLinePostQuoteTagsTrailing)
 }
 
