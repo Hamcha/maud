@@ -129,7 +129,6 @@ var postQuoteSM = stateMachine{
 // Run makes the SM process the input and returns
 // (unprocessed string, processed string, final state)
 func (sm *stateMachine) Run(in string, state lexState) (string, string, lexState) {
-	//buf := make(int, 0, 1<<12)
 	cursor := 0
 	s := in
 	for !state.isTerminal() {
