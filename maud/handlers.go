@@ -34,7 +34,6 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 
 	tagdata := make([]TagData, len(tags))
 
-	return
 	for i := range tags {
 		thread, err := db.GetThreadById(tags[i].LastThread)
 		if err != nil {
