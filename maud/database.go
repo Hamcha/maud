@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"html"
+	"log"
 	"net/url"
 	"sort"
 	"strings"
@@ -386,11 +387,16 @@ func (db Database) PurgePost(post Post) (error, bool) {
 	if thread.LastReply == post.Id {
 		// Get the new last post
 		posts, err := db.GetPosts(&thread, 1, int(thread.Messages)-2)
+		if posts[0].Num != thread.Messages-2 {
+			log.Fatalf("[ FATAL ] While purging thread %s: penultimate post should have num = %d but has %d\r\n", thread.ShortUrl, thread.Messages-2, posts[0].Num)
+		}
 		if err != nil {
+			log.Printf("[ ERR ] Error on GetPosts while purging thread %s: %s\n", thread.ShortUrl, err.Error())
 			return err, false
 		}
 		if len(posts) < 1 {
-			return errors.New("Something is wrong on this thread.."), false
+			log.Printf("[ ERR ] Found no posts while purging thread %s\n", thread.ShortUrl)
+			return errors.New("Something is wrong on this thread..."), false
 		}
 		// Decrement message count and update last post
 		err = db.database.C("threads").UpdateId(thread.Id, bson.M{
@@ -403,6 +409,7 @@ func (db Database) PurgePost(post Post) (error, bool) {
 			},
 		})
 		if err != nil {
+			log.Printf("[ ERR ] After purging last reply of thread %s: %s\n", thread.ShortUrl, err.Error())
 			return err, false
 		}
 	} else {
@@ -413,6 +420,7 @@ func (db Database) PurgePost(post Post) (error, bool) {
 			},
 		})
 		if err != nil {
+			log.Printf("[ ERR ] While decrementing post count when purging thread %s: %s\n", thread.ShortUrl, err.Error())
 			return err, false
 		}
 
@@ -426,6 +434,7 @@ func (db Database) PurgePost(post Post) (error, bool) {
 			},
 		})
 		if err != nil {
+			log.Printf("[ ERR ] After purging thread %s: %s\n", thread.ShortUrl, err.Error())
 			return err, false
 		}
 	}

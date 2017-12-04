@@ -13,7 +13,7 @@ fromList(document.querySelectorAll ".nickname").map (elem) ->
 			if window.location.pathname[0...8] == '/thread/'
 				"<span class='anon'>#{randomAnon()}</span>"
 			else
-				 ''
+				''
 		elem.parentElement.querySelector(".tripcode").innerHTML = ''
 
 # if 'crSetLatestPost' cookie is set, save hidden tripcode and delete the cookie
