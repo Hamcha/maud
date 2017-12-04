@@ -1,15 +1,19 @@
 package main
 
 import (
+	"encoding/base64"
 	"encoding/binary"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"math/rand"
 	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
+	"runtime/debug"
 	"strconv"
 	"strings"
 	"time"
@@ -24,21 +28,22 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 	hThreads, hTags := getHiddenElems(req)
 	tags, err := db.GetPopularTags(siteInfo.HomeTagsNum, 0, hTags)
 	if err != nil {
-		sendError(rw, 500, err.Error())
+		send500(rw, err)
 		return
 	}
 
 	tagdata := make([]TagData, len(tags))
 
+	return
 	for i := range tags {
 		thread, err := db.GetThreadById(tags[i].LastThread)
 		if err != nil {
-			sendError(rw, 500, err.Error())
+			send500(rw, err)
 			return
 		}
 		count, err := db.PostCount(&thread)
 		if err != nil {
-			sendError(rw, 500, err.Error())
+			send500(rw, err)
 			return
 		}
 
@@ -61,7 +66,7 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 
 	tinfos, err := retreiveThreads(siteInfo.HomeThreadsNum, 0, hThreads, hTags)
 	if err != nil {
-		sendError(rw, 500, err.Error())
+		send500(rw, err)
 		return
 	}
 	send(rw, req, "home", "", struct {
@@ -94,7 +99,7 @@ func httpAllThreads(rw http.ResponseWriter, req *http.Request) {
 	hThreads, hTags := getHiddenElems(req)
 	tinfos, err := retreiveThreads(siteInfo.ThreadsPerPage, pageOffset, hThreads, hTags)
 	if err != nil {
-		sendError(rw, 500, err.Error())
+		send500(rw, err)
 		return
 	}
 
@@ -139,7 +144,7 @@ func httpAllTags(rw http.ResponseWriter, req *http.Request) {
 	_, hTags := getHiddenElems(req)
 	tags, err := db.GetPopularTags(siteInfo.TagsPerPage, pageOffset, hTags)
 	if err != nil {
-		sendError(rw, 500, err.Error())
+		send500(rw, err)
 		return
 	}
 	tagdata := make([]TagData, len(tags))
@@ -147,12 +152,12 @@ func httpAllTags(rw http.ResponseWriter, req *http.Request) {
 	for i := range tags {
 		thread, err := db.GetThreadById(tags[i].LastThread)
 		if err != nil {
-			sendError(rw, 500, err.Error())
+			send500(rw, err)
 			return
 		}
 		count, err := db.PostCount(&thread)
 		if err != nil {
-			sendError(rw, 500, err.Error())
+			send500(rw, err)
 			return
 		}
 
@@ -201,7 +206,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		if err.Error() == "not found" {
 			sendError(rw, 404, nil)
 		} else {
-			sendError(rw, 500, err.Error())
+			send500(rw, err)
 		}
 		return
 	}
@@ -225,7 +230,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 
 	postCount, err := db.PostCount(&thread)
 	if err != nil {
-		sendError(rw, 500, err.Error())
+		send500(rw, err)
 		return
 	}
 
@@ -237,7 +242,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 	// Parse posts
 	posts, err := db.GetPosts(&thread, siteInfo.PostsPerPage, pageOffset)
 	if err != nil {
-		sendError(rw, 500, err.Error())
+		send500(rw, err)
 		return
 	}
 	postsInfo := make([]PostInfo, len(posts))
@@ -269,7 +274,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 	if requiresCaptcha {
 		captchaData, err = randomCaptcha()
 		if err != nil {
-			sendError(rw, 500, err.Error())
+			send500(rw, err)
 			return
 		}
 	}
@@ -328,7 +333,7 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 	hThreads, hTags := getHiddenElems(req)
 	threads, err := db.GetThreadList(tagName, siteInfo.TagResultsPerPage, pageOffset, hThreads, hTags)
 	if err != nil {
-		sendError(rw, 500, err.Error())
+		send500(rw, err)
 		return
 	}
 
@@ -361,7 +366,7 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 	for i, v := range threads {
 		post, err := db.GetPost(v.ThreadPost)
 		if err != nil {
-			sendError(rw, 500, err.Error())
+			send500(rw, err)
 			return
 		}
 
@@ -393,12 +398,12 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 		if threadlist[i].HasLR {
 			reply, err := db.GetPost(v.LastReply)
 			if err != nil {
-				sendError(rw, 500, err.Error())
+				send500(rw, err)
 				return
 			}
 			count, err := db.PostCount(&v)
 			if err != nil {
-				sendError(rw, 500, err.Error())
+				send500(rw, err)
 				return
 			}
 
@@ -440,7 +445,7 @@ func httpNewThread(rw http.ResponseWriter, req *http.Request) {
 	if req.Header.Get("Captcha-required") == "true" {
 		captchaData, err := randomCaptcha()
 		if err != nil {
-			sendError(rw, 500, err.Error())
+			send500(rw, err)
 			return
 		}
 		send(rw, req, "newthread", "New thread", struct {
@@ -461,7 +466,7 @@ func httpStiki(rw http.ResponseWriter, req *http.Request) {
 		sendError(rw, 404, nil)
 		return
 	} else if err != nil {
-		sendError(rw, 500, err.Error())
+		send500(rw, err)
 		return
 	}
 	stiki(rw, req, path)
@@ -470,7 +475,7 @@ func httpStiki(rw http.ResponseWriter, req *http.Request) {
 func httpStikiIndex(rw http.ResponseWriter, req *http.Request) {
 	fileList, err := ioutil.ReadDir(maudRoot + "/stiki/")
 	if err != nil {
-		sendError(rw, 500, err.Error())
+		send500(rw, err)
 		return
 	}
 
@@ -524,7 +529,7 @@ func httpManageHidden(rw http.ResponseWriter, req *http.Request) {
 	// Get hidden threads
 	threads, err := db.GetThreads(hThreads, siteInfo.HomeThreadsNum, pageOffset)
 	if err != nil {
-		sendError(rw, 500, err.Error())
+		send500(rw, err)
 		return
 	}
 
@@ -532,13 +537,13 @@ func httpManageHidden(rw http.ResponseWriter, req *http.Request) {
 	for i := range threads {
 		count, err := db.PostCount(&threads[i])
 		if err != nil {
-			sendError(rw, 500, err.Error())
+			send500(rw, err)
 			return
 		}
 
 		lastPost, err := db.GetPost(threads[i].LastReply)
 		if err != nil {
-			sendError(rw, 500, err.Error())
+			send500(rw, err)
 			return
 		}
 
@@ -559,7 +564,7 @@ func httpManageHidden(rw http.ResponseWriter, req *http.Request) {
 	// Get hidden tags
 	tags, err := db.GetTags(hTags, siteInfo.HomeTagsNum, pageOffset)
 	if err != nil {
-		sendError(rw, 500, err.Error())
+		send500(rw, err)
 		return
 	}
 
@@ -568,12 +573,12 @@ func httpManageHidden(rw http.ResponseWriter, req *http.Request) {
 	for i := range tags {
 		thread, err := db.GetThreadById(tags[i].LastThread)
 		if err != nil {
-			sendError(rw, 500, err.Error())
+			send500(rw, err)
 			return
 		}
 		count, err := db.PostCount(&thread)
 		if err != nil {
-			sendError(rw, 500, err.Error())
+			send500(rw, err)
 			return
 		}
 
@@ -701,7 +706,7 @@ func httpBanUser(rw http.ResponseWriter, req *http.Request) {
 
 	// retreive Ip
 	if len(post.Author.Ip) < 1 {
-		sendError(rw, 500, "Couldn't find post IP")
+		send500(rw, errors.New("Couldn't find post IP"))
 		return
 	}
 
@@ -756,7 +761,7 @@ func httpVars(rw http.ResponseWriter, req *http.Request) {
 
 	jsonVars, err := json.Marshal(vars)
 	if err != nil {
-		sendError(rw, 500, err.Error())
+		send500(rw, err)
 		return
 	}
 	rw.Header().Set("Content-Type", "application/javascript")
@@ -842,6 +847,14 @@ func stiki(rw http.ResponseWriter, req *http.Request, name string) {
 			},
 		),
 	)
+}
+
+func send500(rw http.ResponseWriter, err error) {
+	log.Printf("Encountered server error: %s\n", err.Error())
+	debug.PrintStack()
+	errdata := fmt.Sprintf("Error message: %s\nStack: %s", err.Error(), debug.Stack())
+	errdatab64 := base64.StdEncoding.EncodeToString([]byte(errdata))
+	sendError(rw, 500, errdatab64)
 }
 
 func sendError(rw http.ResponseWriter, code int, context interface{}) {
