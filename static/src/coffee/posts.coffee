@@ -32,10 +32,8 @@ quoteText = (elem) ->
 					"#{txt.value[0...txt.selectionStart]}>#{txt.value[txt.selectionStart..]}"
 				else
 					">#{txt.value}"
-			console.log sel
 			txt.focus()
 			txt.selectionEnd = txt.selectionStart = sel
-			console.log txt.selectionStart + ", " + txt.selectionEnd
 			return
 
 		# Add selected text to the form, with a > after each newline
