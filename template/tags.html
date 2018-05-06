@@ -10,11 +10,21 @@
     <a href="{{BasePath}}blacklist" class="button">Blacklist</a>
     {{/IsAdmin}}
 </nav>
-<hr />
+{{#Data}}
+<div class="pages" data-max="nomax">
+{{#Pages}}
+    {{#HasPrev}}
+    <a href="{{BasePath}}tags/page/{{PrevPage}}" rel="prev">&laquo; Back</a>
+    {{/HasPrev}}
+    <b>{{Page}}</b>
+    {{#HasNext}}
+    <a href="{{BasePath}}tags/page/{{NextPage}}" rel="next">Next &raquo;</a>
+    {{/HasNext}}
+{{/Pages}}
+</div>
 <section class="hidden2 sec-header">
     All tags, ordered by popularity
 </section>
-{{#Data}}
 {{#Tags}}
 <article class="tag-item thread">
     <h3 class="tag-name"><a href="{{BasePath}}tag/{{URLName}}" class="nolink">{{{Name}}}</a></h3>
