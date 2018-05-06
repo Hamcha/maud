@@ -14,16 +14,17 @@
 <div class="pages" data-max="nomax">
 {{#Pages}}
     {{#HasPrev}}
-    <a href="{{BasePath}}tag/{{{TagName}}}/page/{{PrevPage}}" rel="prev">&laquo; Back</a>
+    <a href="{{BasePath}}tag/{{{TagNameQuery}}}/page/{{PrevPage}}" rel="prev">&laquo; Back</a>
     {{/HasPrev}}
     <b>{{Page}}</b>
     {{#HasNext}}
-    <a href="{{BasePath}}tag/{{{TagName}}}/page/{{NextPage}}" rel="next">Next &raquo;</a>
+    <a href="{{BasePath}}tag/{{{TagNameQuery}}}/page/{{NextPage}}" rel="next">Next &raquo;</a>
     {{/HasNext}}
 {{/Pages}}
 </div>
-{{#ThreadList}}
 <hr />
+<section><h2 class="editor-header">Threads under "{{TagNameReadable}}"</h2></section>
+{{#ThreadList}}
 <article class="home-thread" data-tags="{{#Tags}}#{{{.}}}{{/Tags}}">
     <div class="last-update">Last activity: <span class="date" data-udate="{{LRDate}}">{{LRStrDate}}</span></div>
     <h2 class="thread-title"><a href="{{BasePath}}thread/{{ShortUrl}}" class="noborder">{{Title}}</a></h2>
@@ -66,11 +67,11 @@
 <div class="pages" data-max="nomax">
 {{#Pages}}
     {{#HasPrev}}
-    <a href="{{BasePath}}tag/{{TagName}}/page/{{PrevPage}}" rel="prev">&laquo; Back</a>
+    <a href="{{BasePath}}tag/{{TagNameQuery}}/page/{{PrevPage}}" rel="prev">&laquo; Back</a>
     {{/HasPrev}}
     <b>{{Page}}</b>
     {{#HasNext}}
-    <a href="{{BasePath}}tag/{{TagName}}/page/{{NextPage}}" rel="next">Next &raquo;</a>
+    <a href="{{BasePath}}tag/{{TagNameQuery}}/page/{{NextPage}}" rel="next">Next &raquo;</a>
     {{/HasNext}}
 {{/Pages}}
 </div>

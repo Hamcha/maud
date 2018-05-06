@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"html"
 	"io/ioutil"
 	"log"
 	"math/rand"
@@ -330,7 +331,16 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	hThreads, hTags := getHiddenElems(req)
-	threads, err := db.GetThreadList(tagName, siteInfo.TagResultsPerPage, pageOffset, hThreads, hTags)
+
+	tagReadable, err := url.QueryUnescape(tagName)
+	if err != nil {
+		send500(rw, err)
+		return
+	}
+	tagReadable = html.UnescapeString(tagReadable)
+	tagReadable = strings.TrimSuffix(tagReadable, " #")
+
+	threads, err := db.GetThreadList(tagReadable, siteInfo.TagResultsPerPage, pageOffset, hThreads, hTags)
 	if err != nil {
 		send500(rw, err)
 		return
@@ -430,12 +440,14 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	send(rw, req, "tagsearch", "Threads under \""+tagName+"\"", struct {
-		ThreadList []ThreadData
-		TagName    string
-		Pages      PageInfo
+		ThreadList      []ThreadData
+		TagNameQuery    string
+		TagNameReadable string
+		Pages           PageInfo
 	}{
 		threadlist,
 		url.QueryEscape(tagName),
+		tagReadable,
 		pages,
 	})
 }

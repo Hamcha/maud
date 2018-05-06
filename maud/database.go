@@ -2,9 +2,7 @@ package main
 
 import (
 	"errors"
-	"html"
 	"log"
-	"net/url"
 	"sort"
 	"strings"
 	"time"
@@ -127,11 +125,6 @@ func (db Database) ReplyThread(thread *Thread, user User, content string) (int, 
 // threads with all tags listed in the `tag` string. Separator is "#".
 func (db Database) GetThreadList(tag string, limit, offset int, hThreads, hTags []string) (threads []Thread, err error) {
 	var filterByTag bson.M
-	tag, err = url.QueryUnescape(tag)
-	tag = html.UnescapeString(tag)
-	if err != nil {
-		return
-	}
 	if tag != "" {
 		if idx := strings.Index(tag, "#"); idx > -1 {
 			// #tag1#tag2,... means 'intersection'
