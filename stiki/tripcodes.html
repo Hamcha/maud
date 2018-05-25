@@ -1,0 +1,25 @@
+<article class="thread">
+<h2 class="thread-title"><a href="/stiki" class="noborder">Tripcodes</a></h2>
+<div class="thread-content">
+    <p>Tripcodes are secure keys associated to a single post. They can be used to "sign" a post (to ensure the identity of the author) as well as to enable future editing and deletion of that post.</p>
+    <br/>
+    <br/>
+    <p>To use a tripcode, you need to provide a nickname in the posting form, followed by <code>#</code> and your chosen tripcode, like this:</p>
+    <br/><br/>
+    <img src='/static/images/tripcode.png' alt='tripcode' title='tripcode' />
+    <br/><br/>
+
+    <p>This will result in your post having a displayed author name, plus some characters aside it. These characters are uniquely associated with your (secret) tripcode, and will always be the same for the same tripcode.</p>
+
+    <br/>
+    <br/>
+    <p>If you wish to edit or delete your post afterwards, you may do so by providing the original tripcode you used to create that post. This way, only you are able to modify your own content.</p>
+
+    <h3>Hidden tripcodes</h3>
+    <p>Even if you don't provide a nickname and a tripcode, a hidden tripcode is always generated automatically and saved with your anonymous post. This hidden tripcode is then saved into your browser's localStorage for future use. This enables you to edit or delete your latest post even if you didn't explicitly provide a tripcode. Note that posting again will overwrite your locally saved hidden tripcode, so you only retain information about your latest post, not all of them.</p>
+
+    <br/>
+    <br/>
+    <p>Should you ever need to access your hidden tripcode (which you usually don't, as this is done automatically for you whenever you edit or delete your latest anonymous post), you may find it into your browser's <a href='https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage'>localStorage</a> under the key <code>'crLatestPost'</code>.</p>
+</div>
+</article>
