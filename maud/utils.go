@@ -119,18 +119,21 @@ func getFirstBytesWithoutSplittingRunes(str string, approxLen int) string {
 
 	short := str[:approxLen]
 
-	// Ensure we don't split up UTF-8 characters. This can grow `short` for at most 3 bytes.
-	if utf8.RuneStart(short[approxLen-1]) && !utf8.ValidString(short[approxLen-1:]) && len(str) > len(short) {
-		lastRune := make([]byte, 2, 4)
-		lastRune[0] = str[approxLen-1]
-		lastRune[1] = str[approxLen]
-		for i := len(short) + 1; i < len(str) && i < approxLen+3 && !utf8.Valid(lastRune); i++ {
-			lastRune = append(lastRune, str[i])
-		}
-		short += string(lastRune[1:])
+	if utf8.ValidString(short) {
+		return short
 	}
 
-	return short
+	lastRuneStart := approxLen
+	for lastRuneStart > 0 {
+		if utf8.RuneStart(str[lastRuneStart]) {
+			break
+		}
+		lastRuneStart--
+	}
+
+	_, lastRuneLength := utf8.DecodeRuneInString(str[lastRuneStart:])
+
+	return str[:lastRuneStart+lastRuneLength]
 }
 
 // shortify returns a string which is either `content` or its first
