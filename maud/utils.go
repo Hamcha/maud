@@ -115,6 +115,24 @@ func removeDuplicates(in []string) []string {
 	return out
 }
 
+func getFirstBytesWithoutSplittingRunes(str string, approxLen int) string {
+
+	short := str[:approxLen]
+
+	// Ensure we don't split up UTF-8 characters. This can grow `short` for at most 3 bytes.
+	if utf8.RuneStart(short[approxLen-1]) && !utf8.ValidString(short[approxLen-1:]) && len(str) > len(short) {
+		lastRune := make([]byte, 2, 4)
+		lastRune[0] = str[approxLen-1]
+		lastRune[1] = str[approxLen]
+		for i := len(short) + 1; i < len(str) && i < approxLen+3 && !utf8.Valid(lastRune); i++ {
+			lastRune = append(lastRune, str[i])
+		}
+		short += string(lastRune[1:])
+	}
+
+	return short
+}
+
 // shortify returns a string which is either `content` or its first
 // ~300 runes, ensuring all HTML tags are properly closed and the
 // returned string is sanitized. The second return parameter is
@@ -126,18 +144,7 @@ func shortify(content string) (string, bool) {
 		return content, false
 	}
 
-	short := content[:maxLen]
-
-	// Ensure we don't split up UTF-8 characters. This can grow `short` for at most 3 bytes.
-	if utf8.RuneStart(short[maxLen-1]) && !utf8.ValidString(short[maxLen-1:]) && len(content) > len(short) {
-		lastRune := make([]byte, 2, 4)
-		lastRune[0] = content[maxLen-1]
-		lastRune[1] = content[maxLen]
-		for i := len(short) + 1; i < len(content) && i < maxLen+3 && !utf8.Valid(lastRune); i++ {
-			lastRune = append(lastRune, content[i])
-		}
-		short += string(lastRune[1:])
-	}
+	short := getFirstBytesWithoutSplittingRunes(content, maxLen)
 
 	// Now count open HTML tags in `short`
 	var stack []string
@@ -145,14 +152,45 @@ func shortify(content string) (string, bool) {
 	offset := -1
 	preTagOffset := -1 // Saves the offset before the latest tag opening
 	isTagOpen := false
+
+	// Scan string only once to find all tag positions
+	tagOpenIndices := make([]int, 0, len(short))
+	tagCloseIndices := make([]int, 0, len(short))
+	for i, c := range short {
+		switch c {
+		case '<':
+			tagOpenIndices = append(tagOpenIndices, i)
+		case '>':
+			tagCloseIndices = append(tagCloseIndices, i)
+		}
+	}
+
+	openI, closeI := 0, 0
+	nextOpenTag := func() int {
+		if openI == len(tagOpenIndices) {
+			return -1
+		}
+		i := tagOpenIndices[openI]
+		openI++
+		return i
+	}
+	nextCloseTag := func() int {
+		if closeI == len(tagCloseIndices) {
+			return -1
+		}
+		i := tagCloseIndices[closeI]
+		closeI++
+		return i
+	}
+
 	for offset < len(short) {
-		offset = index(short, offset+1, '<')
+		offset = nextOpenTag()
 		preTagOffset = offset - 1
 		if offset < 0 {
 			break
 		}
 		isTagOpen = true
-		end := index(short, offset+1, '>')
+		end := nextCloseTag()
 		if end < 0 {
 			break
 		}
