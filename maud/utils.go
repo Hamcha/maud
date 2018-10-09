@@ -120,17 +120,30 @@ func removeDuplicates(in []string) []string {
 // returned string is sanitized. The second return parameter is
 // false if the content wasn't shortified, true otherwise.
 func shortify(content string) (string, bool) {
-	if len(content) < 300 {
+	const maxLen = 300
+
+	if len(content) < maxLen {
 		return content, false
 	}
 
-	// count open HTML tags in content
-	short := content[:300]
+	short := content[:maxLen]
+
+	// Ensure we don't split up UTF-8 characters. This can grow `short` for at most 3 bytes.
+	if utf8.RuneStart(short[maxLen-1]) && !utf8.ValidString(short[maxLen-1:]) && len(content) > len(short) {
+		lastRune := make([]byte, 2, 4)
+		lastRune[0] = content[maxLen-1]
+		lastRune[1] = content[maxLen]
+		for i := len(short) + 1; i < len(content) && i < maxLen+3 && !utf8.Valid(lastRune); i++ {
+			lastRune = append(lastRune, content[i])
+		}
+		short += string(lastRune[1:])
+	}
+
+	// Now count open HTML tags in `short`
 	var stack []string
 	stackindex := -1
 	offset := -1
-	// Saves the offset before the latest tag opening
-	preTagOffset := -1
+	preTagOffset := -1 // Saves the offset before the latest tag opening
 	isTagOpen := false
 	for offset < len(short) {
 		offset = index(short, offset+1, '<')
@@ -224,6 +237,7 @@ func isLightVersion(req *http.Request) bool {
 	return len(siteInfo.LightVersionDomain) > 0 && req.Host == siteInfo.LightVersionDomain
 }
 
+// index returns the index of character `del` in `str`. The search starts from index `offset`.
 func index(str string, offset int, del uint8) int {
 	for i := offset; i < len(str); i++ {
 		if str[i] == del {
