@@ -461,7 +461,7 @@ func apiBlacklistAdd(rw http.ResponseWriter, req *http.Request) {
 		blparams[n] = bl.Parameters()
 	}
 	// backup old blacklist and save new to disk
-	if err := saveJson(&blparams, "blacklist.conf", true); err != nil {
+	if err := saveJson(&blparams, confRoot, "blacklist.conf", true); err != nil {
 		sendError(rw, 500, err.Error())
 		return
 	}
@@ -489,7 +489,7 @@ func apiBlacklistRemove(rw http.ResponseWriter, req *http.Request) {
 		blparams[n] = bl.Parameters()
 	}
 	// backup old blacklist and save new to disk
-	if err := saveJson(&blparams, "blacklist.conf", true); err != nil {
+	if err := saveJson(&blparams, confRoot, "blacklist.conf", true); err != nil {
 		sendError(rw, 500, err.Error())
 		return
 	}
@@ -532,7 +532,7 @@ func apiBlacklistEdit(rw http.ResponseWriter, req *http.Request) {
 		blparams[n] = bl.Parameters()
 	}
 	// backup old blacklist and save new to disk
-	if err := saveJson(&blparams, "blacklist.conf", true); err != nil {
+	if err := saveJson(&blparams, confRoot, "blacklist.conf", true); err != nil {
 		sendError(rw, 500, err.Error())
 		return
 	}

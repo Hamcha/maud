@@ -17,6 +17,7 @@ var (
 	adminConf AdminConfig
 	db        Database
 	maudRoot  string
+	confRoot  string
 	siteInfo  SiteInfo
 	csp       map[string]string
 )
@@ -84,6 +85,7 @@ func main() {
 		panic(err)
 	}
 	maudRoot = filepath.Dir(maudExec)
+	confRoot = maudRoot
 
 	// Setup CSP
 	csp = map[string]string{
@@ -98,22 +100,23 @@ func main() {
 	mongo := flag.String("dburl", "localhost", "MongoDB servers, separated by comma")
 	dbname := flag.String("dbname", "maud", "MongoDB database to use")
 	adminfile := flag.String("admin", "admin.conf", "Admin configuration file")
+	flag.StringVar(&confRoot, "confdir", confRoot, "Directory to read configuration from")
 	flag.StringVar(&maudRoot, "root", maudRoot, "The HTTP server root directory")
 	flag.Parse()
 
 	// Load Site info file
-	err = loadJson("info.json", &siteInfo)
+	err = loadJson(confRoot, "info.json", &siteInfo)
 	if err != nil {
 		fmt.Println("-------------------------------------------------")
 		fmt.Printf("[ ERROR ] info.json was not found or could not be read in directory\r\n\r\n\t%s\r\n\r\n"+
-			"Have you forgot to create one from info.json.sample?\n", maudRoot)
+			"Have you forgot to create one from info.json.sample?\n", confRoot)
 		fmt.Println("-------------------------------------------------")
 		log.Println("[ FATAL ] Could not start maud: aborting.")
 		return
 	}
 
 	// Load Admin config file
-	err = loadJson(*adminfile, &adminConf)
+	err = loadJson(confRoot, *adminfile, &adminConf)
 	if err != nil {
 		log.Printf("[ WARNING ] Admin file %s is missing or malformed, "+
 			"Maud will run without administrators.\r\n", *adminfile)

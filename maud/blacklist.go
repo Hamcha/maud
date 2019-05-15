@@ -42,7 +42,7 @@ type onlyCountry struct {
 
 func initBL() {
 	// Load Blacklist conf
-	err := loadJson("blacklist.conf", &blacklists)
+	err := loadJson(confRoot, "blacklist.conf", &blacklists)
 	if err != nil {
 		log.Printf("[ WARNING ] %s/blacklist.conf not found. BL not initialized.\n", maudRoot)
 	} else {
@@ -55,7 +55,7 @@ func initBL() {
 	}
 
 	// Load Captcha conf
-	err = loadJson("captcha.conf", &captchas)
+	err = loadJson(confRoot, "captcha.conf", &captchas)
 	if err != nil {
 		log.Printf("[ WARNING ] %s/captcha.conf not found. Captchas not initialized.\n", maudRoot)
 	}

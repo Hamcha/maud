@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path"
 	"strconv"
 	"strings"
 	"time"
@@ -405,8 +406,9 @@ func htmlFullEscape(str string) string {
 	return strings.Replace(html.EscapeString(str), "/", "&sol;", -1)
 }
 
-func loadJson(path string, out interface{}) error {
-	file, err := os.Open(maudRoot + string(os.PathSeparator) + path)
+func loadJson(dir, basename string, out interface{}) error {
+	path := path.Join(dir, basename)
+	file, err := os.Open(path)
 	if err != nil {
 		return err
 	}
@@ -417,7 +419,8 @@ func loadJson(path string, out interface{}) error {
 
 // saveJson unmarshals the content of a struct in a JSON file, optionally
 // backing up old file if existing.
-func saveJson(in interface{}, path string, backup bool) error {
+func saveJson(in interface{}, dir, basename string, backup bool) error {
+	path := path.Join(dir, basename)
 	if backup {
 		if _, err := os.Stat(path); os.IsExist(err) {
 			err := os.Rename(path, path+".old")
@@ -426,7 +429,7 @@ func saveJson(in interface{}, path string, backup bool) error {
 			}
 		}
 	}
-	file, err := os.Create(maudRoot + string(os.PathSeparator) + path)
+	file, err := os.Create(path)
 	var buf []byte
 	out := bytes.NewBuffer(buf)
 	enc, err := json.MarshalIndent(in, "", "\t")
