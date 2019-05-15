@@ -4,6 +4,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"path"
 	"regexp"
 	"strings"
 
@@ -44,7 +45,7 @@ func initBL() {
 	// Load Blacklist conf
 	err := loadJson(confRoot, "blacklist.conf", &blacklists)
 	if err != nil {
-		log.Printf("[ WARNING ] %s/blacklist.conf not found. BL not initialized.\n", maudRoot)
+		log.Printf("[ WARNING ] %s/blacklist.conf not found. BL not initialized.\n", confRoot)
 	} else {
 		for i := range blacklists {
 			item := blacklists[i]
@@ -57,13 +58,15 @@ func initBL() {
 	// Load Captcha conf
 	err = loadJson(confRoot, "captcha.conf", &captchas)
 	if err != nil {
-		log.Printf("[ WARNING ] %s/captcha.conf not found. Captchas not initialized.\n", maudRoot)
+		log.Printf("[ WARNING ] %s/captcha.conf not found. Captchas not initialized.\n", confRoot)
 	}
 
 	// Load GeoIP database
-	geoip, err = maxminddb.Open(maudRoot + "/geoip.mmdb")
-	if err != nil {
-		log.Printf("[ WARNING ] %s/geoip.mmdb not found. GeoIP limiting not initialized.\n", maudRoot)
+	geoip, err = maxminddb.Open(path.Join(confRoot, "geoip.mmdb"))
+	if err == nil {
+		log.Printf("[ OK ] GeoIP limiting initialized from %s/geoip.mmdb.\n", confRoot)
+	} else {
+		log.Printf("[ WARNING ] %s/geoip.mmdb not found. GeoIP limiting not initialized.\n", confRoot)
 	}
 }
 

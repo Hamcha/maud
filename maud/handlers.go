@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path"
 	"path/filepath"
 	"runtime/debug"
 	"strconv"
@@ -471,8 +472,8 @@ func httpNewThread(rw http.ResponseWriter, req *http.Request) {
 
 func httpStiki(rw http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
-	path := filepath.Base(vars["page"])
-	_, err := os.Stat(maudRoot + "/stiki/" + path + ".html")
+	fpath := filepath.Base(vars["page"])
+	_, err := os.Stat(path.Join(maudRoot, "stiki", fpath+".html"))
 	if os.IsNotExist(err) {
 		sendError(rw, 404, nil)
 		return
@@ -480,11 +481,11 @@ func httpStiki(rw http.ResponseWriter, req *http.Request) {
 		send500(rw, err)
 		return
 	}
-	stiki(rw, req, path)
+	stiki(rw, req, fpath)
 }
 
 func httpStikiIndex(rw http.ResponseWriter, req *http.Request) {
-	fileList, err := ioutil.ReadDir(maudRoot + "/stiki/")
+	fileList, err := ioutil.ReadDir(path.Join(maudRoot, "stiki"))
 	if err != nil {
 		send500(rw, err)
 		return
@@ -802,8 +803,8 @@ func send(rw http.ResponseWriter, req *http.Request, name, title string, context
 	}
 	fmt.Fprintln(rw,
 		mustache.RenderFileInLayout(
-			maudRoot+"/template/"+name+".html",
-			maudRoot+"/template/layout.html",
+			path.Join(maudRoot, "template", name+".html"),
+			path.Join(maudRoot, "template", "layout.html"),
 			struct {
 				Info     SiteInfo
 				Title    string
@@ -841,8 +842,8 @@ func stiki(rw http.ResponseWriter, req *http.Request, name string) {
 	title := strings.ToUpper(name[:1]) + strings.Replace(name[1:], "-", " ", -1)
 	fmt.Fprintln(rw,
 		mustache.RenderFileInLayout(
-			maudRoot+"/stiki/"+name+".html",
-			maudRoot+"/template/layout.html",
+			path.Join(maudRoot, "stiki", name+".html"),
+			path.Join(maudRoot, "template", "layout.html"),
 			struct {
 				Info     SiteInfo
 				Title    string
@@ -872,8 +873,8 @@ func sendError(rw http.ResponseWriter, code int, context interface{}) {
 	rw.WriteHeader(code)
 	fmt.Fprintln(rw,
 		mustache.RenderFileInLayout(
-			maudRoot+"/errors/"+strconv.Itoa(code)+".html",
-			maudRoot+"/errors/layout.html",
+			path.Join(maudRoot, "errors", strconv.Itoa(code)+".html"),
+			path.Join(maudRoot, "errors", "layout.html"),
 			struct {
 				Info SiteInfo
 				Data interface{}
