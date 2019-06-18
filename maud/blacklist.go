@@ -103,7 +103,7 @@ func checkBlacklist(req *http.Request) (bool, string, string) {
 				log.Printf("[blacklist] Has X-Forwarded-For: %s\n", ipcandidate)
 			}
 		}
-		ip = iphead[0]
+		ip = strings.SplitN(iphead[0], ",", 2)[0]
 	} else {
 		ip = req.RemoteAddr
 	}
