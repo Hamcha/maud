@@ -1,4 +1,4 @@
-package mustache
+package mustache // import "github.com/hamcha/maud/mustache"
 
 import (
 	"bytes"
