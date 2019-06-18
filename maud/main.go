@@ -78,6 +78,8 @@ func dontListDirs(h http.Handler) http.HandlerFunc {
 	})
 }
 
+var debugMode *bool
+
 func main() {
 	// Get executable path
 	maudExec, err := filepath.Abs(os.Args[0])
@@ -100,6 +102,7 @@ func main() {
 	mongo := flag.String("dburl", "localhost", "MongoDB servers, separated by comma")
 	dbname := flag.String("dbname", "maud", "MongoDB database to use")
 	adminfile := flag.String("admin", "admin.conf", "Admin configuration file")
+	debugMode = flag.Bool("debug", false, "Enable debug prints")
 	flag.StringVar(&confRoot, "confdir", confRoot, "Directory to read configuration from")
 	flag.StringVar(&maudRoot, "root", maudRoot, "The HTTP server root directory")
 	flag.Parse()

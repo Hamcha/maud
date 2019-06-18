@@ -94,7 +94,15 @@ func checkBlacklist(req *http.Request) (bool, string, string) {
 	}
 	userAgent := req.UserAgent()
 	var ip string
+	if *debugMode {
+		log.Printf("[blacklist] Request from %s\n", req.RemoteAddr)
+	}
 	if iphead, ok := req.Header["X-Forwarded-For"]; ok {
+		if *debugMode {
+			for _, ipcandidate := range iphead {
+				log.Printf("[blacklist] Has X-Forwarded-For: %s\n", ipcandidate)
+			}
+		}
 		ip = iphead[0]
 	} else {
 		ip = req.RemoteAddr
