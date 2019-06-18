@@ -1,6 +1,7 @@
 package proxy
 
 import (
+	"crypto/tls"
 	"log"
 	"net/http"
 	"regexp"
@@ -32,13 +33,12 @@ func (f *proxyMutator) init(root, domain string) {
 	f.proxy.MaxWidth = 640
 	f.proxy.MaxHeight = 300
 
-	transport := http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{
-			InsecureSkipVerify: true,
-		}
+	transport := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
 	f.proxy.client = http.Client{
-		Timeout: time.Duration(10 * time.Second),
+		Timeout:   time.Duration(10 * time.Second),
 		Transport: transport,
-
 	}
 	f.domain = domain
 	log.Printf("[ OK ] Module initialized: Proxy (root: " + root + ", domain: " + domain + ")")
