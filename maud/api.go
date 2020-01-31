@@ -10,6 +10,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/spf13/viper"
+
 	"github.com/gorilla/mux"
 	. "github.com/hamcha/maud/maud/data"
 )
@@ -111,7 +113,8 @@ func apiReply(rw http.ResponseWriter, req *http.Request) {
 		sendError(rw, 500, "Database error: "+err.Error())
 		return
 	}
-	page := (count + siteInfo.PostsPerPage) / siteInfo.PostsPerPage
+	postsPerPage := viper.GetInt("postsPerPage")
+	page := (count + postsPerPage) / postsPerPage
 	if page < 1 {
 		page = 1
 	}
@@ -284,7 +287,8 @@ func apiEditPost(rw http.ResponseWriter, req *http.Request) {
 		basepath = val.BasePath
 	}
 
-	page := (postId + siteInfo.PostsPerPage) / siteInfo.PostsPerPage
+	postsPerPage := viper.GetInt("postsPerPage")
+	page := (postId + postsPerPage) / postsPerPage
 	if page < 1 {
 		page = 1
 	}
@@ -348,8 +352,8 @@ func apiDeletePost(rw http.ResponseWriter, req *http.Request) {
 	if isAdmin {
 		basepath = val.BasePath
 	}
-
-	page := (postId + siteInfo.PostsPerPage) / siteInfo.PostsPerPage
+	postsPerPage := viper.GetInt("postsPerPage")
+	page := (postId + postsPerPage) / postsPerPage
 	if page < 1 {
 		page = 1
 	}
@@ -461,7 +465,7 @@ func apiBlacklistAdd(rw http.ResponseWriter, req *http.Request) {
 		blparams[n] = bl.Parameters()
 	}
 	// backup old blacklist and save new to disk
-	if err := saveJson(&blparams, confRoot, "blacklist.conf", true); err != nil {
+	if err := saveJson(&blparams, maudRoot, "blacklist.conf", true); err != nil {
 		sendError(rw, 500, err.Error())
 		return
 	}
@@ -489,7 +493,7 @@ func apiBlacklistRemove(rw http.ResponseWriter, req *http.Request) {
 		blparams[n] = bl.Parameters()
 	}
 	// backup old blacklist and save new to disk
-	if err := saveJson(&blparams, confRoot, "blacklist.conf", true); err != nil {
+	if err := saveJson(&blparams, maudRoot, "blacklist.conf", true); err != nil {
 		sendError(rw, 500, err.Error())
 		return
 	}
@@ -532,7 +536,7 @@ func apiBlacklistEdit(rw http.ResponseWriter, req *http.Request) {
 		blparams[n] = bl.Parameters()
 	}
 	// backup old blacklist and save new to disk
-	if err := saveJson(&blparams, confRoot, "blacklist.conf", true); err != nil {
+	if err := saveJson(&blparams, maudRoot, "blacklist.conf", true); err != nil {
 		sendError(rw, 500, err.Error())
 		return
 	}

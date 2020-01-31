@@ -1,0 +1,16 @@
+{
+    "secret" : "secret key",
+    "postFooter": " - <a href=\"https://github.com/hamcha/maud\">GitHub</a> - <a href=\"/stiki/dmca\">DMCA</a>",
+    "fullDomain": "localhost.localdomain:8080",
+    "liteDomain": "lite.localhost.localdomain:8080",
+    "useProxy": true,
+    "proxyDomain": "http://localhost.localdomain:8081",
+    "proxyRoot": "/tmp/static",
+    "adminEnablePath" : true,
+	"adminPath" : "/admin/",
+	"adminEnableDomain" : true,
+	"adminDomain" : "admin.localhost",
+	"adminUsers" : {
+		"admin" : "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918"
+	}
+}

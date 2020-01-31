@@ -21,6 +21,8 @@ import (
 	"time"
 	"unicode/utf8"
 
+	"github.com/spf13/viper"
+
 	"github.com/gorilla/mux"
 	. "github.com/hamcha/maud/maud/data"
 	"github.com/hamcha/maud/mustache"
@@ -28,7 +30,7 @@ import (
 
 func httpHome(rw http.ResponseWriter, req *http.Request) {
 	hThreads, hTags := getHiddenElems(req)
-	tags, err := db.GetPopularTags(siteInfo.HomeTagsNum, 0, hTags)
+	tags, err := db.GetPopularTags(viper.GetInt("tagsInHome"), 0, hTags)
 	if err != nil {
 		send500(rw, err)
 		return
@@ -49,6 +51,7 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 		}
 
 		name := htmlFullEscape(tags[i].Name)
+		postsPerPage := viper.GetInt("postsPerPage")
 		tagdata[i] = TagData{
 			Name:          name,
 			URLName:       url.QueryEscape(name),
@@ -57,7 +60,7 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 			LastThread: ThreadInfo{
 				Thread:      thread,
 				LastMessage: count - 1,
-				Page:        (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
+				Page:        (count + postsPerPage - 1) / postsPerPage,
 			},
 		}
 		if tagdata[i].LastThread.Page < 1 {
@@ -65,7 +68,7 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	tinfos, err := retreiveThreads(siteInfo.HomeThreadsNum, 0, hThreads, hTags)
+	tinfos, err := retreiveThreads(viper.GetInt("threadsInHome"), 0, hThreads, hTags)
 	if err != nil {
 		send500(rw, err)
 		return
@@ -84,6 +87,7 @@ func httpAllThreads(rw http.ResponseWriter, req *http.Request) {
 	var pageOffset int
 	var err error
 	vars := mux.Vars(req)
+	threadsPerPage := viper.GetInt("threadsPerPage")
 
 	if page, ok := vars["page"]; ok {
 		pageInt, err = strconv.Atoi(page)
@@ -91,14 +95,14 @@ func httpAllThreads(rw http.ResponseWriter, req *http.Request) {
 			sendError(rw, 400, "Invalid page number")
 			return
 		}
-		pageOffset = (pageInt - 1) * siteInfo.ThreadsPerPage
+		pageOffset = (pageInt - 1) * threadsPerPage
 	} else {
 		pageInt = 1
 		pageOffset = 0
 	}
 
 	hThreads, hTags := getHiddenElems(req)
-	tinfos, err := retreiveThreads(siteInfo.ThreadsPerPage, pageOffset, hThreads, hTags)
+	tinfos, err := retreiveThreads(threadsPerPage, pageOffset, hThreads, hTags)
 	if err != nil {
 		send500(rw, err)
 		return
@@ -108,7 +112,7 @@ func httpAllThreads(rw http.ResponseWriter, req *http.Request) {
 		Page:     pageInt,
 		HasPrev:  pageInt > 1,
 		PrevPage: pageInt - 1,
-		HasNext:  len(tinfos) == siteInfo.TagsPerPage,
+		HasNext:  len(tinfos) == viper.GetInt("tagsPerPage"),
 		NextPage: pageInt + 1,
 	}
 
@@ -126,6 +130,8 @@ func httpAllTags(rw http.ResponseWriter, req *http.Request) {
 	var pageOffset int
 	var err error
 	vars := mux.Vars(req)
+	tagsPerPage := viper.GetInt("tagsPerPage")
+	postsPerPage := viper.GetInt("postsPerPage")
 
 	if page, ok := vars["page"]; ok {
 		pageInt, err = strconv.Atoi(page)
@@ -136,14 +142,14 @@ func httpAllTags(rw http.ResponseWriter, req *http.Request) {
 		if pageInt < 1 {
 			pageInt = 1
 		}
-		pageOffset = (pageInt - 1) * siteInfo.TagsPerPage
+		pageOffset = (pageInt - 1) * tagsPerPage
 	} else {
 		pageInt = 1
 		pageOffset = 0
 	}
 
 	_, hTags := getHiddenElems(req)
-	tags, err := db.GetPopularTags(siteInfo.TagsPerPage, pageOffset, hTags)
+	tags, err := db.GetPopularTags(tagsPerPage, pageOffset, hTags)
 	if err != nil {
 		send500(rw, err)
 		return
@@ -171,7 +177,7 @@ func httpAllTags(rw http.ResponseWriter, req *http.Request) {
 			LastThread: ThreadInfo{
 				Thread:      thread,
 				LastMessage: count - 1,
-				Page:        (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
+				Page:        (count + postsPerPage - 1) / postsPerPage,
 			},
 		}
 		if tagdata[i].LastThread.Page < 1 {
@@ -183,7 +189,7 @@ func httpAllTags(rw http.ResponseWriter, req *http.Request) {
 		Page:     pageInt,
 		HasPrev:  pageInt > 1,
 		PrevPage: pageInt - 1,
-		HasNext:  len(tags) == siteInfo.TagsPerPage,
+		HasNext:  len(tags) == tagsPerPage,
 		NextPage: pageInt + 1,
 	}
 
@@ -202,6 +208,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 	thread, err := db.GetThread(threadUrl)
 	isAdmin, _ := isAdmin(req)
 	requiresCaptcha := req.Header.Get("Captcha-required") == "true"
+	postsPerPage := viper.GetInt("postsPerPage")
 
 	if err != nil {
 		if err.Error() == "not found" {
@@ -223,7 +230,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 		if pageInt < 1 {
 			pageInt = 1
 		}
-		pageOffset = (pageInt - 1) * siteInfo.PostsPerPage
+		pageOffset = (pageInt - 1) * postsPerPage
 	} else {
 		pageInt = 1
 		pageOffset = 0
@@ -241,7 +248,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	// Parse posts
-	posts, err := db.GetPosts(&thread, siteInfo.PostsPerPage, pageOffset)
+	posts, err := db.GetPosts(&thread, postsPerPage, pageOffset)
 	if err != nil {
 		send500(rw, err)
 		return
@@ -279,7 +286,7 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 			return
 		}
 	}
-	maxPage := (postCount + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage
+	maxPage := (postCount + postsPerPage - 1) / postsPerPage
 	pages := PageInfo{
 		Page:     pageInt,
 		HasPrev:  pageInt > 1,
@@ -315,6 +322,8 @@ func httpThread(rw http.ResponseWriter, req *http.Request) {
 func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	tagName := strings.ToLower(vars["tag"])
+	tagResultsPerPage := viper.GetInt("tagResultsPerPage")
+	postsPerPage := viper.GetInt("postsPerPage")
 
 	var pageInt int
 	var pageOffset int
@@ -325,7 +334,7 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 			sendError(rw, 400, "Invalid page number")
 			return
 		}
-		pageOffset = (pageInt - 1) * siteInfo.TagResultsPerPage
+		pageOffset = (pageInt - 1) * tagResultsPerPage
 	} else {
 		pageInt = 1
 		pageOffset = 0
@@ -341,7 +350,7 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 	tagReadable = html.UnescapeString(tagReadable)
 	tagReadable = strings.TrimSuffix(tagReadable, " #")
 
-	threads, err := db.GetThreadList(tagReadable, siteInfo.TagResultsPerPage, pageOffset, hThreads, hTags)
+	threads, err := db.GetThreadList(tagReadable, tagResultsPerPage, pageOffset, hThreads, hTags)
 	if err != nil {
 		send500(rw, err)
 		return
@@ -427,7 +436,7 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 			}
 			lp.ShortContent, lp.HasBroken = shortify(content)
 			lp.Number = count - 1
-			lp.Page = (count + siteInfo.PostsPerPage - 2) / siteInfo.PostsPerPage
+			lp.Page = (count + postsPerPage - 2) / postsPerPage
 			lp.IsAnon = len(reply.Author.Nickname) < 1 && (len(reply.Author.Tripcode) < 1 || reply.Author.HiddenTripcode)
 		}
 	}
@@ -436,7 +445,7 @@ func httpTagSearch(rw http.ResponseWriter, req *http.Request) {
 		Page:     pageInt,
 		HasPrev:  pageInt > 1,
 		PrevPage: pageInt - 1,
-		HasNext:  len(threadlist) == siteInfo.TagResultsPerPage,
+		HasNext:  len(threadlist) == tagResultsPerPage,
 		NextPage: pageInt + 1,
 	}
 
@@ -523,6 +532,11 @@ func httpManageHidden(rw http.ResponseWriter, req *http.Request) {
 	var pageOffset int
 	var err error
 	vars := mux.Vars(req)
+	threadsPerPage := viper.GetInt("threadsPerPage")
+	postsPerPage := viper.GetInt("postsPerPage")
+	tagResultsPerPage := viper.GetInt("tagResultsPerPage")
+	threadsInHome := viper.GetInt("threadsInHome")
+	tagsInHome := viper.GetInt("tagsInHome")
 
 	if page, ok := vars["page"]; ok {
 		pageInt, err = strconv.Atoi(page)
@@ -530,7 +544,7 @@ func httpManageHidden(rw http.ResponseWriter, req *http.Request) {
 			sendError(rw, 400, "Invalid page number")
 			return
 		}
-		pageOffset = (pageInt - 1) * siteInfo.ThreadsPerPage
+		pageOffset = (pageInt - 1) * threadsPerPage
 	} else {
 		pageInt = 1
 		pageOffset = 0
@@ -539,7 +553,7 @@ func httpManageHidden(rw http.ResponseWriter, req *http.Request) {
 	hThreads, hTags := getHiddenElems(req)
 
 	// Get hidden threads
-	threads, err := db.GetThreads(hThreads, siteInfo.HomeThreadsNum, pageOffset)
+	threads, err := db.GetThreads(hThreads, threadsInHome, pageOffset)
 	if err != nil {
 		send500(rw, err)
 		return
@@ -566,7 +580,7 @@ func httpManageHidden(rw http.ResponseWriter, req *http.Request) {
 				Data:    lastPost,
 				StrDate: strdate(lastPost.Date),
 			},
-			Page: (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
+			Page: (count + postsPerPage - 1) / postsPerPage,
 		}
 		if tinfos[i].Page < 1 {
 			tinfos[i].Page = 1
@@ -574,7 +588,7 @@ func httpManageHidden(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	// Get hidden tags
-	tags, err := db.GetTags(hTags, siteInfo.HomeTagsNum, pageOffset)
+	tags, err := db.GetTags(hTags, tagsInHome, pageOffset)
 	if err != nil {
 		send500(rw, err)
 		return
@@ -601,7 +615,7 @@ func httpManageHidden(rw http.ResponseWriter, req *http.Request) {
 			LastThread: ThreadInfo{
 				Thread:      thread,
 				LastMessage: count - 1,
-				Page:        (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
+				Page:        (count + postsPerPage - 1) / postsPerPage,
 			},
 		}
 		if tagdata[i].LastThread.Page < 1 {
@@ -613,7 +627,7 @@ func httpManageHidden(rw http.ResponseWriter, req *http.Request) {
 		Page:     pageInt,
 		HasPrev:  pageInt > 1,
 		PrevPage: pageInt - 1,
-		HasNext:  len(tinfos) == siteInfo.TagResultsPerPage,
+		HasNext:  len(tinfos) == tagResultsPerPage,
 		NextPage: pageInt + 1,
 	}
 
@@ -761,8 +775,8 @@ func httpRobots(rw http.ResponseWriter, req *http.Request) {
 
 func httpVars(rw http.ResponseWriter, req *http.Request) {
 	vars := map[string]interface{}{
-		"domain":   siteInfo.FullVersionDomain,
-		"maxlen":   siteInfo.MaxPostLength,
+		"domain":   viper.GetString("fullDomain"),
+		"maxlen":   viper.GetString("maxPostLength"),
 		"basepath": "/",
 	}
 
@@ -797,9 +811,9 @@ func send(rw http.ResponseWriter, req *http.Request, name, title string, context
 	if ok {
 		basepath = val.BasePath
 	}
-	footer := siteInfo.Footer[rand.Intn(len(siteInfo.Footer))]
-	if len(siteInfo.PostFooter) > 0 {
-		footer += siteInfo.PostFooter
+	footer := footers[rand.Intn(len(footers))]
+	if viper.IsSet("postFooter") {
+		footer += viper.GetString("postFooter")
 	}
 	fmt.Fprintln(rw,
 		mustache.RenderFileInLayout(
@@ -815,8 +829,8 @@ func send(rw http.ResponseWriter, req *http.Request, name, title string, context
 				IsAdmin  bool
 				IsLight  bool
 			}{
-				siteInfo,
-				siteInfo.Title + title,
+				getSiteInfo(),
+				viper.GetString("siteTitle") + title,
 				footer,
 				context,
 				basepath,
@@ -835,9 +849,9 @@ func stiki(rw http.ResponseWriter, req *http.Request, name string) {
 	if ok {
 		basepath = val.BasePath
 	}
-	footer := siteInfo.Footer[rand.Intn(len(siteInfo.Footer))]
-	if len(siteInfo.PostFooter) > 0 {
-		footer += siteInfo.PostFooter
+	footer := footers[rand.Intn(len(footers))]
+	if viper.IsSet("postFooter") {
+		footer += viper.GetString("postFooter")
 	}
 	title := strings.ToUpper(name[:1]) + strings.Replace(name[1:], "-", " ", -1)
 	fmt.Fprintln(rw,
@@ -851,8 +865,8 @@ func stiki(rw http.ResponseWriter, req *http.Request, name string) {
 				BasePath string
 				UrlPath  string
 			}{
-				siteInfo,
-				siteInfo.Title + " ~ Stiki: " + title,
+				getSiteInfo(),
+				viper.GetString("siteTitle") + " ~ Stiki: " + title,
 				footer,
 				basepath,
 				req.URL.String(),
@@ -879,7 +893,7 @@ func sendError(rw http.ResponseWriter, code int, context interface{}) {
 				Info SiteInfo
 				Data interface{}
 			}{
-				siteInfo,
+				getSiteInfo(),
 				context,
 			},
 		),
