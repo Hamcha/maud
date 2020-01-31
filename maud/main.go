@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/spf13/viper"
@@ -107,6 +106,7 @@ func main() {
 	viper.SetDefault("threadsInHome", 10)
 	viper.SetDefault("maxPostLength", 15000)
 	viper.SetDefault("useProxy", false)
+	viper.SetDefault("maudRoot", ".")
 	viper.SetDefault("siteTitle", "Maud pie lair")
 
 	// Setup sources
@@ -127,9 +127,6 @@ func main() {
 	bind := viper.GetString("bind")
 	debugMode = viper.GetBool("debug")
 	maudRoot = viper.GetString("maudroot")
-	if maudRoot == "" {
-		maudRoot, _ = os.Getwd()
-	}
 
 	// Read footers
 
