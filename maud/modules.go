@@ -3,13 +3,17 @@ package main
 import (
 	. "github.com/hamcha/maud/maud/data"
 	"github.com/hamcha/maud/maud/modules"
+	"github.com/spf13/viper"
+
 	// Formatters
 	"github.com/hamcha/maud/maud/modules/formatters/bbcode"
 	"github.com/hamcha/maud/maud/modules/formatters/lightify"
 	"github.com/hamcha/maud/maud/modules/formatters/markdown"
+
 	// Mutators
 	"github.com/hamcha/maud/maud/modules/maudtext"
 	"github.com/hamcha/maud/maud/modules/proxy"
+
 	// Go libs
 	"net/http"
 )
@@ -35,11 +39,11 @@ func InitFormatters() {
 	postmutators = append(postmutators, lightmutator)
 
 	// Maudtext (handles quotes etc)
-	postmutators = append(postmutators, maudtext.Provide(siteInfo.PostsPerPage))
+	postmutators = append(postmutators, maudtext.Provide(viper.GetInt("postsPerPage")))
 
 	// Proxy
-	if siteInfo.UseProxy {
-		postmutators = append(postmutators, proxy.Provide(siteInfo.ProxyRoot, siteInfo.ProxyDomain))
+	if viper.GetBool("useProxy") {
+		postmutators = append(postmutators, proxy.Provide(mustGet("proxyRoot"), mustGet("proxyDomain")))
 	}
 }
 

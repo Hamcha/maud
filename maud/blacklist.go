@@ -43,9 +43,9 @@ type onlyCountry struct {
 
 func initBL() {
 	// Load Blacklist conf
-	err := loadJson(confRoot, "blacklist.conf", &blacklists)
+	err := loadJson(maudRoot, "blacklist.conf", &blacklists)
 	if err != nil {
-		log.Printf("[ WARNING ] %s/blacklist.conf not found. BL not initialized.\n", confRoot)
+		log.Printf("[ WARNING ] %s/blacklist.conf not found. BL not initialized.\n", maudRoot)
 	} else {
 		for i := range blacklists {
 			item := blacklists[i]
@@ -56,17 +56,17 @@ func initBL() {
 	}
 
 	// Load Captcha conf
-	err = loadJson(confRoot, "captcha.conf", &captchas)
+	err = loadJson(maudRoot, "captcha.conf", &captchas)
 	if err != nil {
-		log.Printf("[ WARNING ] %s/captcha.conf not found. Captchas not initialized.\n", confRoot)
+		log.Printf("[ WARNING ] %s/captcha.conf not found. Captchas not initialized.\n", maudRoot)
 	}
 
 	// Load GeoIP database
-	geoip, err = maxminddb.Open(path.Join(confRoot, "geoip.mmdb"))
+	geoip, err = maxminddb.Open(path.Join(maudRoot, "geoip.mmdb"))
 	if err == nil {
-		log.Printf("[ OK ] GeoIP limiting initialized from %s/geoip.mmdb.\n", confRoot)
+		log.Printf("[ OK ] GeoIP limiting initialized from %s/geoip.mmdb.\n", maudRoot)
 	} else {
-		log.Printf("[ WARNING ] %s/geoip.mmdb not found. GeoIP limiting not initialized.\n", confRoot)
+		log.Printf("[ WARNING ] %s/geoip.mmdb not found. GeoIP limiting not initialized.\n", maudRoot)
 	}
 }
 
@@ -94,11 +94,11 @@ func checkBlacklist(req *http.Request) (bool, string, string) {
 	}
 	userAgent := req.UserAgent()
 	var ip string
-	if *debugMode {
+	if debugMode {
 		log.Printf("[blacklist] Request from %s\n", req.RemoteAddr)
 	}
 	if iphead, ok := req.Header["X-Forwarded-For"]; ok {
-		if *debugMode {
+		if debugMode {
 			for _, ipcandidate := range iphead {
 				log.Printf("[blacklist] Has X-Forwarded-For: %s\n", ipcandidate)
 			}

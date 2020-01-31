@@ -1,25 +1,28 @@
-package main // import "github.com/hamcha/maud/maud"
+package main
 
 import (
-	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
 	"strings"
 
+	"github.com/spf13/viper"
+
 	"github.com/gorilla/mux"
-	. "github.com/hamcha/maud/maud/data"
 )
 
 var (
-	adminConf AdminConfig
-	db        Database
-	maudRoot  string
-	confRoot  string
-	siteInfo  SiteInfo
-	csp       map[string]string
+	db       Database
+	maudRoot string
+	footers  []string
+	csp      = map[string]string{
+		"script-src": "'self'",
+		"style-src":  "'self'",
+		"font-src":   "'self'",
+		//"object-src": "'none'",
+	}
 )
 
 func setupHandlers(router *mux.Router, isAdmin, isSubdir bool) {
@@ -78,56 +81,69 @@ func dontListDirs(h http.Handler) http.HandlerFunc {
 	})
 }
 
-var debugMode *bool
+var debugMode bool
+
+func mustGet(key string) string {
+	val := viper.GetString(key)
+	if val == "" {
+		panic(fmt.Errorf("config key %s not set to a value", key))
+	}
+	return val
+}
 
 func main() {
-	// Get executable path
-	maudExec, err := filepath.Abs(os.Args[0])
+	// Set default values
+	viper.SetDefault("bind", ":8080")
+	viper.SetDefault("dburl", "localhost")
+	viper.SetDefault("dbname", "maud")
+	viper.SetDefault("fullDomain", "localhost.localdomain:8080")
+	viper.SetDefault("liteDomain", "lite.localhost.localdomain:8080")
+	viper.SetDefault("debug", false)
+	viper.SetDefault("postsPerPage", 30)
+	viper.SetDefault("threadsPerPage", 20)
+	viper.SetDefault("tagsPerPage", 20)
+	viper.SetDefault("tagResultsPerPage", 10)
+	viper.SetDefault("tagsInHome", 5)
+	viper.SetDefault("threadsInHome", 10)
+	viper.SetDefault("maxPostLength", 15000)
+	viper.SetDefault("useProxy", false)
+	viper.SetDefault("siteTitle", "Maud pie lair")
+
+	// Setup sources
+	viper.SetConfigName("config")
+	viper.SetConfigType("json")
+	viper.AddConfigPath(".")
+	viper.AutomaticEnv()
+	viper.SetEnvPrefix("maud")
+	err := viper.ReadInConfig()
 	if err != nil {
-		panic(err)
-	}
-	maudRoot = filepath.Dir(maudExec)
-	confRoot = maudRoot
-
-	// Setup CSP
-	csp = map[string]string{
-		"script-src": "'self'",
-		"style-src":  "'self'",
-		"font-src":   "'self'",
-		//"object-src": "'none'",
-	}
-
-	// Command line parameters
-	bind := flag.String("port", ":8080", "Address to bind to")
-	mongo := flag.String("dburl", "localhost", "MongoDB servers, separated by comma")
-	dbname := flag.String("dbname", "maud", "MongoDB database to use")
-	adminfile := flag.String("admin", "admin.conf", "Admin configuration file")
-	debugMode = flag.Bool("debug", false, "Enable debug prints")
-	flag.StringVar(&confRoot, "confdir", confRoot, "Directory to read configuration from")
-	flag.StringVar(&maudRoot, "root", maudRoot, "The HTTP server root directory")
-	flag.Parse()
-
-	// Load Site info file
-	err = loadJson(confRoot, "info.json", &siteInfo)
-	if err != nil {
-		fmt.Println("-------------------------------------------------")
-		fmt.Printf("[ ERROR ] info.json was not found or could not be read in directory\r\n\r\n\t%s\r\n\r\n"+
-			"Have you forgot to create one from info.json.sample?\n", confRoot)
-		fmt.Println("-------------------------------------------------")
-		log.Println("[ FATAL ] Could not start maud: aborting.")
-		return
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			log.Println("Could not find config file, maud will use other sources if possible (or fail)")
+		} else {
+			panic(err)
+		}
 	}
 
-	// Load Admin config file
-	err = loadJson(confRoot, *adminfile, &adminConf)
-	if err != nil {
-		log.Printf("[ WARNING ] Admin file %s is missing or malformed, "+
-			"Maud will run without administrators.\r\n", *adminfile)
+	bind := viper.GetString("bind")
+	debugMode = viper.GetBool("debug")
+	maudRoot = viper.GetString("maudroot")
+	if maudRoot == "" {
+		maudRoot, _ = os.Getwd()
+	}
+
+	// Read footers
+
+	if footersTxt, err := ioutil.ReadFile(maudRoot + "/footers.txt"); err == nil {
+		footers = strings.Split(string(footersTxt), "\n")
+	} else {
+		footers = []string{}
 	}
 
 	// Initialize formatters, database and other modules
-	log.Printf("[ INFO ] Connecting to %s/%s ...", *mongo, *dbname)
-	db = InitDatabase(*mongo, *dbname)
+	mongo := viper.GetString("dburl")
+	dbname := viper.GetString("dbname")
+	log.Printf("[ INFO ] Connecting to %s/%s ...", mongo, dbname)
+	db = InitDatabase(mongo, dbname)
 	defer db.Close()
 	log.Printf("[ OK ] Connected.\r\n")
 	InitFormatters()
@@ -140,12 +156,12 @@ func main() {
 
 	// Admin mode pages
 	initAdmin()
-	if adminConf.EnablePath {
-		adminPath := router.PathPrefix(adminConf.Path).Subrouter()
+	if viper.GetBool("adminEnablePath") {
+		adminPath := router.PathPrefix(mustGet("adminPath")).Subrouter()
 		setupHandlers(adminPath, true, true)
 	}
-	if adminConf.EnableDomain {
-		adminHost := router.Host(adminConf.Domain).Subrouter()
+	if viper.GetBool("adminEnableDomain") {
+		adminHost := router.Host(mustGet("adminDomain")).Subrouter()
 		setupHandlers(adminHost, true, false)
 	}
 
@@ -154,6 +170,6 @@ func main() {
 	http.Handle("/static/", dontListDirs(http.StripPrefix("/static/", http.FileServer(http.Dir(maudRoot+"/static")))))
 
 	// Start serving pages
-	log.Printf("Listening on %s\r\nServer root: %s\r\n", *bind, maudRoot)
-	http.ListenAndServe(*bind, nil)
+	log.Printf("Listening on %s\r\nServer root: %s\r\n", bind, maudRoot)
+	http.ListenAndServe(bind, nil)
 }

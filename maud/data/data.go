@@ -2,12 +2,11 @@ package data
 
 import "gopkg.in/mgo.v2/bson"
 
-type AdminConfig struct {
-	EnablePath   bool
-	EnableDomain bool
-	Path         string
-	Domain       string
-	Admins       map[string]string
+type SiteInfo struct {
+	Title              string
+	MaxPostLength      int
+	LightVersionDomain string
+	FullVersionDomain  string
 }
 
 type CaptchaData struct {
@@ -51,25 +50,6 @@ type PostInfo struct {
 	Editable           bool
 	Modified           bool
 	IsAnon             bool
-}
-
-type SiteInfo struct {
-	Title              string
-	Secret             string
-	HomeThreadsNum     int
-	HomeTagsNum        int
-	PostsPerPage       int
-	ThreadsPerPage     int
-	TagResultsPerPage  int
-	TagsPerPage        int
-	MaxPostLength      int
-	Footer             []string
-	PostFooter         string
-	FullVersionDomain  string
-	LightVersionDomain string
-	UseProxy           bool
-	ProxyDomain        string
-	ProxyRoot          string
 }
 
 type Tag struct {

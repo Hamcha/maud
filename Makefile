@@ -1,10 +1,10 @@
 all: maud
 
-maud: grunt dep core
+maud: grunt core
 
 .PHONY: core
 core:
-	go install github.com/hamcha/maud/maud
+	go install ./maud
 
 grunt:
 	grunt build
@@ -13,16 +13,8 @@ grunt:
 run: all
 	maud
 
-dep:
-	go get github.com/gorilla/mux
-	go get github.com/microcosm-cc/bluemonday
-	go get github.com/oschwald/maxminddb-golang
-	go get github.com/bamiaux/rez
-	go get gopkg.in/mgo.v2
-	touch dep
-
 clean:
-	rm -f dep grunt
+	rm -f grunt
 
 test:
 	go test ./...

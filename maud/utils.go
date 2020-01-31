@@ -20,6 +20,8 @@ import (
 	"unicode"
 	"unicode/utf8"
 
+	"github.com/spf13/viper"
+
 	. "github.com/hamcha/maud/maud/data"
 )
 
@@ -41,7 +43,7 @@ func parseNickname(nickname string) (string, string) {
 }
 
 func tripcode(str string) string {
-	sum := sha256.Sum256([]byte(str + siteInfo.Secret))
+	sum := sha256.Sum256([]byte(str + mustGet("secret")))
 	b64 := base64.URLEncoding.EncodeToString(sum[:6])
 	return b64[:6]
 }
@@ -272,11 +274,12 @@ func threadPostOrErr(rw http.ResponseWriter, threadId, postIdStr string) (Thread
 }
 
 func postTooLong(content string) bool {
-	return siteInfo.MaxPostLength > 0 && utf8.RuneCountInString(content) > siteInfo.MaxPostLength
+	maxPostLen := viper.GetInt("maxPostLength")
+	return maxPostLen > 0 && utf8.RuneCountInString(content) > maxPostLen
 }
 
 func isLightVersion(req *http.Request) bool {
-	return len(siteInfo.LightVersionDomain) > 0 && req.Host == siteInfo.LightVersionDomain
+	return req.Host == viper.GetString("liteDomain")
 }
 
 // index returns the index of character `del` in `str`. The search starts from index `offset`.
@@ -318,7 +321,7 @@ func randomString(length int) string {
 	_, err := rand.Read(b)
 	if err != nil {
 		// Fallback to a quite less secure method
-		sum := sha256.Sum256([]byte(strconv.Itoa(int(time.Now().UnixNano())) + siteInfo.Secret))
+		sum := sha256.Sum256([]byte(strconv.Itoa(int(time.Now().UnixNano())) + mustGet("secret")))
 		b64 := base64.URLEncoding.EncodeToString(sum[:])
 		for len(b64) < length {
 			sum2 := sha256.Sum256(sum[:])
@@ -361,12 +364,13 @@ func getHiddenElems(req *http.Request) (threads, tags []string) {
 // retreiveThreads retreives up to `n` threads, skipping the first `offset`,
 // from the DB, excluding the ones matching the hidden elements of the client.
 func retreiveThreads(n, offset int, hThreads, hTags []string) ([]ThreadInfo, error) {
+	postsPerPage := viper.GetInt("postsPerPage")
 	threads, err := db.GetThreadList("", n, offset, hThreads, hTags)
 	if err != nil {
 		return nil, err
 	}
 
-	tinfos := make([]ThreadInfo, 0, siteInfo.HomeThreadsNum)
+	tinfos := make([]ThreadInfo, 0, viper.GetInt("threadsInHome"))
 	for i := range threads {
 		count, err := db.PostCount(&threads[i])
 		if err != nil {
@@ -385,7 +389,7 @@ func retreiveThreads(n, offset int, hThreads, hTags []string) ([]ThreadInfo, err
 				Data:    lastPost,
 				StrDate: strdate(lastPost.Date),
 			},
-			Page: (count + siteInfo.PostsPerPage - 1) / siteInfo.PostsPerPage,
+			Page: (count + postsPerPage - 1) / postsPerPage,
 		})
 		if tinfos[i].Page < 1 {
 			tinfos[i].Page = 1
@@ -458,4 +462,16 @@ func emojiLink(surl string) string {
 		str += string(emojis[b])
 	}
 	return str
+}
+
+/**
+ * Helper for templates that depend on legacy code
+ */
+func getSiteInfo() SiteInfo {
+	return SiteInfo{
+		Title:              viper.GetString("title"),
+		MaxPostLength:      viper.GetInt("maxPostLength"),
+		LightVersionDomain: viper.GetString("liteDomain"),
+		FullVersionDomain:  viper.GetString("fullDomain"),
+	}
 }

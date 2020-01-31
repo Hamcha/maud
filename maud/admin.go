@@ -3,8 +3,10 @@ package main
 import (
 	"crypto/sha256"
 	"encoding/hex"
-	"github.com/gorilla/mux"
 	"net/http"
+
+	"github.com/gorilla/mux"
+	"github.com/spf13/viper"
 )
 
 type AdminRequestInfo struct {
@@ -13,9 +15,11 @@ type AdminRequestInfo struct {
 }
 
 var adminRequests map[*http.Request]AdminRequestInfo
+var adminUsers map[string]string
 
 func initAdmin() {
 	adminRequests = make(map[*http.Request]AdminRequestInfo)
+	adminUsers = viper.GetStringMapString("adminUsers")
 }
 
 func wrapAdmin(handler http.HandlerFunc, usePath bool) http.HandlerFunc {
@@ -23,7 +27,7 @@ func wrapAdmin(handler http.HandlerFunc, usePath bool) http.HandlerFunc {
 		user, pass, _ := req.BasicAuth()
 		basepath := "/"
 		if usePath {
-			basepath = adminConf.Path
+			basepath = mustGet("adminPath")
 		}
 		if checkAdmin(user, pass) {
 			adminRequests[req] = AdminRequestInfo{
@@ -56,7 +60,7 @@ func isAdmin(req *http.Request) (bool, AdminRequestInfo) {
 }
 
 func checkAdmin(user, pass string) bool {
-	if enc, ok := adminConf.Admins[user]; ok {
+	if enc, ok := adminUsers[user]; ok {
 		sum := sha256.Sum256([]byte(pass))
 		str := hex.EncodeToString(sum[:])
 		return str == enc
