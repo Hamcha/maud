@@ -165,7 +165,7 @@ func main() {
 	}
 
 	setupHandlers(router, false, false)
-	http.Handle("/", router)
+	http.Handle("/", panicHandler{router})
 	http.Handle("/static/", dontListDirs(http.StripPrefix("/static/", http.FileServer(http.Dir(maudRoot+"/static")))))
 
 	// Start serving pages

@@ -8,12 +8,14 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"html"
 	mathrand "math/rand"
 	"net/http"
 	"net/url"
 	"os"
 	"path"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
@@ -474,4 +476,21 @@ func getSiteInfo() SiteInfo {
 		LightVersionDomain: viper.GetString("liteDomain"),
 		FullVersionDomain:  viper.GetString("fullDomain"),
 	}
+}
+
+type panicHandler struct {
+	http.Handler
+}
+
+func (h panicHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	defer func() {
+		err := recover()
+		if err != nil {
+			buf := make([]byte, 1<<20)
+			n := runtime.Stack(buf, true)
+			fmt.Fprintf(os.Stderr, "panic: %v\n\n%s", err, buf[:n])
+			os.Exit(1)
+		}
+	}()
+	h.Handler.ServeHTTP(w, r)
 }

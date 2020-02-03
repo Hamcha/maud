@@ -881,6 +881,8 @@ func send500(rw http.ResponseWriter, err error) {
 	errdata := fmt.Sprintf("Error message: %s\nStack: %s", err.Error(), debug.Stack())
 	errdatab64 := base64.StdEncoding.EncodeToString([]byte(errdata))
 	sendError(rw, 500, errdatab64)
+	// Server errors are pretty bad
+	panic(err)
 }
 
 func sendError(rw http.ResponseWriter, code int, context interface{}) {
