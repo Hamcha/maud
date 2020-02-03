@@ -1,21 +1,23 @@
 {
-    "name": "maud",
+    "name": "maud-assets",
     "version": "0.0.0",
     "dependencies": {
-    },
-    "devDependencies": {
         "coffee-script": "*",
+        "connect-livereload": "*",
         "grunt": "*",
-        "grunt-contrib-watch": "*",
-        "grunt-contrib-coffee": "*",
-        "grunt-contrib-compass": "*",
-        "grunt-contrib-uglify": "*",
         "grunt-concurrent": "*",
+        "grunt-contrib-coffee": "*",
         "grunt-contrib-connect": "*",
+        "grunt-contrib-sass": "^1.0.0",
+        "grunt-contrib-uglify": "*",
+        "grunt-contrib-watch": "*",
+        "grunt-dart-sass": "^1.1.3",
         "grunt-open": "*",
         "load-grunt-tasks": "*",
-        "connect-livereload": "*",
         "time-grunt": "*"
+    },
+    "scripts": {
+        "start": "grunt build"
     },
     "engines": {
         "node": ">=0.8.0"
