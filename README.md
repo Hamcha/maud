@@ -11,6 +11,7 @@
 You will need:
 
 - Skaffold
+- Kustomize (probably)
 
 Run with skaffold with live-reload: `skaffold dev`
 
