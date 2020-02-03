@@ -69,8 +69,8 @@ module.exports = function(grunt) {
         files: [
           {
             expand: true,
-            cwd: ".",
-            src: ["<%= yeoman.scss %>/*.scss"],
+            cwd: "<%= yeoman.scss %>",
+            src: ["*.scss"],
             dest: "<%= yeoman.css %>",
             ext: ".css"
           }
