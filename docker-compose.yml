@@ -1,0 +1,16 @@
+version: "2"
+services:
+  mongo:
+    image: mongo:latest
+    restart: always
+    volumes:
+      - mongo-data:/data/db
+  maud:
+    image: maud:latest
+    restart: always
+    environment:
+      - MAUD_DBURL=mongo
+    ports:
+      - 8080:8080
+volumes:
+  mongo-data:

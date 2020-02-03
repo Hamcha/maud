@@ -106,7 +106,7 @@ func main() {
 	viper.SetDefault("threadsInHome", 10)
 	viper.SetDefault("maxPostLength", 15000)
 	viper.SetDefault("useProxy", false)
-	viper.SetDefault("maudRoot", ".")
+	viper.SetDefault("maudRoot", "/maud")
 	viper.SetDefault("siteTitle", "Maud pie lair")
 
 	// Setup sources
@@ -132,8 +132,10 @@ func main() {
 
 	if footersTxt, err := ioutil.ReadFile(maudRoot + "/footers.txt"); err == nil {
 		footers = strings.Split(string(footersTxt), "\n")
+		log.Printf("[ OK ] Loaded %d footers.\r\n", len(footers))
 	} else {
-		footers = []string{}
+		footers = []string{""}
+		log.Printf("[ WARNING ] Footers are missing! (footers.txt)\r\n")
 	}
 
 	// Initialize formatters, database and other modules
