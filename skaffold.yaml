@@ -1,0 +1,10 @@
+apiVersion: skaffold/v2alpha2
+kind: Config
+build:
+  artifacts:
+    - image: registry.zyg.ovh/hamcha/maud
+  local:
+    push: false
+deploy:
+  kustomize:
+    path: "kubernetes/overlays/local"

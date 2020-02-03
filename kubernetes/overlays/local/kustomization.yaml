@@ -1,0 +1,11 @@
+bases:
+  - ../../base
+
+namespace: maud
+
+resources:
+  - ingress.yaml
+  - mongo-pv.yaml
+
+patchesStrategicMerge:
+  - maud-deployment.yaml

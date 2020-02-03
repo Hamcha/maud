@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: maud
+  name: maud
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: maud
+    spec:
+      containers:
+        - env:
+            - name: MAUD_DBURL
+              value: mongo
+          image: registry.zyg.ovh/hamcha/maud:latest
+          name: maud
+          ports:
+            - containerPort: 8080
+          resources: {}
+      restartPolicy: Always
+status: {}
