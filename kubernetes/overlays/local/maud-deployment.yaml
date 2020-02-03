@@ -1,0 +1,10 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: maud
+spec:
+  template:
+    spec:
+      containers:
+        - name: maud
+          imagePullPolicy: "Never"

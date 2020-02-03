@@ -1,6 +1,7 @@
 FROM node:lts as node
 WORKDIR /assets
-COPY package.json package-lock.json Gruntfile.js static ./
+COPY package.json package-lock.json Gruntfile.js ./
+COPY static static
 RUN npm ci && npm start
 
 FROM golang:alpine as golang
@@ -24,7 +25,7 @@ COPY . .
 COPY --from=golang /go/bin/app/maud-bin /maud/maud-bin
 
 # Copy compiled assets
-COPY --from=node /assets /maud/static
+COPY --from=node /assets/static /maud/static
 
 ENV ZONEINFO /zoneinfo.zip
 COPY --from=alpine /zoneinfo.zip /
