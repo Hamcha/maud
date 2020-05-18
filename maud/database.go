@@ -374,9 +374,12 @@ func (db Database) PurgePost(post Post) (error, bool) {
 	if err != nil {
 		return err, false
 	}
+
 	if thread.ThreadPost == post.Id {
+		// Post was OP: purge entire thread
 		return db.PurgeThread(&thread), true
 	}
+
 	if thread.LastReply == post.Id {
 		// Get the new last post
 		posts, err := db.GetPosts(&thread, 1, int(thread.Messages)-2)
@@ -454,9 +457,43 @@ func (db Database) PurgeThread(thread *Thread) error {
 	}
 	// Decrement all tags
 	for i := range thread.Tags {
-		err = db.DecTag(thread.Tags[i])
+		tagname := thread.Tags[i]
+		err = db.DecTag(tagname)
 		if err != nil {
 			return err
+		}
+
+		// If this was the latest thread on that tag, update it, or it will point to an invalid thread!
+		tags, err := db.GetTags([]string{tagname}, 1, 0)
+		if err != nil {
+			return err
+		}
+		if len(tags) < 1 {
+			continue
+		}
+		tag := tags[0]
+		if tag.LastThread == thread.Id {
+			lastValidThreads := db.database.C("threads").Find(bson.M{
+				"tags": bson.M{
+					"$in": []string{tag.Name},
+				},
+			}).Limit(1)
+			if count, err := lastValidThreads.Count(); count < 1 || err != nil {
+				log.Printf("[ ERR ] Expected to find at least 1 valid thread with tag %s while purging %s!", tagname, thread.ShortUrl)
+				return errors.New("Didn't find a valid thread when updating tag.LastThread.")
+			}
+
+			var lastValidThread Thread
+			if err = lastValidThreads.One(&lastValidThread); err != nil {
+				return err
+			}
+
+			err = db.database.C("tags").Update(bson.M{"name": tagname}, bson.M{
+				"$set": bson.M{"lastthread": lastValidThread.Id},
+			})
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil
