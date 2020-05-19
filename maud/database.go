@@ -216,6 +216,13 @@ func (db Database) GetTags(tagnames []string, limit, offset int) ([]Tag, error) 
 	return tags, err
 }
 
+// GetTag returns a specific tag
+func (db Database) GetTag(name string) (Tag, error) {
+	var doc Tag
+	err := db.database.C("tags").Find(bson.M{"name": name}).One(&doc)
+	return doc, err
+}
+
 func (db Database) GetThreadById(id bson.ObjectId) (Thread, error) {
 	var thread Thread
 	err := db.database.C("threads").FindId(id).One(&thread)
@@ -473,24 +480,7 @@ func (db Database) PurgeThread(thread *Thread) error {
 		}
 		tag := tags[0]
 		if tag.LastThread == thread.Id {
-			lastValidThreads := db.database.C("threads").Find(bson.M{
-				"tags": bson.M{
-					"$in": []string{tag.Name},
-				},
-			}).Limit(1)
-			if count, err := lastValidThreads.Count(); count < 1 || err != nil {
-				log.Printf("[ ERR ] Expected to find at least 1 valid thread with tag %s while purging %s!", tagname, thread.ShortUrl)
-				return errors.New("Didn't find a valid thread when updating tag.LastThread.")
-			}
-
-			var lastValidThread Thread
-			if err = lastValidThreads.One(&lastValidThread); err != nil {
-				return err
-			}
-
-			err = db.database.C("tags").Update(bson.M{"name": tagname}, bson.M{
-				"$set": bson.M{"lastthread": lastValidThread.Id},
-			})
+			_, err := db.HealTag(tag.Name)
 			if err != nil {
 				return err
 			}
@@ -529,4 +519,29 @@ func (db Database) GetMatchingTags(word string, limit, offset int, filter []stri
 	var tags []Tag
 	err := query.All(&tags)
 	return tags, err
+}
+
+// HealTag recalculates references to the given tag, in case they got corrupted
+// It will return whether the tag was deleted and an error if any DB operation failed
+func (db Database) HealTag(name string) (bool, error) {
+	lastValidThreads := db.database.C("threads").Find(bson.M{
+		"tags": bson.M{
+			"$in": []string{name},
+		},
+	}).Limit(1)
+	if count, err := lastValidThreads.Count(); count < 1 || err != nil {
+		// No threads under this tag, make sure the tag is dead
+		err = db.database.C("tags").Remove(bson.M{"name": name})
+		return err == nil, err
+	}
+
+	var lastValidThread Thread
+	if err := lastValidThreads.One(&lastValidThread); err != nil {
+		return false, err
+	}
+
+	err := db.database.C("tags").Update(bson.M{"name": name}, bson.M{
+		"$set": bson.M{"lastthread": lastValidThread.Id},
+	})
+	return false, err
 }
