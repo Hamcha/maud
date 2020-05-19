@@ -36,23 +36,44 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	tagdata := make([]TagData, len(tags))
+	tagdata := make([]TagData, 0)
 
 	for i := range tags {
 		thread, err := db.GetThreadById(tags[i].LastThread)
-		if err != nil {
-			send500(rw, err)
-			return
+		var deleted bool
+		for err != nil {
+			// Oh fuck, try to fix or hide the tag
+			deleted, err = db.HealTag(tags[i].Name)
+			if err != nil {
+				send500(rw, err)
+				return
+			}
+			if deleted {
+				break
+			} else {
+				// Re-fetch tag
+				tag, err := db.GetTag(tags[i].Name)
+				if err != nil {
+					// WTF
+					deleted = true
+					break
+				}
+				thread, err = db.GetThreadById(tag.LastThread)
+			}
+		}
+		if deleted {
+			continue
 		}
 		count, err := db.PostCount(&thread)
 		if err != nil {
-			send500(rw, err)
-			return
+			// Should probably check why this is broken
+			count = 0
+			continue
 		}
 
 		name := htmlFullEscape(tags[i].Name)
 		postsPerPage := viper.GetInt("postsPerPage")
-		tagdata[i] = TagData{
+		tagdata = append(tagdata, TagData{
 			Name:          name,
 			URLName:       url.QueryEscape(name),
 			LastUpdate:    tags[i].LastUpdate,
@@ -62,9 +83,9 @@ func httpHome(rw http.ResponseWriter, req *http.Request) {
 				LastMessage: count - 1,
 				Page:        (count + postsPerPage - 1) / postsPerPage,
 			},
-		}
-		if tagdata[i].LastThread.Page < 1 {
-			tagdata[i].LastThread.Page = 1
+		})
+		if tagdata[len(tagdata)-1].LastThread.Page < 1 {
+			tagdata[len(tagdata)-1].LastThread.Page = 1
 		}
 	}
 
@@ -154,22 +175,43 @@ func httpAllTags(rw http.ResponseWriter, req *http.Request) {
 		send500(rw, err)
 		return
 	}
-	tagdata := make([]TagData, len(tags))
+	tagdata := make([]TagData, 0)
 
 	for i := range tags {
 		thread, err := db.GetThreadById(tags[i].LastThread)
-		if err != nil {
-			send500(rw, err)
-			return
+		var deleted bool
+		for err != nil {
+			// Oh fuck, try to fix or hide the tag
+			deleted, err = db.HealTag(tags[i].Name)
+			if err != nil {
+				send500(rw, err)
+				return
+			}
+			if deleted {
+				break
+			} else {
+				// Re-fetch tag
+				tag, err := db.GetTag(tags[i].Name)
+				if err != nil {
+					// WTF
+					deleted = true
+					break
+				}
+				thread, err = db.GetThreadById(tag.LastThread)
+			}
+		}
+		if deleted {
+			continue
 		}
 		count, err := db.PostCount(&thread)
 		if err != nil {
-			send500(rw, err)
+			// Should probably check why this is broken
+			count = 0
 			return
 		}
 
 		name := htmlFullEscape(tags[i].Name)
-		tagdata[i] = TagData{
+		tagdata = append(tagdata, TagData{
 			Name:          name,
 			URLName:       url.QueryEscape(name),
 			LastUpdate:    tags[i].LastUpdate,
@@ -179,9 +221,9 @@ func httpAllTags(rw http.ResponseWriter, req *http.Request) {
 				LastMessage: count - 1,
 				Page:        (count + postsPerPage - 1) / postsPerPage,
 			},
-		}
-		if tagdata[i].LastThread.Page < 1 {
-			tagdata[i].LastThread.Page = 1
+		})
+		if tagdata[len(tagdata)-1].LastThread.Page < 1 {
+			tagdata[len(tagdata)-1].LastThread.Page = 1
 		}
 	}
 
