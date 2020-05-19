@@ -131,7 +131,7 @@ func main() {
 	// Read footers
 
 	if footersTxt, err := ioutil.ReadFile(maudRoot + "/footers.txt"); err == nil {
-		footers = strings.Split(string(footersTxt), "\n")
+		footers = strings.Split(strings.TrimSpace(string(footersTxt)), "\n")
 		log.Printf("[ OK ] Loaded %d footers.\r\n", len(footers))
 	} else {
 		footers = []string{""}
