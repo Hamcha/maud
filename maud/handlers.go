@@ -16,6 +16,7 @@ import (
 	"path"
 	"path/filepath"
 	"runtime/debug"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -785,6 +786,26 @@ func httpBanUser(rw http.ResponseWriter, req *http.Request) {
 	})
 }
 
+type BlacklistDataList []BlacklistData
+
+// Flattened blacklist structure
+type BlacklistData struct {
+	Name      string
+	Blacklist Blacklist
+}
+
+func (blData BlacklistDataList) Len() int {
+	return len(blData)
+}
+
+func (blData BlacklistDataList) Less(i, j int) bool {
+	return blData[i].Name < blData[j].Name
+}
+
+func (blData BlacklistDataList) Swap(i, j int) {
+	blData[i], blData[j] = blData[j], blData[i]
+}
+
 func httpBlacklist(rw http.ResponseWriter, req *http.Request) {
 	isAdmin, _ := isAdmin(req)
 	if !isAdmin {
@@ -792,17 +813,14 @@ func httpBlacklist(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// Flattened blacklist structure
-	type BlacklistData struct {
-		Name      string
-		Blacklist Blacklist
-	}
-	blacklisted := make([]BlacklistData, len(blacklists))
+	blacklisted := make(BlacklistDataList, len(blacklists))
 	i := 0
 	for name, rule := range blacklists {
 		blacklisted[i] = BlacklistData{name, rule}
 		i++
 	}
+
+	sort.Sort(blacklisted)
 
 	send(rw, req, "blacklist", "Blacklist", struct {
 		BLData []BlacklistData
