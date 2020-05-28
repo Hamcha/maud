@@ -126,7 +126,7 @@ func main() {
 
 	bind := viper.GetString("bind")
 	debugMode = viper.GetBool("debug")
-	maudRoot = viper.GetString("maudroot")
+	maudRoot = viper.GetString("maudRoot")
 
 	// Read footers
 

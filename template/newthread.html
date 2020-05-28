@@ -18,7 +18,7 @@
         <input class="full verysmall" name="captcha" type="text" placeholder="{{Question}}"/>
         <input name="question" type="hidden" value="{{Question}}"/>
         {{/Captcha}}{{/Data}}
-        <input type="text" name="ferrarelle" class="metadata" placeholder="Leave empty" />
+        <input type="email" name="email" class="metadata" placeholder="Insert your email" tabindex="-1" autocomplete="off"/>
         <div class="center">
             <div class="chars-count" data-maxlen="{{#Info}}{{MaxPostLength}}{{/Info}}"></div>
             <input type="submit" value="Create thread" />

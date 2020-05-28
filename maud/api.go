@@ -16,6 +16,8 @@ import (
 	. "github.com/hamcha/maud/maud/data"
 )
 
+const antiSpamFieldName = "email"
+
 // apiNewThread: creates a new thread with its OP.
 // POST params: title, text, [nickname, tags]
 func apiNewThread(rw http.ResponseWriter, req *http.Request) {
@@ -31,7 +33,7 @@ func apiNewThread(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	postAntispam := req.PostFormValue("ferrarelle")
+	postAntispam := req.PostFormValue(antiSpamFieldName)
 	if len(postAntispam) > 0 {
 		// Fuck spambots
 		sendError(rw, 500, "Database error")
@@ -126,7 +128,7 @@ func apiReply(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	postAntispam := req.PostFormValue("ferrarelle")
+	postAntispam := req.PostFormValue(antiSpamFieldName)
 	if len(postAntispam) > 0 {
 		// Fuck spambots
 		sendError(rw, 500, "Database error")
