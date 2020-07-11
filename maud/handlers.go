@@ -799,7 +799,7 @@ func (blData BlacklistDataList) Len() int {
 }
 
 func (blData BlacklistDataList) Less(i, j int) bool {
-	return blData[i].Name < blData[j].Name
+	return strings.ToLower(blData[i].Name) < strings.ToLower(blData[j].Name)
 }
 
 func (blData BlacklistDataList) Swap(i, j int) {
